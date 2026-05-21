@@ -1,5 +1,6 @@
 //* Menu do site
 import { Menu, X, MapPin } from "lucide-react";
+import Logo from "./Logo";
 
 function Navbar() {
   return (
@@ -15,22 +16,7 @@ function Navbar() {
           w-3/4
           flex justify-between items-center"
         >
-          <h1
-            className="
-            text-xl text-ocean font-black font-head
-            flex items-center gap-1.5"
-          >
-            <span
-              className="
-              inline-flex items-center justify-center
-              h-10 w-10
-              rounded-full
-              bg-gradient-ocean"
-            >
-              <MapPin className="w-6 h-6 text-white" />
-            </span>
-            <a href="">Nort City</a>
-          </h1>
+          <Logo />
           <nav className="font-body text-sm text-link font-medium">
             <ul className="flex gap-2.5">
               <li>
