@@ -1,139 +1,55 @@
 //* Menu do site
-import { Menu, X, MapPin } from "lucide-react";
+import { Menu, X, MapPin, Plus, Minus } from "lucide-react";
+import { useState } from "react";
 import Logo from "./Logo";
 
 function Navbar() {
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
     <>
-      <header
-        className="
-        w-full
-        flex justify-center
-        p-5"
-      >
-        <section
-          className="
-          w-3/4
-          flex justify-between items-center"
-        >
-          <Logo />
-          <nav className="font-body text-sm text-link font-medium">
-            <ul className="flex gap-2.5">
-              <li>
-                <a href="" className="px-2.5">
-                  Explorar
-                </a>
-              </li>
-              <li className="relative group">
-                <a href="" className="px-2.5">
-                  Serviços
-                </a>
-                <ul
-                  className="
-                  hidden
-                  absolute
-                  group-hover:block
-                  top-full
-                  left-0
-                  bg-white
-                  shadow-lg
-                  rounded-md
-                  main-w-48
-                  py-2
-                  z-50
-                  whitespace-nowrap
-                "
-                >
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Negócios
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Profissionais
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Prestadores de serviços
-                    </a>
-                  </li>
+      <header className="w-full bg-sand shadow-md">
+        <section className="w-full p-4 flex justify-between items-center">
+          <Logo showText={false} />
+          <button type="button" onClick={() => setMenuOpen(!menuOpen)}>
+            <Menu className="h-5 w-5 mr-4" />
+          </button>
+        </section>
+        <section className={`bg-white p-4 ${menuOpen ? "" : "hidden"}`}>
+          <nav>
+            <ul className="flex-col">
+              <li className="my-10 ml-3">Explorar</li>
+              <li className="my-10 ml-3">
+                <button type="button" onClick={() => setServicesOpen(!servicesOpen)} className="flex gap-1">
+                  Serviços {servicesOpen ? <Minus className="w-3" /> : <Plus className="w-3" />}
+                </button>
+                <ul className={`my-5 ${servicesOpen ? "" : "hidden"}`}>
+                  <li className="my-3">Negócios</li>
+                  <li className="my-3">Profissionais</li>
+                  <li className="my-3">Prestadores de Serviços</li>
                 </ul>
               </li>
-              <li className="relative group">
-                <a href="" className="px-2.5">
-                  Informações úteis
-                </a>
-                <ul
-                  className="
-                  hidden
-                  absolute
-                  group-hover:block
-                  top-full
-                  left-0
-                  bg-white
-                  shadow-lg
-                  rounded-md
-                  main-w-46
-                  py-2
-                  z-50
-                  whitespace-nowrap
-                "
-                >
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Tábua de marés
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Feiras Livres
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Eventos
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Telefones Úteis
-                    </a>
-                  </li>
+              <li className="my-10 ml-3">
+                <button type="button" onClick={() => setInfoOpen(!infoOpen)} className="flex gap-1">
+                  Informações úteis {infoOpen ? <Minus className="w-3" /> : <Plus className="w-3" />}
+                </button>
+                <ul className={`my-5 ${infoOpen ? "" : "hidden"}`}>
+                  <li className="my-3">Tábua de maré</li>
+                  <li className="my-3">Feiras livres</li>
+                  <li className="my-3">Telefones úteis</li>
+                  <li className="my-3">Eventos</li>
                 </ul>
               </li>
-              <li>
-                <a href="" className="px-2.5">
-                  Praias e Regiões
-                </a>
-              </li>
-              <li>
-                <a href="" className="px-2.5">
-                  Contato
-                </a>
-              </li>
-              <li>
-                <a href="" className="px-2.5">
-                  Planos
-                </a>
+              <li className="my-10 ml-3">Praias e Regiões</li>
+              <li className="my-10 ml-3">Sobre</li>
+              <li className="my-10 ml-3">Contato</li>
+              <li className="my-10 ml-3">Planos</li>
+              <li className="w-full my-5 py-3 rounded-full text-center bg-turquoise">
+                Cadastrar meu negócio
               </li>
             </ul>
           </nav>
-          <a
-            href=""
-            className="
-            py-2
-            px-4
-            font-body font-bold
-            text-sm text-sand
-            shadow-md
-            bg-turquoise
-            rounded-3xl
-           "
-          >
-            Cadastrar meu negócio
-          </a>
         </section>
       </header>
     </>
