@@ -1,139 +1,103 @@
 //* Menu do site
-import { Menu, X, MapPin } from "lucide-react";
+import { Menu, X, Plus, Minus } from "lucide-react";
+import { useState } from "react";
 import Logo from "./Logo";
 
 function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [openDropDown, setOpenDropDown] = useState(null);
+
   return (
     <>
-      <header
-        className="
-        w-full
-        flex justify-center
-        p-5"
-      >
-        <section
-          className="
-          w-3/4
-          flex justify-between items-center"
-        >
-          <Logo />
-          <nav className="font-body text-sm text-link font-medium">
-            <ul className="flex gap-2.5">
-              <li>
-                <a href="" className="px-2.5">
-                  Explorar
-                </a>
-              </li>
-              <li className="relative group">
-                <a href="" className="px-2.5">
-                  Serviços
-                </a>
-                <ul
-                  className="
-                  hidden
-                  absolute
-                  group-hover:block
-                  top-full
-                  left-0
-                  bg-white
-                  shadow-lg
-                  rounded-md
-                  main-w-48
-                  py-2
-                  z-50
-                  whitespace-nowrap
-                "
-                >
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Negócios
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Profissionais
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Prestadores de serviços
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li className="relative group">
-                <a href="" className="px-2.5">
-                  Informações úteis
-                </a>
-                <ul
-                  className="
-                  hidden
-                  absolute
-                  group-hover:block
-                  top-full
-                  left-0
-                  bg-white
-                  shadow-lg
-                  rounded-md
-                  main-w-46
-                  py-2
-                  z-50
-                  whitespace-nowrap
-                "
-                >
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Tábua de marés
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Feiras Livres
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Eventos
-                    </a>
-                  </li>
-                  <li>
-                    <a href="" className="block px-4 py-2 hover:bg-gray-100">
-                      Telefones Úteis
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <a href="" className="px-2.5">
-                  Praias e Regiões
-                </a>
-              </li>
-              <li>
-                <a href="" className="px-2.5">
-                  Contato
-                </a>
-              </li>
-              <li>
-                <a href="" className="px-2.5">
-                  Planos
-                </a>
-              </li>
-            </ul>
-          </nav>
-          <a
-            href=""
-            className="
-            py-2
-            px-4
-            font-body font-bold
-            text-sm text-sand
-            shadow-md
-            bg-turquoise
-            rounded-3xl
-           "
+      <header className="w-full bg-sand shadow-md">
+        <section className="mx-auto w-full max-w-7xl xl:flex xl:items-center  xl:justify-between">
+          <section className="flex min-h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+            <Logo showText={true} />
+            <button
+              type="button"
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full xl:hidden"
+              aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+              aria-expanded={menuOpen}
+            >
+              {menuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </button>
+          </section>
+          <section
+            className={`w-full border-t border-ocean/10 bg-white px-4 sm:px-6 lg:px-8 xl:block xl:w-auto xl:border-t-0 xl:bg-transparent xl:py-0 ${menuOpen ? "block" : "hidden"
+              }`}
           >
-            Cadastrar meu negócio
-          </a>
+            <nav className="w-full">
+              <ul className="flex flex-col gap-1 xl:flex-row xl:items-center xl:justify-end xl:gap-6">
+                <li className="px-3 py-3 xl:p-0">Explorar</li>
+
+                <li className="relative px-3 py-3 xl:p-0">
+                  <button
+                    type="button"
+                    onClick={() => setOpenDropDown(openDropDown === "services" ? null : 'services')}
+                    className="flex items-center gap-1"
+                  >
+                    Serviços{" "}
+                    {openDropDown === "services" ? (
+                      <Minus className="w-3" />
+                    ) : (
+                      <Plus className="w-3" />
+                    )}
+                  </button>
+                  <ul className={`
+                    mt-3 space-y-3
+                    xl:absolute xl:left-0 xl:top-full xl:z-50
+                    xl:mt-4 xl:w-56 xl:rounded-md xl:bg-white xl:p-4 xl:shadow-lg
+                    ${openDropDown === "services" ? "block" : "hidden"}`}>
+                    <li className="my-3">Negócios</li>
+                    <li className="my-3">Profissionais</li>
+                    <li className="my-3">Prestadores de Serviços</li>
+                  </ul>
+                </li>
+
+                <li className="relative px-3 py-3 xl:p-0">
+                  <button
+                    type="button"
+                    onClick={() => setOpenDropDown(openDropDown === 'info' ? null : 'info')}
+                    className="flex items-center gap-1 whitespace-nowrap"
+                  >
+                    Informações úteis{" "}
+                    {openDropDown === "info" ? (
+                      <Minus className="w-3" />
+                    ) : (
+                      <Plus className="w-3" />
+                    )}
+                  </button>
+                  <ul className={`
+                    mt-3 space-y-3
+                    xl:absolute xl:left-0 xl:top-full xl:z-50
+                    xl:mt-4 xl:w-56 xl:rounded-md xl:bg-white xl:p-4 xl:shadow-lg 
+                    ${openDropDown === "info" ? "block" : "hidden"}`}>
+                    <li className="my-3">Tábua de maré</li>
+                    <li className="my-3">Feiras livres</li>
+                    <li className="my-3">Telefones úteis</li>
+                    <li className="my-3">Eventos</li>
+                  </ul>
+                </li>
+
+                <li className="px-3 py-3 whitespace-nowrap xl:p-0">
+                  Praias e Regiões
+                </li>
+                <li className="px-3 py-3 xl:p-0">Sobre</li>
+                <li className="px-3 py-3 xl:p-0">Contato</li>
+                <li className="px-3 py-3 xl:p-0">Planos</li>
+                <li className="px-3 py-3 xl:p-0">
+                  <a className="block w-full rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap sm:w-auto">
+                    Cadastrar meu negócio
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </section>
         </section>
       </header>
     </>
