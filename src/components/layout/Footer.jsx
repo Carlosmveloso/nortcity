@@ -9,10 +9,10 @@ function Footer() {
   const exploreLinks = [{ nome: "passeios", href: "/categorias/passeios" }];
   return (
     <>
-      <footer className="w-full bg-ocean text-sand font-body flex flex-col items-center">
-        <section className="w-full py-3 px-4 grid grid-cols-1 gap-10">
+      <footer className="w-full bg-ocean text-sand font-body">
+        <section className="mx-auto grid w-full max-w-7xl grid-cols-1 xl:grid-cols-5 gap-10 px-4 py-10 sm:px-6 md:grid-cols-2 lg:px-8">
           <section>
-            <Logo variantText="sand" variantBg="turquoise" />
+            <Logo variantText="sand" variantBg="turquoise" showText={false} />
             <p className="my-3 py-2">
               A plataforma digital que conecta tudo de Pitimbu em um só lugar.
             </p>
@@ -114,10 +114,10 @@ function Footer() {
         </section>
         <section
           className="
-          w-full
+          mx-auto w-full max-w-7xl
           flex-col justify-items-center gap-5
           border-t border-sand
-          p-3"
+          px-4 py-3 sm:px-6 lg:px-8"
         >
           <section className="">
             <p className="py-2 text-center">

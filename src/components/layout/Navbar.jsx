@@ -1,55 +1,103 @@
 //* Menu do site
-import { Menu, X, MapPin, Plus, Minus } from "lucide-react";
+import { Menu, X, Plus, Minus } from "lucide-react";
 import { useState } from "react";
 import Logo from "./Logo";
 
 function Navbar() {
-  const [servicesOpen, setServicesOpen] = useState(false);
-  const [infoOpen, setInfoOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openDropDown, setOpenDropDown] = useState(null);
+
   return (
     <>
       <header className="w-full bg-sand shadow-md">
-        <section className="w-full p-4 flex justify-between items-center">
-          <Logo showText={false} />
-          <button type="button" onClick={() => setMenuOpen(!menuOpen)}>
-            <Menu className="h-5 w-5 mr-4" />
-          </button>
-        </section>
-        <section className={`bg-white p-4 ${menuOpen ? "" : "hidden"}`}>
-          <nav>
-            <ul className="flex-col">
-              <li className="my-10 ml-3">Explorar</li>
-              <li className="my-10 ml-3">
-                <button type="button" onClick={() => setServicesOpen(!servicesOpen)} className="flex gap-1">
-                  Serviços {servicesOpen ? <Minus className="w-3" /> : <Plus className="w-3" />}
-                </button>
-                <ul className={`my-5 ${servicesOpen ? "" : "hidden"}`}>
-                  <li className="my-3">Negócios</li>
-                  <li className="my-3">Profissionais</li>
-                  <li className="my-3">Prestadores de Serviços</li>
-                </ul>
-              </li>
-              <li className="my-10 ml-3">
-                <button type="button" onClick={() => setInfoOpen(!infoOpen)} className="flex gap-1">
-                  Informações úteis {infoOpen ? <Minus className="w-3" /> : <Plus className="w-3" />}
-                </button>
-                <ul className={`my-5 ${infoOpen ? "" : "hidden"}`}>
-                  <li className="my-3">Tábua de maré</li>
-                  <li className="my-3">Feiras livres</li>
-                  <li className="my-3">Telefones úteis</li>
-                  <li className="my-3">Eventos</li>
-                </ul>
-              </li>
-              <li className="my-10 ml-3">Praias e Regiões</li>
-              <li className="my-10 ml-3">Sobre</li>
-              <li className="my-10 ml-3">Contato</li>
-              <li className="my-10 ml-3">Planos</li>
-              <li className="w-full my-5 py-3 rounded-full text-center bg-turquoise">
-                Cadastrar meu negócio
-              </li>
-            </ul>
-          </nav>
+        <section className="mx-auto w-full max-w-7xl xl:flex xl:items-center  xl:justify-between">
+          <section className="flex min-h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+            <Logo showText={true} />
+            <button
+              type="button"
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full xl:hidden"
+              aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+              aria-expanded={menuOpen}
+            >
+              {menuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </button>
+          </section>
+          <section
+            className={`w-full border-t border-ocean/10 bg-white px-4 sm:px-6 lg:px-8 xl:block xl:w-auto xl:border-t-0 xl:bg-transparent xl:py-0 ${menuOpen ? "block" : "hidden"
+              }`}
+          >
+            <nav className="w-full">
+              <ul className="flex flex-col gap-1 xl:flex-row xl:items-center xl:justify-end xl:gap-6">
+                <li className="px-3 py-3 xl:p-0">Explorar</li>
+
+                <li className="relative px-3 py-3 xl:p-0">
+                  <button
+                    type="button"
+                    onClick={() => setOpenDropDown(openDropDown === "services" ? null : 'services')}
+                    className="flex items-center gap-1"
+                  >
+                    Serviços{" "}
+                    {openDropDown === "services" ? (
+                      <Minus className="w-3" />
+                    ) : (
+                      <Plus className="w-3" />
+                    )}
+                  </button>
+                  <ul className={`
+                    mt-3 space-y-3
+                    xl:absolute xl:left-0 xl:top-full xl:z-50
+                    xl:mt-4 xl:w-56 xl:rounded-md xl:bg-white xl:p-4 xl:shadow-lg
+                    ${openDropDown === "services" ? "block" : "hidden"}`}>
+                    <li className="my-3">Negócios</li>
+                    <li className="my-3">Profissionais</li>
+                    <li className="my-3">Prestadores de Serviços</li>
+                  </ul>
+                </li>
+
+                <li className="relative px-3 py-3 xl:p-0">
+                  <button
+                    type="button"
+                    onClick={() => setOpenDropDown(openDropDown === 'info' ? null : 'info')}
+                    className="flex items-center gap-1 whitespace-nowrap"
+                  >
+                    Informações úteis{" "}
+                    {openDropDown === "info" ? (
+                      <Minus className="w-3" />
+                    ) : (
+                      <Plus className="w-3" />
+                    )}
+                  </button>
+                  <ul className={`
+                    mt-3 space-y-3
+                    xl:absolute xl:left-0 xl:top-full xl:z-50
+                    xl:mt-4 xl:w-56 xl:rounded-md xl:bg-white xl:p-4 xl:shadow-lg 
+                    ${openDropDown === "info" ? "block" : "hidden"}`}>
+                    <li className="my-3">Tábua de maré</li>
+                    <li className="my-3">Feiras livres</li>
+                    <li className="my-3">Telefones úteis</li>
+                    <li className="my-3">Eventos</li>
+                  </ul>
+                </li>
+
+                <li className="px-3 py-3 whitespace-nowrap xl:p-0">
+                  Praias e Regiões
+                </li>
+                <li className="px-3 py-3 xl:p-0">Sobre</li>
+                <li className="px-3 py-3 xl:p-0">Contato</li>
+                <li className="px-3 py-3 xl:p-0">Planos</li>
+                <li className="px-3 py-3 xl:p-0">
+                  <a className="block w-full rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap sm:w-auto">
+                    Cadastrar meu negócio
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </section>
         </section>
       </header>
     </>
