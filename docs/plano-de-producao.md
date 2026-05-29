@@ -31,11 +31,11 @@ Objetivo: criar a fundacao visual do site.
 ### Checklist
 
 - [x] Criar Navbar
-- [ ] Criar Footer
-- [ ] Revisar `index.css` com tokens do design system
-- [ ] Garantir fontes Poppins e Inter
-- [ ] Criar estrutura basica de layout da pagina
-- [ ] Definir espacamentos padrao das secoes
+- [x] Criar Footer
+- [x] Revisar `index.css` com tokens do design system
+- [x] Garantir fontes Poppins e Inter
+- [x] Criar estrutura basica de layout da pagina
+- [x] Definir espacamentos padrao das secoes
 
 ### O que aprender nesta fase
 
@@ -66,7 +66,7 @@ Objetivo: montar a primeira pagina completa do projeto.
 
 ### Checklist
 
-- [ ] Criar/ajustar `Home.jsx`
+- [x] Criar/ajustar `Home.jsx`
 - [ ] Criar `HeroSection.jsx`
 - [ ] Criar secao de categorias
 - [ ] Criar secao de negocios em destaque
