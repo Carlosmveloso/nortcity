@@ -1,12 +1,11 @@
 //* Categorias Principais
 import { categoriesSection } from '../../data/categoriesSection';
-import GlassButton from '../ui/GlassButton';
 import GlassButtonMini from '../ui/GlassButtonMini';
 
 function CategoriesSection() {
     return (
         <>
-            <section className="bg-sand">
+            <section className="bg-white">
                 <section className='flex flex-col items-center pb-10'>
                     <h1 className='text-center pt-15 pb-5 font-head font-extrabold text-3xl font-stretch-expanded'>{categoriesSection.title}</h1>
                     <p className='text-center text-balance text-dark-ocean/80'>{categoriesSection.description}</p>
