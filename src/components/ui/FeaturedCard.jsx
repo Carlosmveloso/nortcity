@@ -10,11 +10,13 @@ function FeaturedCard() {
                         className="bg-card rounded-4xl relative shadow-2xl"
                         key={featured.title}
                     >
-                        <img
-                            className="w-full rounded-t-4xl"
-                            src={featured.img}
-                            alt={featured.altText}
-                        />
+                        <div className='h-70 overflow-hidden rounded-t-4xl'>
+                            <img
+                                className="w-full h-full object-cover"
+                                src={featured.img}
+                                alt={featured.altText}
+                            />
+                        </div>
                         <div className="absolute top-4 left-4 flex gap-2">
                             {featured.categories.map((categorie) => {
                                 return (

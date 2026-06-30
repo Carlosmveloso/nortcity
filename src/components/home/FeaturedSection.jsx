@@ -10,7 +10,7 @@ function FeaturedSection() {
                     <p className='text-balance text-muted-foreground'>Os passeios e experiências mais procuradas pelos visitantes</p>
                     <a className='flex justify-center mt-4 py-2 px-5 border-2 border-dark-ocean rounded-full' href="">Ver todos</a>
                 </section>
-                <section className="w-9/10">
+                <section className="flex flex-col gap-6 w-9/10">
                     <FeaturedCard />
                 </section>
             </section>
