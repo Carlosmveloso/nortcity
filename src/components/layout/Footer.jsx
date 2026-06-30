@@ -6,7 +6,6 @@ import { Mail, MapPin, Phone, Heart } from "lucide-react";
 
 function Footer() {
   //Links
-  const exploreLinks = [{ nome: "passeios", href: "/categorias/passeios" }];
   return (
     <>
       <footer className="w-full bg-ocean text-sand font-body">

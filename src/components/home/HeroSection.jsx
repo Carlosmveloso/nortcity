@@ -12,10 +12,11 @@ function HeroSection() {
     const heroImg = `
     bg-[linear-gradient(rgba(0,0,0,0.30),rgba(0,0,0,0.10)),url('/hero-beach1.jpeg')]
     bg-cover bg-center bg-no-repeat
-    max-h-[700px]
-    flex flex-col items-center`;
+    min-h-[700px]
+    flex flex-col items-center
+    shadow-lg`;
     const heroCta = `
-    w-9/10 h-dvh
+    w-9/10 h-full
     py-4
     flex flex-col gap-7 items-center`;
     return (
@@ -23,7 +24,7 @@ function HeroSection() {
             <section className={`${heroImg}`}>
                 <section className={`${heroCta}`}>
                     <GlassButton>Tudo de Pitimbu em um só lugar!</GlassButton>
-                    <h1 className="text-4xl text-white text-center font-semibold">
+                    <h1 className="text-4xl font-head text-white text-center font-semibold text-shadow-lg">
                         Descubra Pitimbu com o{' '}
                         <span className="text-turquoise ">Farol Pitimbu</span>
                     </h1>
@@ -40,17 +41,24 @@ function HeroSection() {
                                 placeholder="O que você procura? ex: pousada, passeio de barco."
                             />
                         </section>
-                        <section className="flex justify-between p-4 bg-sand-dark/50 rounded-4xl">
+                        <section className="flex justify-between p-4 bg-sand-dark/50 rounded-4xl text-dark-ocean">
                             <section
                                 className={`${categoriesOpen ? 'grid w-full grid-cols-2 gap-y-1' : 'w-full flex justify-between'}`}
                             >
                                 <p className="self-start">Serviços</p>
+                                {/* // className={`${categoriesOpen ? 'block row-start-2 col-start-1' : 'hidden'}`} */}
                                 <ul
-                                    className={`${categoriesOpen ? 'block row-start-2 col-start-1' : 'hidden'}`}
+                                    className={`${categoriesOpen ? 'block row-start-2 col-start-1 menu  rounded-box w-56' : 'hidden'}`}
                                 >
-                                    <li>Negócios</li>
-                                    <li>Profissionais</li>
-                                    <li className="whitespace-nowrap">Prestadores de serviços</li>
+                                    <li>
+                                        <a>Negócios</a>
+                                    </li>
+                                    <li>
+                                        <a>Profissionais</a>
+                                    </li>
+                                    <li>
+                                        <a>Prestadores de serviços</a>
+                                    </li>
                                 </ul>
                                 <button
                                     className="row-start-1 col-start-2 justify-self-end self-start justify-items-end"
@@ -65,7 +73,7 @@ function HeroSection() {
                             <p className="text-sand font-bold ">Buscar</p>
                         </button>
                     </section>
-                    <section className='flex flex-wrap gap-2 mt-3 justify-center'>
+                    <section className="flex flex-wrap gap-2 py-3 justify-center">
                         <GlassButton>Comer</GlassButton>
                         <GlassButton>Passeios</GlassButton>
                         <GlassButton>Hospedagem</GlassButton>

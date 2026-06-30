@@ -1,7 +1,7 @@
 //* Números do projeto
 
-function StastSection() {
-    return <></>
-};
+function StatsSection() {
+    return <></>;
+}
 
-export default StastSection;
+export default StatsSection;
