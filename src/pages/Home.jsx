@@ -5,6 +5,7 @@ import CategoriesSection from "../components/home/CategoriesSection";
 import FeaturedSection from "../components/home/FeaturedSection";
 import StastSection from "../components/home/StatsSection";
 import CallToActionSection from "../components/home/CallToActionSection";
+import ExperiencesSection from "../components/home/ExperiencesSection";
 
 function Home () {
     return (
@@ -12,8 +13,10 @@ function Home () {
             <HeroSection />
             <CategoriesSection />
             <FeaturedSection />
+            <ExperiencesSection />
             <StastSection />
             <CallToActionSection />
+
         </main>
     )
 }
