@@ -5,7 +5,7 @@ import { experiencesSection } from '../../data/experiencesSection';
 function ExperienceCard() {
     return (
         <>
-            {experiencesSection.map((experience) => {
+            {experiencesSection.experiences.map((experience) => {
                 return (
                     <section
                         key={experience.title}

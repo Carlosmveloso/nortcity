@@ -3,7 +3,7 @@
 import HeroSection from "../components/home/HeroSection";
 import CategoriesSection from "../components/home/CategoriesSection";
 import FeaturedSection from "../components/home/FeaturedSection";
-import StastSection from "../components/home/StatsSection";
+import StatsSection from "../components/home/StatsSection";
 import CallToActionSection from "../components/home/CallToActionSection";
 import ExperiencesSection from "../components/home/ExperiencesSection";
 
@@ -14,7 +14,7 @@ function Home () {
             <CategoriesSection />
             <FeaturedSection />
             <ExperiencesSection />
-            <StastSection />
+            <StatsSection />
             <CallToActionSection />
 
         </main>

@@ -3,8 +3,11 @@ import bgTours from '../assets/images/category-tours.jpg';
 import bgServices from "../assets/images/category-services.jpg";
 
 
-export const experiencesSection = [
-    {
+export const experiencesSection = {
+    title: "Explorar por experiência",
+    description: "Roteiros e guias especiais para aproveitar o melhor de pitimbu.",
+    experiences: [
+         {
         title: 'Roteiro 1 dia em Pitimbu',
         description: 'O melhor de Pitimbu em 24 horas',
         link: 'tal página',
@@ -28,4 +31,5 @@ export const experiencesSection = [
         link: 'tal página',
         bgImg: bgServices,
     },
-];
+    ]
+};
