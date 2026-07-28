@@ -33,4 +33,14 @@ export const featureSection = [
         img: cartorioPitimbu,
         altText: 'Catório Pitimbu',
     },
+    {
+        title: 'Festa de São João',
+        local: 'Pitimbu',
+        categories: ['Notas', 'Contratos'],
+        grade: 4.5,
+        feedbacks: 89,
+        from: 100,
+        img: cartorioPitimbu,
+        altText: 'Catório Pitimbu',
+    },
 ];
