@@ -10,7 +10,7 @@ function Logo({ variantText = "ocean", variantBg = "gradient-ocean", showText = 
           <MapPin className="w-6 h-6 text-white" />
         </span>
         <a href="" className={showText ? "hidden whitespace-nowrap sm:block" : "block"}>
-          Farol Pitimbu
+          NortCity
         </a>
       </div>
     </>
