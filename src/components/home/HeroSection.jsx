@@ -1,12 +1,9 @@
-import { ChevronDown, ChevronRight, Search } from 'lucide-react';
-import { useState } from 'react';
+import { Search } from 'lucide-react';
 import GlassButton from '../ui/GlassButton';
 
 //* Primeira dobra da página
 
 function HeroSection() {
-    //Functions
-    const [categoriesOpen, setCategoriesOpen] = useState(false);
 
     //Styles
     const heroImg = `
@@ -14,7 +11,7 @@ function HeroSection() {
     bg-cover bg-center bg-no-repeat
     min-h-[700px]
     flex flex-col items-center justify-center
-    shadow-lg`;
+    shadow-xl`;
     const heroCta = `
     w-9/10 h-full
     py-4
