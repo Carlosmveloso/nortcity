@@ -80,13 +80,13 @@ function Footer() {
               <li className="py-2">
                 <section className="flex gap-2">
                   <Mail className="w-4 text-turquoise-light" />
-                  <p className="text-sand-dark">contato@gmail.com</p>
+                  <p className="text-sand-dark">carloseduardomveloso@gmail.com</p>
                 </section>
               </li>
               <li className="py-2">
                 <section className="flex gap-2">
                   <Phone className="w-4 text-turquoise-light" />
-                  <p className="text-sand-dark">(83) 90999-9999</p>
+                  <p className="text-sand-dark">(83) 99113-4990</p>
                 </section>
               </li>
               <li className="py-2">
@@ -120,7 +120,7 @@ function Footer() {
         >
           <section className="">
             <p className="py-2 text-center">
-              © 2026 Farol Pitimbu. Todos os direitos reservados.
+              © 2025 Farol Pitimbu. Todos os direitos reservados.
             </p>
           </section>
           <section className="">
