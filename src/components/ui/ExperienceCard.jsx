@@ -13,7 +13,7 @@ function ExperienceCard() {
                         className="relative min-h-45 rounded-2xl overflow-hidden bg-cover bg-center shadow-lg"
                     >
                         <div className="absolute inset-0 bg-black/30" />
-                        <div className="relative z-10 min-h-45 flex flex-col justify-center p-5">
+                        <div className="relative z-10 min-h-45 flex flex-col justify-center p-8">
                             <p className="font-head font-bold text-xl text-card mb-2">
                                 {experience.title}
                             </p>

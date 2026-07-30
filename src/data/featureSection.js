@@ -1,6 +1,7 @@
 import velosoRachel from '../assets/featuredClients/veloso-rachel-logo.jpg';
 import asenzaResort from '../assets/featuredClients/asenza-logo.jpg';
 import cartorioPitimbu from "../assets/featuredClients/cartorio-pitimbu.jpg";
+import kasaFalezia from "../assets/featuredClients/Kasa da Falésia.png";
 
 export const featureSection = [
     {
@@ -34,13 +35,13 @@ export const featureSection = [
         altText: 'Catório Pitimbu',
     },
     {
-        title: 'Festa de São João',
+        title: 'Kasa da Falésia',
         local: 'Pitimbu',
-        categories: ['Notas', 'Contratos'],
-        grade: 4.5,
-        feedbacks: 89,
-        from: 100,
-        img: cartorioPitimbu,
-        altText: 'Catório Pitimbu',
+        categories: ['Imóveis', 'Temporada'],
+        grade: 5.0,
+        feedbacks: 102,
+        from: 5000,
+        img: kasaFalezia,
+        altText: 'Kasa da falésia',
     },
 ];

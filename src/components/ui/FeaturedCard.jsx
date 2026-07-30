@@ -10,7 +10,7 @@ function FeaturedCard() {
                         className="w-full max-w-82.5 bg-card rounded-4xl relative shadow-2xl"
                         key={featured.title}
                     >
-                        <div className='h-62  overflow-hidden rounded-t-4xl'>
+                        <div className='h-62 overflow-hidden rounded-t-4xl'>
                             <img
                                 className="w-full h-full object-cover"
                                 src={featured.img}

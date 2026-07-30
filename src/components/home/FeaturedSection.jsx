@@ -13,7 +13,7 @@ function FeaturedSection() {
                         </div>
                         <a className='flex justify-center mt-4 py-2 px-5 border-2 border-dark-ocean rounded-full' href="">Ver todos</a>
                     </section>
-                    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center w-full">
+                    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 justify-items-center w-full">
                         <FeaturedCard />
                     </section>
                 </section>
