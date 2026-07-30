@@ -13,7 +13,7 @@ function HeroSection() {
     bg-[linear-gradient(rgba(0,0,0,0.30),rgba(0,0,0,0.10)),url('/hero-beach1.jpeg')]
     bg-cover bg-center bg-no-repeat
     min-h-[700px]
-    flex flex-col items-center
+    flex flex-col items-center justify-center
     shadow-lg`;
     const heroCta = `
     w-9/10 h-full
@@ -32,8 +32,8 @@ function HeroSection() {
                         Encontre passeios, gastronomia, hospedagem e serviços locais em um só lugar
                         !
                     </p>
-                    <section className="w-full bg-white rounded-4xl p-2 flex flex-col gap-2">
-                        <section className="flex p-3 bg-sand-dark/50 gap-3 text-dark-ocean rounded-full">
+                    <section className="w-full bg-white rounded-4xl p-2 flex flex-col md:flex-row gap-2">
+                        <section className="flex p-3 bg-sand-dark/50 gap-3 text-dark-ocean rounded-full flex-grow-4">
                             <Search />
                             <input
                                 className=" w-full"
@@ -41,35 +41,7 @@ function HeroSection() {
                                 placeholder="O que você procura? ex: pousada, passeio de barco."
                             />
                         </section>
-                        <section className="flex justify-between p-4 bg-sand-dark/50 rounded-4xl text-dark-ocean">
-                            <section
-                                className={`${categoriesOpen ? 'grid w-full grid-cols-2 gap-y-1' : 'w-full flex justify-between'}`}
-                            >
-                                <p className="self-start">Serviços</p>
-                                {/* // className={`${categoriesOpen ? 'block row-start-2 col-start-1' : 'hidden'}`} */}
-                                <ul
-                                    className={`${categoriesOpen ? 'block row-start-2 col-start-1 menu  rounded-box w-56' : 'hidden'}`}
-                                >
-                                    <li>
-                                        <a>Negócios</a>
-                                    </li>
-                                    <li>
-                                        <a>Profissionais</a>
-                                    </li>
-                                    <li>
-                                        <a>Prestadores de serviços</a>
-                                    </li>
-                                </ul>
-                                <button
-                                    className="row-start-1 col-start-2 justify-self-end self-start justify-items-end"
-                                    onClick={() => setCategoriesOpen(!categoriesOpen)}
-                                >
-                                    {categoriesOpen ? <ChevronDown /> : <ChevronRight />}
-                                </button>
-                            </section>
-                            <button></button>
-                        </section>
-                        <button className="w-full bg-turquoise p-3 rounded-3xl">
+                        <button className="w-full sm:w-1/5 bg-turquoise p-3 rounded-3xl">
                             <p className="text-sand font-bold ">Buscar</p>
                         </button>
                     </section>

@@ -31,64 +31,13 @@ function Navbar() {
                         <nav className="w-full">
                             <ul className="flex flex-col gap-1 xl:flex-row xl:items-center xl:justify-end xl:gap-6">
                                 <li className="px-3 py-3 xl:p-0">Explorar</li>
-
-                                <li className="relative px-3 py-3 xl:p-0">
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            setOpenDropDown(
-                                                openDropDown === 'services' ? null : 'services',
-                                            )
-                                        }
-                                        className="flex items-center gap-1"
-                                    >
-                                        Serviços{' '}
-                                        {openDropDown === 'services' ? (
-                                            <Minus className="w-3" />
-                                        ) : (
-                                            <Plus className="w-3" />
-                                        )}
-                                    </button>
-                                    <ul
-                                        className={`mt-3 space-y-3 xl:absolute xl:top-full xl:left-0 xl:z-50 xl:mt-4 xl:w-56 xl:rounded-md xl:bg-white xl:p-4 xl:shadow-lg ${openDropDown === 'services' ? 'block' : 'hidden'}`}
-                                    >
-                                        <li className="my-3">Negócios</li>
-                                        <li className="my-3">Profissionais</li>
-                                        <li className="my-3">Prestadores de Serviços</li>
-                                    </ul>
-                                </li>
-
-                                <li className="relative px-3 py-3 xl:p-0">
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            setOpenDropDown(openDropDown === 'info' ? null : 'info')
-                                        }
-                                        className="flex items-center gap-1 whitespace-nowrap"
-                                    >
-                                        Informações úteis{' '}
-                                        {openDropDown === 'info' ? (
-                                            <Minus className="w-3" />
-                                        ) : (
-                                            <Plus className="w-3" />
-                                        )}
-                                    </button>
-                                    <ul
-                                        className={`mt-3 space-y-3 xl:absolute xl:top-full xl:left-0 xl:z-50 xl:mt-4 xl:w-56 xl:rounded-md xl:bg-white xl:p-4 xl:shadow-lg ${openDropDown === 'info' ? 'block' : 'hidden'}`}
-                                    >
-                                        <li className="my-3">Tábua de maré</li>
-                                        <li className="my-3">Feiras livres</li>
-                                        <li className="my-3">Telefones úteis</li>
-                                        <li className="my-3">Eventos</li>
-                                    </ul>
-                                </li>
-
-                                <li className="px-3 py-3 whitespace-nowrap xl:p-0">
-                                    Praias e Regiões
-                                </li>
-                                <li className="px-3 py-3 xl:p-0">Sobre</li>
-                                <li className="px-3 py-3 xl:p-0">Contato</li>
-                                <li className="px-3 py-3 xl:p-0">Planos</li>
+                                <li className="px-3 py-3 xl:p-0">Categorias</li>
+                                <li className="px-3 py-3 xl:p-0">Atrações</li>
+                                <li className="px-3 py-3 xl:p-0">Eventos</li>
+                                <li className="px-3 py-3 xl:p-0">Mapa</li>
+                                <li className="px-3 py-3 xl:p-0">Profissionais</li>
+                                <li className="px-3 py-3 xl:p-0">Blog</li>
+                                <li className='p-3 xl:p-0'>Planos</li>
                                 <li className="px-3 py-3 xl:p-0">
                                     <a className="bg-turquoise block w-full rounded-full px-5 py-3 text-center whitespace-nowrap sm:w-auto">
                                         Cadastrar meu negócio
