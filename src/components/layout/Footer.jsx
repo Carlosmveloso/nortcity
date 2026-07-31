@@ -1,103 +1,109 @@
-//* Rodapé do site
-
 import Logo from "./Logo";
 import { FaInstagram, FaTiktok } from "react-icons/fa6";
 import { Mail, MapPin, Phone, Heart } from "lucide-react";
 
 function Footer() {
-  //Links
   return (
-    <>
-      <footer className="w-full bg-ocean text-sand font-body">
-        <section className="mx-auto grid w-full max-w-7xl grid-cols-1 xl:grid-cols-5 gap-10 px-4 py-10 sm:px-6 md:grid-cols-2 lg:px-8">
-          <section>
-            <Logo variantText="sand" variantBg="turquoise" showText={false} />
-            <p className="my-3 py-2">
-              A plataforma digital que conecta tudo de Pitimbu em um só lugar.
-            </p>
-            <section className="flex gap-2">
-              <a href="https://www.instagram.com/farolpitimbupb/" target="blank">
-                <FaInstagram className="w-9 h-9 p-2 text-white bg-sand/20 rounded-full" />
-              </a>
-              <a href="https://www.tiktok.com/@farolpitimbu" target="blank">
-                <FaTiktok className="w-9 h-9 p-2 text-white bg-sand/20 rounded-full" />
-              </a>
-            </section>
-          </section>
-          <section>
+    <footer className="w-full bg-ocean text-sand font-body">
+      <section className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-10 px-4 py-10 sm:px-6 sm:grid-cols-2 lg:grid-cols-5 lg:px-8">
+        <div>
+          <Logo variantText="sand" variantBg="turquoise" showText={false} />
+          <p className="my-3 py-2">
+            A plataforma digital que conecta tudo de Pitimbu em um só lugar.
+          </p>
+          <div className="flex gap-2">
+            <a
+              href="https://www.instagram.com/farolpitimbupb/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram do Farol Pitimbu"
+            >
+              <FaInstagram className="w-9 h-9 p-2 text-white bg-sand/20 rounded-full" />
+            </a>
+            <a
+              href="https://www.tiktok.com/@farolpitimbu"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="TikTok do Farol Pitimbu"
+            >
+              <FaTiktok className="w-9 h-9 p-2 text-white bg-sand/20 rounded-full" />
+            </a>
+          </div>
+        </div>
+          <nav aria-label="Links de exploração">
             <p>Explorar</p>
             <ul className="mt-3">
               <li className="py-2">
-                <a href="" className="text-sand-dark">
+                <a href="#" className="text-sand-dark">
                   Passeios
                 </a>
               </li>
               <li className="py-2">
-                <a href="" className="text-sand-dark">
+                <a href="#" className="text-sand-dark">
                   Hospedagem
                 </a>
               </li>
               <li className="py-2">
-                <a href="" className="text-sand-dark">
+                <a href="#" className="text-sand-dark">
                   Gastronomia
                 </a>
               </li>
               <li className="py-2">
-                <a href="" className="text-sand-dark">
+                <a href="#" className="text-sand-dark">
                   Serviços
                 </a>
               </li>
             </ul>
-          </section>
-          <section>
+          </nav>
+          <nav aria-label="Links institucionais">
             <p>Institucional</p>
             <ul className="mt-3">
               <li className="py-2">
-                <a href="" className="text-sand-dark">
+                <a href="#" className="text-sand-dark">
                   Sobre Nós
                 </a>
               </li>
               <li className="py-2">
-                <a href="" className="text-sand-dark">
+                <a href="#" className="text-sand-dark">
                   Contato
                 </a>
               </li>
               <li className="py-2">
-                <a href="" className="text-sand-dark">
+                <a href="#" className="text-sand-dark">
                   Blog
                 </a>
               </li>
               <li className="py-2">
-                <a href="" className="text-sand-dark">
+                <a href="#" className="text-sand-dark">
                   FAQ
                 </a>
               </li>
             </ul>
-          </section>
-          <section>
+          </nav>
+          <div>
             <p>Contato</p>
             <ul className="mt-3">
               <li className="py-2">
-                <section className="flex gap-2">
-                  <Mail className="w-4 text-turquoise-light" />
-                  <p className="text-sand-dark">carloseduardomveloso@gmail.com</p>
-                </section>
+                <div className="flex gap-2 min-w-0">
+                  <Mail className="w-4 shrink-0 text-turquoise-light" aria-hidden="true" />
+                  <p className="text-sand-dark break-all">carloseduardomveloso@gmail.com</p>
+                </div>
               </li>
               <li className="py-2">
-                <section className="flex gap-2">
-                  <Phone className="w-4 text-turquoise-light" />
+                <div className="flex gap-2 min-w-0">
+                  <Phone className="w-4 shrink-0 text-turquoise-light" aria-hidden="true" />
                   <p className="text-sand-dark">(83) 99113-4990</p>
-                </section>
+                </div>
               </li>
               <li className="py-2">
-                <section className="flex gap-2">
-                  <MapPin className="w-4 text-turquoise-light" />
+                <div className="flex gap-2 min-w-0">
+                  <MapPin className="w-4 shrink-0 text-turquoise-light" aria-hidden="true" />
                   <p className="text-sand-dark">Pitimbu, Paraíba - Brasil</p>
-                </section>
+                </div>
               </li>
             </ul>
-          </section>
-          <section>
+          </div>
+          <div>
             <p>Patrocinadores</p>
             <ul className="mt-3">
               <li className="py-2">
@@ -109,28 +115,27 @@ function Footer() {
                 </p>
               </li>
             </ul>
-          </section>
+          </div>
         </section>
-        <section
+        <div
           className="
           mx-auto w-full max-w-7xl
           flex-col justify-items-center gap-5
           border-t border-sand
           px-4 py-3 sm:px-6 lg:px-8"
         >
-          <section className="">
+          <div>
             <p className="py-2 text-center">
               © 2025 Farol Pitimbu. Todos os direitos reservados.
             </p>
-          </section>
-          <section className="">
+          </div>
+          <div>
             <p className="py-2 flex gap-2">
-              Feito com <Heart className="w-4 text-sun-yellow" /> em Pitimbu, PB
+              Feito com <Heart className="w-4 text-sun-yellow" aria-hidden="true" /> em Pitimbu, PB
             </p>
-          </section>
-        </section>
+          </div>
+        </div>
       </footer>
-    </>
   );
 }
 
