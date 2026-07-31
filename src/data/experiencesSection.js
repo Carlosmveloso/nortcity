@@ -7,29 +7,29 @@ export const experiencesSection = {
     title: "Explorar por experiência",
     description: "Roteiros e guias especiais para aproveitar o melhor de pitimbu.",
     experiences: [
-         {
-        title: 'Roteiro 1 dia em Pitimbu',
-        description: 'O melhor de Pitimbu em 24 horas',
-        link: 'tal página',
-        bgImg: '/hero-beach.jpg',
-    },
-    {
-        title: 'Praias e Mirantes',
-        description: 'Os melhores pontos de vista',
-        link: 'tal página',
-        bgImg: bgTours,
-    },
-    {
-        title: 'Onde comer bem',
-        description: 'Gastronomia local imperdível',
-        link: 'tal página',
-        bgImg: bgFood,
-    },
-    {
-        title: 'Artesanato local',
-        description: 'Cultura e tradição regional',
-        link: 'tal página',
-        bgImg: bgServices,
-    },
+        {
+            title: 'Roteiro 1 dia em Pitimbu',
+            description: 'O melhor de Pitimbu em 24 horas',
+            link: '/explorar?experiencia=roteiro-1-dia',
+            bgImg: '/hero-beach.jpg',
+        },
+        {
+            title: 'Praias e Mirantes',
+            description: 'Os melhores pontos de vista',
+            link: '/explorar?experiencia=praias-mirantes',
+            bgImg: bgTours,
+        },
+        {
+            title: 'Onde comer bem',
+            description: 'Gastronomia local imperdível',
+            link: '/explorar?experiencia=onde-comer',
+            bgImg: bgFood,
+        },
+        {
+            title: 'Artesanato local',
+            description: 'Cultura e tradição regional',
+            link: '/explorar?experiencia=artesanato-local',
+            bgImg: bgServices,
+        },
     ]
 };
