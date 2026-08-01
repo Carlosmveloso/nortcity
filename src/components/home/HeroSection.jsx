@@ -1,5 +1,6 @@
 import { Search, ChevronDown, Mouse } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import GlassButton from '../ui/GlassButton';
 
 const quickFilters = [
@@ -11,6 +12,7 @@ const quickFilters = [
 ];
 
 function HeroSection() {
+    const navigate = useNavigate();
     const [query, setQuery] = useState('');
     const [category, setCategory] = useState('');
 
@@ -27,7 +29,10 @@ function HeroSection() {
 
     const handleSearchSubmit = (event) => {
         event.preventDefault();
-        // TODO: navegar para /explorar?q=query&categoria=category quando o roteamento estiver implementado
+        const params = new URLSearchParams();
+        if (query) params.set('q', query);
+        if (category) params.set('categoria', category);
+        navigate(`/explorar${params.toString() ? `?${params.toString()}` : ''}`);
     };
 
     const handleQuickFilter = (value) => {

@@ -1,8 +1,18 @@
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Logo from './Logo';
 
-const navLinks = ['Explorar', 'Categorias', 'Atrações', 'Eventos', 'Mapa', 'Profissionais', 'Blog', 'Planos'];
+const navLinks = [
+    { label: 'Explorar', to: '/explorar' },
+    { label: 'Categorias', to: '/categorias' },
+    { label: 'Atrações', to: '/atracoes' },
+    { label: 'Eventos', to: '/eventos' },
+    { label: 'Mapa', to: '/mapa' },
+    { label: 'Profissionais', to: '/profissionais' },
+    { label: 'Blog', to: '/blog' },
+    { label: 'Planos', to: '/planos' },
+];
 
 function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -15,17 +25,17 @@ function Navbar() {
                 <nav className="hidden xl:flex xl:items-center" aria-label="Menu principal">
                     <ul className="flex items-center gap-6">
                         {navLinks.map((link) => (
-                            <li key={link}><a href="#">{link}</a></li>
+                            <li key={link.to}><Link to={link.to}>{link.label}</Link></li>
                         ))}
                     </ul>
                 </nav>
 
-                <a
-                    href="#"
+                <Link
+                    to="/cadastrar-negocio"
                     className="hidden shrink-0 rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap xl:block"
                 >
                     Cadastrar meu negócio
-                </a>
+                </Link>
 
                 <button
                     type="button"
@@ -42,15 +52,18 @@ function Navbar() {
                 <nav className="px-4 py-3 sm:px-6" aria-label="Menu principal mobile">
                     <ul className="flex flex-col gap-1">
                         {navLinks.map((link) => (
-                            <li key={link} className="px-3 py-3"><a href="#">{link}</a></li>
+                            <li key={link.to} className="px-3 py-3">
+                                <Link to={link.to} onClick={() => setMenuOpen(false)}>{link.label}</Link>
+                            </li>
                         ))}
                     </ul>
-                    <a
-                        href="#"
+                    <Link
+                        to="/cadastrar-negocio"
+                        onClick={() => setMenuOpen(false)}
                         className="mx-3 mt-2 block rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap"
                     >
                         Cadastrar meu negócio
-                    </a>
+                    </Link>
                 </nav>
             </div>
         </header>
