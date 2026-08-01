@@ -2,10 +2,10 @@ import { MessageCircle, MapPin, Star } from 'lucide-react';
 
 function FeaturedCard({ featured }) {
     return (
-        <article className="w-full max-w-82.5 bg-card rounded-4xl relative shadow-2xl">
+        <article className="group w-full max-w-82.5 bg-card rounded-4xl relative shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.35)]">
             <div className='h-62 overflow-hidden rounded-t-4xl'>
                 <img
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     src={featured.img}
                     alt={featured.altText}
                     loading="lazy"

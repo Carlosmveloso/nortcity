@@ -1,6 +1,6 @@
-import { Search, ChevronDown } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { businesses } from '../data/businesses';
 import BusinessCard from '../components/ui/BusinessCard';
 
@@ -79,13 +79,27 @@ function Explorar() {
     };
 
     return (
-        <section className="min-h-screen bg-background px-4 py-28 sm:px-6 lg:px-8">
+        <>
+            <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
+                <div className="container mx-auto max-w-5xl">
+                    <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-sm text-card/70">
+                        <Link to="/" className="hover:text-card">
+                            Início
+                        </Link>
+                        <ChevronRight size={14} aria-hidden="true" />
+                        <span className="text-card">Explorar</span>
+                    </nav>
+                    <p className="text-sm font-bold tracking-wide text-turquoise-light uppercase">Descubra Pitimbu</p>
+                    <h1 className="mt-2 font-head text-3xl font-extrabold text-card md:text-4xl">
+                        Explore tudo o que Pitimbu oferece
+                    </h1>
+                    <p className="mt-2 max-w-2xl text-card/80">
+                        Encontre passeios, gastronomia, hospedagem e serviços locais em Pitimbu.
+                    </p>
+                </div>
+            </section>
+            <section className="min-h-screen bg-background px-4 py-10 sm:px-6 lg:px-8">
             <div className="container mx-auto max-w-5xl">
-                <h1 className="font-head text-3xl font-extrabold text-dark-ocean md:text-4xl">Explorar</h1>
-                <p className="mt-2 text-dark-ocean/70">
-                    Encontre passeios, gastronomia, hospedagem e serviços locais em Pitimbu.
-                </p>
-
                 <form
                     role="search"
                     onSubmit={handleSearchSubmit}
@@ -185,7 +199,8 @@ function Explorar() {
                     </div>
                 )}
             </div>
-        </section>
+            </section>
+        </>
     );
 }
 

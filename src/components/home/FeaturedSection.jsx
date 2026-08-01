@@ -1,4 +1,5 @@
 import FeaturedCard from '../ui/FeaturedCard';
+import Reveal from '../ui/Reveal';
 import { featureSection } from '../../data/featureSection';
 
 function FeaturedSection() {
@@ -14,7 +15,9 @@ function FeaturedSection() {
                 </div>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 justify-items-center w-full">
                     {featureSection.map((featured, index) => (
-                        <FeaturedCard key={`${featured.title}-${index}`} featured={featured} />
+                        <Reveal key={`${featured.title}-${index}`} delay={index * 100} className="w-full flex justify-center">
+                            <FeaturedCard featured={featured} />
+                        </Reveal>
                     ))}
                 </div>
             </div>

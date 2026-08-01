@@ -8,7 +8,7 @@ function toWhatsappLink(phone) {
 
 function BusinessCard({ business }) {
     return (
-        <article className="flex flex-col overflow-hidden rounded-3xl bg-card shadow-sm">
+        <article className="group flex flex-col overflow-hidden rounded-3xl bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
             <div className="h-40 w-full overflow-hidden bg-sand-dark">
                 {business.image ? (
                     <img
@@ -16,7 +16,7 @@ function BusinessCard({ business }) {
                         alt={business.name}
                         loading="lazy"
                         decoding="async"
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                 ) : (
                     <div className="flex h-full w-full items-center justify-center text-dark-ocean/30">

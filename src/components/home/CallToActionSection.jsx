@@ -1,12 +1,13 @@
 import { callToAction } from '../../data/callToAction';
 import CtaPromisse from '../ui/CtaPromisse';
+import Reveal from '../ui/Reveal';
 import { ArrowRight } from "lucide-react";
 
 function CallToActionSection() {
     return (
         <section className="py-16 md:py-24 bg-background">
             <div className="container">
-                <div className="relative bg-card rounded-3xl shadow-xl overflow-hidden grid md:grid-cols-2 gap-8 p-6 sm:p-8 md:p-12 lg:p-16">
+                <Reveal className="relative bg-card rounded-3xl shadow-xl overflow-hidden grid md:grid-cols-2 gap-8 p-6 sm:p-8 md:p-12 lg:p-16">
                     <div>
                         <h2 className="font-head text-3xl md:text-4xl text-foreground font-bold mb-4">
                             {callToAction.title}
@@ -34,7 +35,7 @@ function CallToActionSection() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </Reveal>
             </div>
         </section>
     );
