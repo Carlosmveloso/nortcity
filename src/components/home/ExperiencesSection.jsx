@@ -1,4 +1,5 @@
 import ExperienceCard from '../ui/ExperienceCard';
+import Reveal from '../ui/Reveal';
 import { experiencesSection } from '../../data/experiencesSection';
 
 function ExperiencesSection() {
@@ -15,7 +16,9 @@ function ExperiencesSection() {
                 </div>
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                     {experiencesSection.experiences.map((experience, index) => (
-                        <ExperienceCard key={`${experience.title}-${index}`} experience={experience} />
+                        <Reveal key={`${experience.title}-${index}`} delay={index * 100}>
+                            <ExperienceCard experience={experience} />
+                        </Reveal>
                     ))}
                 </div>
             </div>

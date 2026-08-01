@@ -5,7 +5,7 @@ import bgServices from "../assets/images/category-services.jpg";
 
 export const experiencesSection = {
     title: "Explorar por experiência",
-    description: "Roteiros e guias especiais para aproveitar o melhor de pitimbu.",
+    description: "Roteiros e guias especiais para aproveitar o melhor de Pitimbu.",
     experiences: [
         {
             title: 'Roteiro 1 dia em Pitimbu',

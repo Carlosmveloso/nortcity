@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Logo from "./Logo";
 import { FaInstagram, FaTiktok } from "react-icons/fa6";
 import { Mail, MapPin, Phone, Heart } from "lucide-react";
@@ -34,24 +35,24 @@ function Footer() {
             <p>Explorar</p>
             <ul className="mt-3">
               <li className="py-2">
-                <a href="#" className="text-sand-dark">
+                <Link to="/explorar?categoria=passeios" className="text-sand-dark">
                   Passeios
-                </a>
+                </Link>
               </li>
               <li className="py-2">
-                <a href="#" className="text-sand-dark">
+                <Link to="/explorar?categoria=hospedagem" className="text-sand-dark">
                   Hospedagem
-                </a>
+                </Link>
               </li>
               <li className="py-2">
-                <a href="#" className="text-sand-dark">
+                <Link to="/explorar?categoria=gastronomia" className="text-sand-dark">
                   Gastronomia
-                </a>
+                </Link>
               </li>
               <li className="py-2">
-                <a href="#" className="text-sand-dark">
+                <Link to="/explorar?categoria=servicos" className="text-sand-dark">
                   Serviços
-                </a>
+                </Link>
               </li>
             </ul>
           </nav>
@@ -69,9 +70,9 @@ function Footer() {
                 </a>
               </li>
               <li className="py-2">
-                <a href="#" className="text-sand-dark">
+                <Link to="/blog" className="text-sand-dark">
                   Blog
-                </a>
+                </Link>
               </li>
               <li className="py-2">
                 <a href="#" className="text-sand-dark">

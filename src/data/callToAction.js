@@ -1,5 +1,5 @@
 export const callToAction = {
-    title: "Tem um negócio em pitimbu ?",
+    title: "Tem um negócio em Pitimbu?",
     description: "Cadastre sua empresa ou serviço gratuitamente e seja contratado por turistas ou moradores locais.",
     promisses: [
         {
