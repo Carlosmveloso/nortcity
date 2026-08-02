@@ -15,6 +15,10 @@ const Profissionais = lazy(() => import("./pages/Profissionais"));
 const Blog = lazy(() => import("./pages/Blog"));
 const Planos = lazy(() => import("./pages/Planos"));
 const CadastrarNegocio = lazy(() => import("./pages/CadastrarNegocio"));
+const Sobre = lazy(() => import("./pages/Sobre"));
+const Contato = lazy(() => import("./pages/Contato"));
+const Favoritos = lazy(() => import("./pages/Favoritos"));
+const Entrar = lazy(() => import("./pages/Entrar"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function App() {
@@ -34,6 +38,10 @@ function App() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/planos" element={<Planos />} />
           <Route path="/cadastrar-negocio" element={<CadastrarNegocio />} />
+          <Route path="/sobre" element={<Sobre />} />
+          <Route path="/contato" element={<Contato />} />
+          <Route path="/favoritos" element={<Favoritos />} />
+          <Route path="/entrar" element={<Entrar />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

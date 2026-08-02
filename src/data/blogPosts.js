@@ -1,0 +1,58 @@
+export const blogCategories = ['Guias', 'Notícias', 'Gastronomia', 'Roteiros', 'Cultura'];
+
+export const blogPosts = [
+    {
+        id: 'fim-de-semana-perfeito-em-pitimbu',
+        category: 'Roteiros',
+        title: 'Guia completo: um fim de semana perfeito em Pitimbu',
+        excerpt: 'Roteiro de sexta a domingo com praias, gastronomia local e pôr do sol no Rio Abiaí.',
+        author: 'Equipe Farol',
+        readTime: '7 min',
+        date: '2026-05-09',
+    },
+    {
+        id: 'melhores-frutos-do-mar',
+        category: 'Gastronomia',
+        title: 'Onde comer os melhores frutos do mar em Pitimbu',
+        excerpt: 'Selecionamos endereços à beira-mar e no centro, do quiosque descolado ao restaurante clássico.',
+        author: 'Equipe Farol',
+        readTime: '6 min',
+        date: '2026-04-27',
+    },
+    {
+        id: 'ilha-de-areia-vermelha-tudo-que-precisa-saber',
+        category: 'Guias',
+        title: 'Ilha de Areia Vermelha: tudo que você precisa saber antes de ir',
+        excerpt: 'Horário da maré, valores, o que levar e dicas para curtir a piscina natural sem stress.',
+        author: 'Equipe Farol',
+        readTime: '5 min',
+        date: '2026-04-14',
+    },
+    {
+        id: 'pousadas-charmosas-em-pitimbu',
+        category: 'Guias',
+        title: '8 pousadas charmosas para se hospedar em Pitimbu',
+        excerpt: 'Do pé na areia ao refúgio na mata, uma seleção com preço, estrutura e diferenciais.',
+        author: 'Equipe Farol',
+        readTime: '6 min',
+        date: '2026-03-29',
+    },
+    {
+        id: 'festival-do-camarao-2026',
+        category: 'Notícias',
+        title: 'Festival do Camarão 2026: datas, atrações e ingressos',
+        excerpt: 'Programação confirmada com praça gastronômica, shows locais e concurso de pratos.',
+        author: 'Equipe Farol',
+        readTime: '3 min',
+        date: '2026-06-01',
+    },
+    {
+        id: 'coco-de-roda-tradicao-do-litoral',
+        category: 'Cultura',
+        title: 'Coco de roda: a batida que embala as noites de Pitimbu',
+        excerpt: 'Conheça a manifestação popular que resiste no litoral paraibano e onde ver apresentações.',
+        author: 'Equipe Farol',
+        readTime: '5 min',
+        date: '2026-03-11',
+    },
+];

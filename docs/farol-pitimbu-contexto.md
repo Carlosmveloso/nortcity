@@ -422,10 +422,12 @@ src/
 ### MVP (v1.0) — atual + curto prazo
 - [x] Home com todas as seções (revisada, sem bugs conhecidos em 01/08/2026)
 - [x] Design system completo
-- [x] Roteamento (React Router v7, 10 rotas, lazy loading)
+- [x] Roteamento (React Router v7, 14 rotas, lazy loading)
 - [x] `/explorar` funcional (busca, filtro por categoria, paginação — sobre 78 negócios reais mockados)
-- [ ] Páginas institucionais restantes (Categorias, Profissionais, Planos são placeholder "Em construção"; Sobre e Contato nem roteadas)
-- [ ] Auth (e-mail + Google)
+- [x] Páginas públicas restantes com UI completa e dados mockados (Sprint 1.5, 01/08/2026): Categorias,
+      Atrações, Eventos, Mapa (React-Leaflet + OpenStreetMap), Profissionais, Blog, Planos,
+      Cadastrar Negócio (wizard 4 passos), Sobre, Contato, Favoritos, Entrar
+- [ ] Auth (e-mail + Google) — UI de `/entrar` já pronta, falta ligar ao Supabase
 - [ ] Backend Supabase (tabelas, RLS) — `/explorar` ainda roda sobre dado estático em `data/businesses.js`
 - [ ] CRUD de negócios
 - [ ] Perfil público `/negocio/:slug`

@@ -1,0 +1,58 @@
+export const eventCategories = ['Religioso', 'Gastronômico', 'Cultural', 'Esportivo'];
+
+export const events = [
+    {
+        id: 'festa-de-sao-pedro-dos-pescadores',
+        date: '2026-06-29',
+        time: '09:00',
+        category: 'Religioso',
+        title: 'Festa de São Pedro dos Pescadores',
+        location: 'Igreja Matriz e Porto',
+        price: 'Gratuito',
+    },
+    {
+        id: 'forro-pe-de-serra-na-praca',
+        date: '2026-07-12',
+        time: '20:00',
+        category: 'Cultural',
+        title: 'Forró Pé de Serra na Praça',
+        location: 'Praça Central',
+        price: 'Gratuito',
+    },
+    {
+        id: 'regata-de-jangadas',
+        date: '2026-08-16',
+        time: '08:00',
+        category: 'Esportivo',
+        title: 'Regata de Jangadas',
+        location: 'Praia Bela',
+        price: 'Gratuito',
+    },
+    {
+        id: 'torneio-de-pesca-esportiva-de-acau',
+        date: '2026-09-06',
+        time: '06:00',
+        category: 'Esportivo',
+        title: 'Torneio de Pesca Esportiva de Acaú',
+        location: 'Porto de Acaú',
+        price: 'R$ 50',
+    },
+    {
+        id: 'festival-do-camarao',
+        date: '2026-11-14',
+        time: '18:00',
+        category: 'Gastronômico',
+        title: 'Festival do Camarão',
+        location: 'Praça de Eventos, Praia de Pitimbu',
+        price: 'R$ 20',
+    },
+    {
+        id: 'reveillon-na-praia',
+        date: '2026-12-31',
+        time: '22:00',
+        category: 'Cultural',
+        title: 'Réveillon na Praia',
+        location: 'Orla de Pitimbu',
+        price: 'Gratuito',
+    },
+];

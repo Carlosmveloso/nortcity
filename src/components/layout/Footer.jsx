@@ -60,14 +60,14 @@ function Footer() {
             <p>Institucional</p>
             <ul className="mt-3">
               <li className="py-2">
-                <a href="#" className="text-sand-dark">
+                <Link to="/sobre" className="text-sand-dark">
                   Sobre Nós
-                </a>
+                </Link>
               </li>
               <li className="py-2">
-                <a href="#" className="text-sand-dark">
+                <Link to="/contato" className="text-sand-dark">
                   Contato
-                </a>
+                </Link>
               </li>
               <li className="py-2">
                 <Link to="/blog" className="text-sand-dark">

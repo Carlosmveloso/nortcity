@@ -1,4 +1,4 @@
-import { Menu, X } from 'lucide-react';
+import { Heart, Menu, User, X } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from './Logo';
@@ -29,6 +29,23 @@ function Navbar() {
                         ))}
                     </ul>
                 </nav>
+
+                <div className="hidden items-center gap-1 xl:flex">
+                    <Link
+                        to="/favoritos"
+                        aria-label="Favoritos"
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
+                    >
+                        <Heart className="h-5 w-5" aria-hidden="true" />
+                    </Link>
+                    <Link
+                        to="/entrar"
+                        aria-label="Entrar na conta"
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
+                    >
+                        <User className="h-5 w-5" aria-hidden="true" />
+                    </Link>
+                </div>
 
                 <Link
                     to="/cadastrar-negocio"
@@ -69,6 +86,20 @@ function Navbar() {
                                 <Link to={link.to} onClick={() => setMenuOpen(false)}>{link.label}</Link>
                             </li>
                         ))}
+                        {[
+                            { label: 'Favoritos', to: '/favoritos' },
+                            { label: 'Entrar', to: '/entrar' },
+                        ].map((link, index) => (
+                            <li
+                                key={link.to}
+                                className={`px-3 py-3 transition-all duration-300 ${
+                                    menuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
+                                }`}
+                                style={{ transitionDelay: menuOpen ? `${(navLinks.length + index) * 40}ms` : '0ms' }}
+                            >
+                                <Link to={link.to} onClick={() => setMenuOpen(false)}>{link.label}</Link>
+                            </li>
+                        ))}
                     </ul>
                     <Link
                         to="/cadastrar-negocio"
@@ -76,7 +107,7 @@ function Navbar() {
                         className={`mx-3 mt-2 block rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap transition-all duration-300 ${
                             menuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
                         }`}
-                        style={{ transitionDelay: menuOpen ? `${navLinks.length * 40}ms` : '0ms' }}
+                        style={{ transitionDelay: menuOpen ? `${(navLinks.length + 2) * 40}ms` : '0ms' }}
                     >
                         Cadastrar meu negócio
                     </Link>

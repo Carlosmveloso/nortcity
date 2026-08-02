@@ -1,0 +1,82 @@
+export const plans = [
+    {
+        id: 'basico',
+        name: 'Básico',
+        tagline: 'Ideal para começar a divulgar seu negócio',
+        price: 'Grátis',
+        period: 'para sempre',
+        featured: false,
+        features: [
+            { text: 'Perfil básico no diretório', included: true },
+            { text: '1 foto do negócio', included: true },
+            { text: 'Informações de contato', included: true },
+            { text: 'Link para WhatsApp', included: true },
+            { text: 'Horário de funcionamento', included: true },
+            { text: 'Destaque nas buscas', included: false },
+            { text: 'Galeria de fotos ilimitada', included: false },
+            { text: 'Selo de verificado', included: false },
+            { text: 'Estatísticas de visualização', included: false },
+        ],
+        cta: 'Começar grátis',
+    },
+    {
+        id: 'profissional',
+        name: 'Profissional',
+        tagline: 'Para negócios que querem se destacar',
+        price: 'R$ 29',
+        period: '/mês',
+        featured: true,
+        badge: 'Mais popular',
+        features: [
+            { text: 'Perfil completo no diretório', included: true },
+            { text: 'Até 10 fotos do negócio', included: true },
+            { text: 'Informações de contato', included: true },
+            { text: 'Link para WhatsApp', included: true },
+            { text: 'Horário de funcionamento', included: true },
+            { text: 'Destaque nas buscas', included: true },
+            { text: 'Selo de verificado', included: true },
+            { text: 'Estatísticas de visualização', included: true },
+            { text: 'Banner na página inicial', included: false },
+        ],
+        cta: 'Assinar agora',
+    },
+    {
+        id: 'premium',
+        name: 'Premium',
+        tagline: 'Máxima visibilidade para seu negócio',
+        price: 'R$ 59',
+        period: '/mês',
+        featured: false,
+        features: [
+            { text: 'Perfil premium no diretório', included: true },
+            { text: 'Fotos ilimitadas', included: true },
+            { text: 'Informações de contato', included: true },
+            { text: 'Link para WhatsApp', included: true },
+            { text: 'Horário de funcionamento', included: true },
+            { text: 'Destaque nas buscas', included: true },
+            { text: 'Banner na página inicial', included: true },
+            { text: 'Selo de verificado premium', included: true },
+            { text: 'Estatísticas avançadas', included: true },
+        ],
+        cta: 'Assinar Premium',
+    },
+];
+
+export const planBenefits = [
+    {
+        title: 'Aumente suas vendas',
+        description: 'Seja encontrado por turistas e moradores que buscam exatamente o que você oferece.',
+    },
+    {
+        title: 'Visibilidade 24/7',
+        description: 'Seu negócio disponível para consulta a qualquer hora, de qualquer lugar.',
+    },
+    {
+        title: 'Conexão direta',
+        description: 'Receba contatos diretamente no seu WhatsApp, sem intermediários.',
+    },
+    {
+        title: 'Credibilidade',
+        description: 'Ganhe confiança com avaliações e selo de verificado.',
+    },
+];
