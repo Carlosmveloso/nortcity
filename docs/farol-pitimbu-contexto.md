@@ -420,13 +420,18 @@ src/
 ## 10. Roadmap
 
 ### MVP (v1.0) — atual + curto prazo
-- [x] Home + páginas institucionais (Explorar, Categorias, Profissionais, Sobre, Contato, Planos)
+- [x] Home com todas as seções (revisada, sem bugs conhecidos em 01/08/2026)
 - [x] Design system completo
+- [x] Roteamento (React Router v7, 10 rotas, lazy loading)
+- [x] `/explorar` funcional (busca, filtro por categoria, paginação — sobre 78 negócios reais mockados)
+- [ ] Páginas institucionais restantes (Categorias, Profissionais, Planos são placeholder "Em construção"; Sobre e Contato nem roteadas)
 - [ ] Auth (e-mail + Google)
+- [ ] Backend Supabase (tabelas, RLS) — `/explorar` ainda roda sobre dado estático em `data/businesses.js`
 - [ ] CRUD de negócios
 - [ ] Perfil público `/negocio/:slug`
 - [ ] Dashboard básico do dono
-- [ ] Filtros funcionais em `/explorar`
+
+> Status detalhado: ver `docs/STATUS-ATUAL.md` e `docs/roadmap-mvp-v1.md`.
 
 ### v1.1 — Monetização
 - [ ] Integração Stripe + 4 planos

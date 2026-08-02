@@ -1,9 +1,10 @@
 import { ArrowRight } from "lucide-react"
+import { Link } from "react-router-dom"
 
 function ExperienceCard({ experience }) {
     return (
-        <a
-            href="#"
+        <Link
+            to={experience.link}
             className="group relative block aspect-video overflow-hidden rounded-2xl shadow-lg"
         >
             <img
@@ -26,7 +27,7 @@ function ExperienceCard({ experience }) {
                     </span>
                 </div>
             </div>
-        </a>
+        </Link>
     );
 }
 
