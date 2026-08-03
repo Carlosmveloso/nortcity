@@ -14,6 +14,7 @@ const Mapa = lazy(() => import("./pages/Mapa"));
 const Profissionais = lazy(() => import("./pages/Profissionais"));
 const Blog = lazy(() => import("./pages/Blog"));
 const Planos = lazy(() => import("./pages/Planos"));
+const GuiaLocal = lazy(() => import("./pages/GuiaLocal"));
 const CadastrarNegocio = lazy(() => import("./pages/CadastrarNegocio"));
 const Sobre = lazy(() => import("./pages/Sobre"));
 const Contato = lazy(() => import("./pages/Contato"));
@@ -37,6 +38,7 @@ function App() {
           <Route path="/profissionais" element={<Profissionais />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/planos" element={<Planos />} />
+          <Route path="/guia-local" element={<GuiaLocal />} />
           <Route path="/cadastrar-negocio" element={<CadastrarNegocio />} />
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/contato" element={<Contato />} />

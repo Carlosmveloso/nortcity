@@ -6,11 +6,9 @@ import Logo from './Logo';
 const navLinks = [
     { label: 'Explorar', to: '/explorar' },
     { label: 'Categorias', to: '/categorias' },
-    { label: 'Atrações', to: '/atracoes' },
-    { label: 'Eventos', to: '/eventos' },
     { label: 'Mapa', to: '/mapa' },
-    { label: 'Profissionais', to: '/profissionais' },
-    { label: 'Blog', to: '/blog' },
+    { label: 'Guia Local', to: '/guia-local' },
+    { label: 'Contato', to: '/contato' },
     { label: 'Planos', to: '/planos' },
 ];
 
@@ -88,9 +86,12 @@ function Navbar() {
                                 <Link to={link.to} onClick={() => setMenuOpen(false)}>{link.label}</Link>
                             </li>
                         ))}
+                    </ul>
+
+                    <ul className="border-ocean/10 mt-2 flex flex-col gap-1 border-t pt-2">
                         {[
-                            { label: 'Favoritos', to: '/favoritos' },
-                            { label: 'Entrar', to: '/entrar' },
+                            { label: 'Favoritos', to: '/favoritos', icon: Heart },
+                            { label: 'Entrar na conta', to: '/entrar', icon: User },
                         ].map((link, index) => (
                             <li
                                 key={link.to}
@@ -99,7 +100,14 @@ function Navbar() {
                                 }`}
                                 style={{ transitionDelay: menuOpen ? `${(navLinks.length + index) * 40}ms` : '0ms' }}
                             >
-                                <Link to={link.to} onClick={() => setMenuOpen(false)}>{link.label}</Link>
+                                <Link
+                                    to={link.to}
+                                    onClick={() => setMenuOpen(false)}
+                                    className="flex items-center gap-2 text-dark-ocean/70"
+                                >
+                                    <link.icon className="h-4 w-4" aria-hidden="true" />
+                                    {link.label}
+                                </Link>
                             </li>
                         ))}
                     </ul>

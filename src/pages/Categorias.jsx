@@ -1,77 +1,129 @@
-import { ChevronRight } from 'lucide-react';
+import { Search } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { popularCategories, otherCategories } from '../data/categories';
 import Reveal from '../components/ui/Reveal';
+
+function normalize(text) {
+    return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '');
+}
 
 function CategoryTile({ category, size = 'default' }) {
     const Icon = category.icon;
     const isLarge = size === 'large';
 
+    if (isLarge) {
+        return (
+            <Link
+                to={`/explorar?categoria=${category.slug}`}
+                style={{ backgroundImage: `url(${category.img})` }}
+                className="group relative block aspect-[4/5] overflow-hidden rounded-2xl bg-cover bg-center text-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+            >
+                <div className="absolute inset-0 bg-linear-to-t from-ocean/90 via-ocean/40 to-transparent"></div>
+                <div className="absolute inset-x-0 bottom-0 p-4">
+                    <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-turquoise/20 backdrop-blur-sm">
+                        <Icon className="h-5 w-5 text-card" aria-hidden="true" />
+                    </div>
+                    <h3 className="font-head text-sm leading-tight font-semibold break-words text-card sm:text-lg">
+                        {category.label}
+                    </h3>
+                    <p className="text-sm text-card/80">{category.description}</p>
+                    {category.count > 0 && (
+                        <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-card/20 px-2 py-1 text-xs text-card backdrop-blur-sm">
+                            +{category.count} opções
+                        </div>
+                    )}
+                </div>
+            </Link>
+        );
+    }
+
     return (
         <Link
             to={`/explorar?categoria=${category.slug}`}
-            className="group flex flex-col items-center gap-3 rounded-3xl bg-card p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+            className="group block rounded-2xl bg-card p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
         >
-            <div
-                className={`flex items-center justify-center rounded-2xl bg-gradient-ocean text-card ${
-                    isLarge ? 'h-16 w-16' : 'h-12 w-12'
-                }`}
-            >
-                <Icon className={isLarge ? 'h-8 w-8' : 'h-6 w-6'} aria-hidden="true" />
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-turquoise/10 transition-colors group-hover:bg-turquoise/20">
+                <Icon className="h-6 w-6 text-turquoise" aria-hidden="true" />
             </div>
-            <div>
-                <h3 className={`font-head font-semibold text-foreground ${isLarge ? 'text-lg' : 'text-base'}`}>
-                    {category.label}
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground">{category.description}</p>
-            </div>
+            <h3 className="font-head mb-1 font-semibold break-words text-foreground">{category.label}</h3>
+            <p className="mb-2 text-xs text-muted-foreground">{category.description}</p>
             {category.count > 0 && (
-                <span className="mt-1 rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold text-turquoise">
-                    +{category.count} opções
-                </span>
+                <span className="text-xs font-medium text-turquoise">+{category.count}</span>
             )}
         </Link>
     );
 }
 
 function Categorias() {
+    const [query, setQuery] = useState('');
+
+    const filteredPopular = useMemo(() => {
+        const normalizedQuery = normalize(query.trim());
+        if (!normalizedQuery) return popularCategories;
+        return popularCategories.filter((category) =>
+            normalize(`${category.label} ${category.description}`).includes(normalizedQuery)
+        );
+    }, [query]);
+
+    const filteredOther = useMemo(() => {
+        const normalizedQuery = normalize(query.trim());
+        if (!normalizedQuery) return otherCategories;
+        return otherCategories.filter((category) =>
+            normalize(`${category.label} ${category.description}`).includes(normalizedQuery)
+        );
+    }, [query]);
+
     return (
         <>
-            <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
-                <div className="container mx-auto max-w-5xl">
-                    <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-sm text-card/70">
-                        <Link to="/" className="hover:text-card">
-                            Início
-                        </Link>
-                        <ChevronRight size={14} aria-hidden="true" />
-                        <span className="text-card">Categorias</span>
-                    </nav>
-                    <p className="text-sm font-bold tracking-wide text-turquoise-light uppercase">Diretório</p>
-                    <h1 className="mt-2 font-head text-3xl font-extrabold text-card md:text-4xl">Categorias</h1>
-                    <p className="mt-2 max-w-2xl text-card/80">
-                        Explore Pitimbu por categoria e encontre exatamente o que você precisa.
+            <section className="bg-sand-dark px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
+                <div className="container mx-auto max-w-2xl text-center">
+                    <h1 className="font-head text-3xl font-bold text-foreground md:text-4xl">Categorias</h1>
+                    <p className="mt-4 text-muted-foreground">
+                        Explore Pitimbu por categoria e encontre exatamente o que você precisa
                     </p>
+                    <div className="relative mx-auto mt-8 max-w-md">
+                        <Search
+                            className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-muted-foreground"
+                            aria-hidden="true"
+                        />
+                        <input
+                            type="text"
+                            value={query}
+                            onChange={(event) => setQuery(event.target.value)}
+                            placeholder="Buscar categoria..."
+                            aria-label="Buscar categoria"
+                            className="h-12 w-full rounded-xl border-0 bg-card pl-12 pr-4 text-foreground shadow-sm placeholder:text-muted-foreground focus:ring-2 focus:ring-turquoise focus:outline-none"
+                        />
+                    </div>
                 </div>
             </section>
 
-            <section className="bg-background px-4 py-12 sm:px-6 lg:px-8">
+            <section className="bg-background px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
                 <div className="container mx-auto max-w-5xl">
                     <Reveal>
                         <h2 className="font-head text-2xl font-bold text-foreground">Mais procuradas</h2>
                     </Reveal>
-                    <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-                        {popularCategories.map((category, index) => (
+                    <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-5">
+                        {filteredPopular.map((category, index) => (
                             <Reveal key={category.slug} delay={index * 60}>
                                 <CategoryTile category={category} size="large" />
                             </Reveal>
                         ))}
                     </div>
+                </div>
+            </section>
 
+            <section className="bg-sand-dark px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+                <div className="container mx-auto max-w-5xl">
                     <Reveal>
-                        <h2 className="mt-14 font-head text-2xl font-bold text-foreground">Todas as categorias</h2>
+                        <h2 className="font-head text-2xl font-bold text-foreground">Todas as categorias</h2>
                     </Reveal>
-                    <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                        {otherCategories.map((category, index) => (
+                    <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                        {filteredOther.map((category, index) => (
                             <Reveal key={category.slug} delay={index * 60}>
                                 <CategoryTile category={category} />
                             </Reveal>

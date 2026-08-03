@@ -70,11 +70,6 @@ function Footer() {
                 </Link>
               </li>
               <li className="py-2">
-                <Link to="/blog" className="text-sand-dark">
-                  Blog
-                </Link>
-              </li>
-              <li className="py-2">
                 <a href="#" className="text-sand-dark">
                   FAQ
                 </a>

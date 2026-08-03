@@ -13,6 +13,11 @@ import {
     Hammer,
 } from 'lucide-react';
 import { businesses } from './businesses';
+import foodCategory from '../assets/images/category-food.jpg';
+import accommodationCategory from '../assets/images/category-accommodation.jpg';
+import toursCategory from '../assets/images/category-tours.jpg';
+import servicesCategory from '../assets/images/category-services.jpg';
+import professionalsCategory from '../assets/images/category-professionals.jpg';
 
 function countByCategory(slug) {
     return businesses.filter((business) => business.category === slug).length;
@@ -25,6 +30,7 @@ export const popularCategories = [
         description: 'Restaurantes, bares e lanchonetes',
         icon: UtensilsCrossed,
         count: countByCategory('gastronomia'),
+        img: foodCategory,
     },
     {
         slug: 'hospedagem',
@@ -32,6 +38,7 @@ export const popularCategories = [
         description: 'Pousadas, hotéis e casas',
         icon: BedDouble,
         count: countByCategory('hospedagem'),
+        img: accommodationCategory,
     },
     {
         slug: 'passeios',
@@ -39,6 +46,7 @@ export const popularCategories = [
         description: 'Ilhas, trilhas e aventuras',
         icon: Waves,
         count: countByCategory('passeios'),
+        img: toursCategory,
     },
     {
         slug: 'servicos',
@@ -46,6 +54,7 @@ export const popularCategories = [
         description: 'Lojas e utilidades gerais',
         icon: Wrench,
         count: countByCategory('servicos'),
+        img: servicesCategory,
     },
     {
         slug: 'profissionais',
@@ -53,6 +62,7 @@ export const popularCategories = [
         description: 'Guias, técnicos e especialistas',
         icon: Users,
         count: countByCategory('profissionais'),
+        img: professionalsCategory,
     },
 ];
 
