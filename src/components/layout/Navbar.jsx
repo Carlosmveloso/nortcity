@@ -19,52 +19,54 @@ function Navbar() {
 
     return (
         <header className="fixed inset-x-0 top-0 z-50 w-full bg-sand/95 shadow-md backdrop-blur-md">
-            <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-                <Logo showText={true} />
+            <div className="mx-auto flex w-full max-w-400 items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8 xl:grid xl:grid-cols-[1fr_auto_1fr]">
+                <div className="flex items-center">
+                    <Logo showText={true} />
+                </div>
 
-                <nav className="hidden xl:flex xl:items-center" aria-label="Menu principal">
-                    <ul className="flex items-center gap-6">
+                <nav className="hidden xl:flex xl:items-center xl:justify-center" aria-label="Menu principal">
+                    <ul className="flex items-center gap-8">
                         {navLinks.map((link) => (
                             <li key={link.to}><Link to={link.to}>{link.label}</Link></li>
                         ))}
                     </ul>
                 </nav>
 
-                <div className="hidden items-center gap-1 xl:flex">
+                <div className="flex items-center gap-2 xl:justify-self-end">
                     <Link
                         to="/favoritos"
                         aria-label="Favoritos"
-                        className="flex h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
+                        className="hidden h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50 xl:flex"
                     >
                         <Heart className="h-5 w-5" aria-hidden="true" />
                     </Link>
                     <Link
                         to="/entrar"
                         aria-label="Entrar na conta"
-                        className="flex h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
+                        className="hidden h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50 xl:flex"
                     >
                         <User className="h-5 w-5" aria-hidden="true" />
                     </Link>
+
+                    <Link
+                        to="/cadastrar-negocio"
+                        className="hidden shrink-0 rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap xl:block"
+                    >
+                        Cadastrar meu negócio
+                    </Link>
+
+                    <button
+                        type="button"
+                        onClick={() => setMenuOpen(!menuOpen)}
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-full xl:hidden"
+                        aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+                        aria-expanded={menuOpen}
+                    >
+                        <span className={`inline-flex transition-transform duration-300 ${menuOpen ? 'rotate-90' : 'rotate-0'}`}>
+                            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                        </span>
+                    </button>
                 </div>
-
-                <Link
-                    to="/cadastrar-negocio"
-                    className="hidden shrink-0 rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap xl:block"
-                >
-                    Cadastrar meu negócio
-                </Link>
-
-                <button
-                    type="button"
-                    onClick={() => setMenuOpen(!menuOpen)}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-full xl:hidden"
-                    aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
-                    aria-expanded={menuOpen}
-                >
-                    <span className={`inline-flex transition-transform duration-300 ${menuOpen ? 'rotate-90' : 'rotate-0'}`}>
-                        {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                    </span>
-                </button>
             </div>
 
             <div

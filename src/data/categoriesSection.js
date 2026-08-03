@@ -10,30 +10,35 @@ export const categoriesSection = {
     categories: [
         {
             title: 'Comer',
+            value: 'gastronomia',
             subCategories: ['Restaurantes', 'Bares'],
             options: '+24 opções',
             img: foodCategory,
         },
         {
             title: 'Hospedagem',
+            value: 'hospedagem',
             subCategories: ['Pousadas', 'Hotéis'],
             options: '+15 opções',
             img: accommodationCategory,
         },
         {
             title: 'Passeios',
+            value: 'passeios',
             subCategories: ['Ilhas', 'Aventuras'],
             options: '+27 opções',
             img: toursCategory,
         },
         {
             title: 'Serviços',
+            value: 'servicos',
             subCategories: ['Lojas', 'Utilidades'],
             options: '+22 opções',
             img: servicesCategory,
         },
         {
             title: 'Profissionais',
+            value: 'profissionais',
             subCategories: ['Guias', 'Especialistas'],
             options: '+36 opções',
             img: professionalsCategory,

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { categoriesSection } from '../../data/categoriesSection';
 import GlassButtonMini from '../ui/GlassButtonMini';
 import Reveal from '../ui/Reveal';
@@ -14,11 +15,12 @@ function CategoriesSection() {
                     {categoriesSection.categories.map((category, index) => {
                         return (
                             <Reveal
-                                as="article"
+                                as={Link}
+                                to={`/explorar?categoria=${category.value}`}
                                 key={`${category.title}-${index}`}
                                 delay={index * 80}
                                 style={{ backgroundImage: `url(${category.img})` }}
-                                className="h-46 md:h-75 relative rounded-3xl bg-cover bg-center overflow-hidden text-sand hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl"
+                                className="h-46 md:h-75 relative block rounded-3xl bg-cover bg-center overflow-hidden text-sand hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl"
                             >
                                 <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent"></div>
                                 <div className="relative z-10 flex h-full flex-col justify-end p-4 text-white">
