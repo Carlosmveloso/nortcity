@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -13,25 +14,50 @@ function createIcon(color) {
 }
 
 function MapView({ points, categories, center = [-7.4667, -34.8167], zoom = 13, className = '' }) {
+    const [active, setActive] = useState(false);
     const colorFor = (category) => categories.find((item) => item.value === category)?.color ?? '#094f66';
     const labelFor = (category) => categories.find((item) => item.value === category)?.label ?? category;
 
     return (
-        <MapContainer center={center} zoom={zoom} scrollWheelZoom={false} className={className}>
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            {points.map((point) => (
-                <Marker key={point.id} position={[point.lat, point.lng]} icon={createIcon(colorFor(point.category))}>
-                    <Popup>
-                        <strong>{point.name}</strong>
-                        <br />
-                        {labelFor(point.category)}
-                    </Popup>
-                </Marker>
-            ))}
-        </MapContainer>
+        <div className="relative isolate">
+            {!active && (
+                <button
+                    type="button"
+                    onClick={() => setActive(true)}
+                    onTouchStart={() => setActive(true)}
+                    className="absolute inset-0 z-[1000] flex items-center justify-center bg-dark-ocean/10"
+                    aria-label="Toque para interagir com o mapa"
+                >
+                    <span className="rounded-full bg-card px-4 py-2 text-sm font-semibold text-dark-ocean shadow-md">
+                        Toque para interagir com o mapa
+                    </span>
+                </button>
+            )}
+            <MapContainer
+                center={center}
+                zoom={zoom}
+                scrollWheelZoom={false}
+                dragging={active}
+                touchZoom={active}
+                doubleClickZoom={active}
+                tap={active}
+                className={className}
+            >
+                <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                {points.map((point) => (
+                    <Marker key={point.id} position={[point.lat, point.lng]} icon={createIcon(colorFor(point.category))}>
+                        <Popup>
+                            <strong>{point.name}</strong>
+                            <br />
+                            {labelFor(point.category)}
+                        </Popup>
+                    </Marker>
+                ))}
+            </MapContainer>
+        </div>
     );
 }
 

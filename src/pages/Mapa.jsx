@@ -40,7 +40,7 @@ function Mapa() {
                         ))}
                     </div>
 
-                    <div className="overflow-hidden rounded-3xl shadow-sm">
+                    <div className="relative isolate overflow-hidden rounded-3xl shadow-sm">
                         <MapView points={mapPoints} categories={mapCategories} className="h-[70vh] w-full" />
                     </div>
                 </div>
