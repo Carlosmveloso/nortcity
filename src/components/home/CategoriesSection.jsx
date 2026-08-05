@@ -24,7 +24,7 @@ function CategoriesSection() {
                             >
                                 <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent"></div>
                                 <div className="relative z-10 flex h-full flex-col justify-end p-4 text-white">
-                                    <h3 className="text-lg/8 font-bold">{category.title}</h3>
+                                    <h3 className="text-sm leading-tight font-bold break-words sm:text-lg/8">{category.title}</h3>
                                     <p className='text-balance mb-2'>{category.subCategories.join(' e ')}</p>
                                     <GlassButtonMini>{category.options}</GlassButtonMini>
                                 </div>
