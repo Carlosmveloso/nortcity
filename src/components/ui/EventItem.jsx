@@ -30,6 +30,7 @@ function EventItem({ event }) {
                     </span>
                 </div>
                 <h3 className="font-head text-base font-semibold text-foreground sm:text-lg">{event.title}</h3>
+                {event.description && <p className="text-sm text-foreground/80">{event.description}</p>}
                 <div className="flex flex-col gap-1 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-1">
                     <span className="flex items-center gap-1.5">
                         <Clock size={15} className="shrink-0 text-turquoise" aria-hidden="true" />
