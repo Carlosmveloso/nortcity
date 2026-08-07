@@ -2,6 +2,7 @@ import { ChevronRight, Waves, ShoppingBasket, CalendarDays, Phone } from 'lucide
 import { Link } from 'react-router-dom';
 import { events } from '../data/events';
 import { usefulPhones } from '../data/usefulPhones';
+import { localMarkets, localMarketsSchedule } from '../data/localMarkets';
 import EventItem from '../components/ui/EventItem';
 import Reveal from '../components/ui/Reveal';
 import TideForecast from '../components/ui/TideForecast';
@@ -53,10 +54,21 @@ function GuiaLocal() {
                     <Reveal delay={60}>
                         <InfoCard icon={ShoppingBasket} title="Feiras Livres">
                             <p className="text-sm text-muted-foreground">
-                                Estamos confirmando dias, horários e locais das feiras livres de Pitimbu com a
-                                prefeitura para trazer essa informação certinha.
+                                Toda semana, aos {localMarketsSchedule.day.toLowerCase()}s, das{' '}
+                                {localMarketsSchedule.hours}, com funcionamento mais intenso pela manhã.
                             </p>
-                            <p className="mt-3 text-xs font-semibold text-turquoise">Em breve</p>
+                            <ul className="mt-4 flex flex-col gap-3">
+                                {localMarkets.map((market) => (
+                                    <li key={market.id} className="text-sm">
+                                        <p className="font-semibold text-foreground">{market.name}</p>
+                                        <p className="text-muted-foreground">{market.location}</p>
+                                    </li>
+                                ))}
+                            </ul>
+                            <p className="mt-4 text-sm text-muted-foreground">
+                                Frutas, verduras, grãos, artesanato local e forte presença de frutos do mar,
+                                trazidos direto por pescadores, marisqueiras e agricultores familiares da região.
+                            </p>
                         </InfoCard>
                     </Reveal>
 
