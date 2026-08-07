@@ -3,7 +3,7 @@ export const eventCategories = ['Religioso', 'Gastronômico', 'Cultural', 'Espor
 export const events = [
     {
         id: 'festa-de-sao-pedro-dos-pescadores',
-        date: '2026-06-29',
+        date: '2026-06',
         time: '09:00',
         category: 'Religioso',
         title: 'Festa de São Pedro dos Pescadores',
@@ -12,7 +12,7 @@ export const events = [
     },
     {
         id: 'forro-pe-de-serra-na-praca',
-        date: '2026-07-12',
+        date: '2026-07',
         time: '20:00',
         category: 'Cultural',
         title: 'Forró Pé de Serra na Praça',
@@ -21,7 +21,7 @@ export const events = [
     },
     {
         id: 'regata-de-jangadas',
-        date: '2026-08-16',
+        date: '2026-08',
         time: '08:00',
         category: 'Esportivo',
         title: 'Regata de Jangadas',
@@ -30,7 +30,7 @@ export const events = [
     },
     {
         id: 'torneio-de-pesca-esportiva-de-acau',
-        date: '2026-09-06',
+        date: '2026-09',
         time: '06:00',
         category: 'Esportivo',
         title: 'Torneio de Pesca Esportiva de Acaú',
@@ -39,7 +39,7 @@ export const events = [
     },
     {
         id: 'festival-do-camarao',
-        date: '2026-11-14',
+        date: '2026-11',
         time: '18:00',
         category: 'Gastronômico',
         title: 'Festival do Camarão',
@@ -48,7 +48,7 @@ export const events = [
     },
     {
         id: 'reveillon-na-praia',
-        date: '2026-12-31',
+        date: '2026-12',
         time: '22:00',
         category: 'Cultural',
         title: 'Réveillon na Praia',
@@ -57,7 +57,7 @@ export const events = [
     },
     {
         id: 'jogos-de-verao',
-        date: '2026-01-15',
+        date: '2026-01',
         time: '08:00',
         category: 'Esportivo',
         title: 'Jogos de Verão',
@@ -68,7 +68,7 @@ export const events = [
     },
     {
         id: 'corridas-de-caico',
-        date: '2026-01-20',
+        date: '2026-01',
         time: '09:00',
         category: 'Esportivo',
         title: 'Corridas de Caíco',
@@ -79,7 +79,7 @@ export const events = [
     },
     {
         id: 'festa-do-senhor-do-bomfim',
-        date: '2026-01-25',
+        date: '2026-01',
         time: '18:00',
         category: 'Religioso',
         title: 'Festa do Senhor do Bomfim',
@@ -90,7 +90,7 @@ export const events = [
     },
     {
         id: 'carnaval-de-pitimbu',
-        date: '2026-02-14',
+        date: '2026-02',
         time: '16:00',
         category: 'Cultural',
         title: 'Carnaval de Pitimbu',
@@ -100,7 +100,7 @@ export const events = [
     },
     {
         id: 'festival-da-lagosta',
-        date: '2026-10-17',
+        date: '2026-10',
         time: '18:00',
         category: 'Gastronômico',
         title: 'Festival da Lagosta',

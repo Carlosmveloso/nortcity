@@ -1,24 +1,38 @@
 import { Clock, MapPin } from 'lucide-react';
 
 const monthLabels = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+const fullMonthLabels = [
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
+];
 
 function formatDateBadge(dateStr) {
-    const [, month, day] = dateStr.split('-').map(Number);
-    return { month: monthLabels[month - 1], day };
+    const [, month] = dateStr.split('-').map(Number);
+    return { month: monthLabels[month - 1] };
 }
 
-function formatFullDate(dateStr) {
-    return new Date(`${dateStr}T00:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+function formatFullMonth(dateStr) {
+    const [, month] = dateStr.split('-').map(Number);
+    return fullMonthLabels[month - 1];
 }
 
 function EventItem({ event }) {
-    const { month, day } = formatDateBadge(event.date);
+    const { month } = formatDateBadge(event.date);
 
     return (
         <article className="flex gap-3 rounded-3xl bg-card p-4 shadow-sm sm:gap-4 sm:p-5">
             <div className="flex w-14 shrink-0 flex-col items-center justify-center rounded-2xl bg-gradient-ocean py-2.5 text-card sm:w-16 sm:py-3">
-                <span className="text-xs font-bold tracking-wide">{month}</span>
-                <span className="font-head text-xl font-extrabold sm:text-2xl">{day}</span>
+                <span className="font-head text-lg font-extrabold sm:text-xl">{month}</span>
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -34,7 +48,7 @@ function EventItem({ event }) {
                 <div className="flex flex-col gap-1 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-1">
                     <span className="flex items-center gap-1.5">
                         <Clock size={15} className="shrink-0 text-turquoise" aria-hidden="true" />
-                        {formatFullDate(event.date)}, {event.time}
+                        {formatFullMonth(event.date)}, {event.time}
                     </span>
                     <span className="flex items-center gap-1.5">
                         <MapPin size={15} className="shrink-0 text-turquoise" aria-hidden="true" />
