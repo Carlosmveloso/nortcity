@@ -4,6 +4,7 @@ import { events } from '../data/events';
 import { usefulPhones } from '../data/usefulPhones';
 import EventItem from '../components/ui/EventItem';
 import Reveal from '../components/ui/Reveal';
+import TideForecast from '../components/ui/TideForecast';
 
 const upcomingEvents = [...events].sort((a, b) => a.date.localeCompare(b.date)).slice(0, 3);
 
@@ -45,15 +46,7 @@ function GuiaLocal() {
                 <div className="container mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2">
                     <Reveal>
                         <InfoCard icon={Waves} title="Tábua de Marés">
-                            <p className="text-sm text-muted-foreground">
-                                A maré em Pitimbu muda todos os dias conforme o ciclo lunar — por isso não mostramos
-                                números fixos aqui, para não te dar uma informação errada. Antes de sair para pescar
-                                ou passear de barco, confira sempre uma fonte oficial atualizada, como a Marinha do
-                                Brasil.
-                            </p>
-                            <p className="mt-3 text-xs font-semibold text-turquoise">
-                                Em breve: tábua de marés em tempo real integrada aqui.
-                            </p>
+                            <TideForecast />
                         </InfoCard>
                     </Reveal>
 
