@@ -9,7 +9,7 @@ const navLinks = [
     { label: 'Praias e Mapa', to: '/mapa' },
     { label: 'Guia Local', to: '/guia-local' },
     { label: 'Contato', to: '/contato' },
-    { label: 'Planos', to: '/planos' },
+    { label: 'Planos', to: '/planos', hidden: true },
 ];
 
 function Navbar() {
@@ -25,7 +25,7 @@ function Navbar() {
                 <nav className="hidden xl:flex xl:items-center xl:justify-center" aria-label="Menu principal">
                     <ul className="flex items-center gap-8">
                         {navLinks.map((link) => (
-                            <li key={link.to}><Link to={link.to}>{link.label}</Link></li>
+                            <li key={link.to} className={link.hidden ? 'hidden' : undefined}><Link to={link.to}>{link.label}</Link></li>
                         ))}
                     </ul>
                 </nav>
@@ -78,7 +78,7 @@ function Navbar() {
                         {navLinks.map((link, index) => (
                             <li
                                 key={link.to}
-                                className={`px-3 py-3 transition-all duration-300 ${
+                                className={`px-3 py-3 transition-all duration-300 ${link.hidden ? 'hidden' : ''} ${
                                     menuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
                                 }`}
                                 style={{ transitionDelay: menuOpen ? `${index * 40}ms` : '0ms' }}
