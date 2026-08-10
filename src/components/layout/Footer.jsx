@@ -2,6 +2,9 @@ import { Link } from "react-router-dom";
 import Logo from "./Logo";
 import { FaInstagram, FaTiktok } from "react-icons/fa6";
 import { Mail, MapPin, Phone, Heart } from "lucide-react";
+import { businesses } from "../../data/businesses";
+
+const asenza = businesses.find((business) => business.id === "asenza-beach-resort");
 
 function Footer() {
   return (
@@ -101,10 +104,23 @@ function Footer() {
           </div>
           <div>
             <p>Patrocinadores</p>
+            {asenza?.image && (
+              <Link
+                to={`/explorar?q=${encodeURIComponent(asenza.name)}`}
+                aria-label={`Ver ${asenza.name} no Explorar`}
+                title={asenza.name}
+                className="mt-3 inline-block overflow-hidden rounded-xl ring-2 ring-sun-yellow/60 transition-transform hover:scale-105"
+              >
+                <img
+                  src={asenza.image}
+                  alt={asenza.name}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-16 w-16 object-cover"
+                />
+              </Link>
+            )}
             <ul className="mt-3">
-              <li className="py-2">
-                <p className="text-sand-dark">Asenza Beach Resort</p>
-              </li>
               <li className="py-2">
                 <p className="text-sand-dark">
                   Rachel & Veloso corretores de imóveis

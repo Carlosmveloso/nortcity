@@ -3,7 +3,7 @@ export const eventCategories = ['Religioso', 'Gastronômico', 'Cultural', 'Espor
 export const events = [
     {
         id: 'festa-de-sao-pedro-dos-pescadores',
-        date: '2026-06-29',
+        date: '2026-06',
         time: '09:00',
         category: 'Religioso',
         title: 'Festa de São Pedro dos Pescadores',
@@ -12,7 +12,7 @@ export const events = [
     },
     {
         id: 'forro-pe-de-serra-na-praca',
-        date: '2026-07-12',
+        date: '2026-07',
         time: '20:00',
         category: 'Cultural',
         title: 'Forró Pé de Serra na Praça',
@@ -21,7 +21,7 @@ export const events = [
     },
     {
         id: 'regata-de-jangadas',
-        date: '2026-08-16',
+        date: '2026-08',
         time: '08:00',
         category: 'Esportivo',
         title: 'Regata de Jangadas',
@@ -30,7 +30,7 @@ export const events = [
     },
     {
         id: 'torneio-de-pesca-esportiva-de-acau',
-        date: '2026-09-06',
+        date: '2026-09',
         time: '06:00',
         category: 'Esportivo',
         title: 'Torneio de Pesca Esportiva de Acaú',
@@ -39,7 +39,7 @@ export const events = [
     },
     {
         id: 'festival-do-camarao',
-        date: '2026-11-14',
+        date: '2026-11',
         time: '18:00',
         category: 'Gastronômico',
         title: 'Festival do Camarão',
@@ -48,11 +48,65 @@ export const events = [
     },
     {
         id: 'reveillon-na-praia',
-        date: '2026-12-31',
+        date: '2026-12',
         time: '22:00',
         category: 'Cultural',
         title: 'Réveillon na Praia',
         location: 'Orla de Pitimbu',
         price: 'Gratuito',
+    },
+    {
+        id: 'jogos-de-verao',
+        date: '2026-01',
+        time: '08:00',
+        category: 'Esportivo',
+        title: 'Jogos de Verão',
+        location: 'Arena na Orla da Praia de Pitimbu',
+        price: 'Gratuito',
+        description:
+            'Competições esportivas na areia que movimentam a orla e atraem turistas, com destaque para o torneio de beach soccer reunindo equipes locais e regionais.',
+    },
+    {
+        id: 'corridas-de-caico',
+        date: '2026-01',
+        time: '09:00',
+        category: 'Esportivo',
+        title: 'Corridas de Caíco',
+        location: 'Praia de Pontinhas e Acaú',
+        price: 'Gratuito',
+        description:
+            'Provas tradicionais de velocidade e habilidade com embarcações dos tipos Baiteira e Caíco, reunindo pescadores locais e de municípios vizinhos como Cabedelo e localidades de Pernambuco.',
+    },
+    {
+        id: 'festa-do-senhor-do-bomfim',
+        date: '2026-01',
+        time: '18:00',
+        category: 'Religioso',
+        title: 'Festa do Senhor do Bomfim',
+        location: 'Igreja Matriz e Praça Senhor do Bomfim, Centro',
+        price: 'Gratuito',
+        description:
+            'Principal festa religiosa e cultural de Pitimbu, com ritos religiosos, missas, novenários e shows musicais com artistas locais e nacionais em homenagem ao padroeiro.',
+    },
+    {
+        id: 'carnaval-de-pitimbu',
+        date: '2026-02',
+        time: '16:00',
+        category: 'Cultural',
+        title: 'Carnaval de Pitimbu',
+        location: 'Orla de Pitimbu e Polo Acaú',
+        price: 'Gratuito',
+        description: 'Blocos de rua, orquestras de frevo e shows na Orla de Pitimbu e no Polo Acaú.',
+    },
+    {
+        id: 'festival-da-lagosta',
+        date: '2026-10',
+        time: '18:00',
+        category: 'Gastronômico',
+        title: 'Festival da Lagosta',
+        location: 'Distrito de Acaú',
+        price: 'Gratuito',
+        description:
+            'Evento cultural e gastronômico que celebra o fim do defeso e a abertura da pesca da lagosta, com shows musicais, oficinas gastronômicas em parceria com o Senac, feira de artesanato, concursos de pratos típicos e ampla oferta de pratos à base de lagosta a preços populares.',
     },
 ];
