@@ -9,7 +9,7 @@ export const categoriesSection = {
     description: 'Explore Pitimbu por categorias e encontre exatamente o que você precisa',
     categories: [
         {
-            title: 'Comer',
+            title: 'Gastronomia',
             value: 'gastronomia',
             subCategories: ['Restaurantes', 'Bares'],
             options: '+24 opções',
@@ -37,10 +37,10 @@ export const categoriesSection = {
             img: servicesCategory,
         },
         {
-            title: 'Profissionais',
-            value: 'profissionais',
-            subCategories: ['Guias', 'Especialistas'],
-            options: '+36 opções',
+            title: 'Negócio',
+            value: 'negocio',
+            subCategories: ['Comércios', 'Empreendedores'],
+            options: 'Novidade',
             img: professionalsCategory,
         },
     ],

@@ -12,18 +12,6 @@ function FeaturedCard({ featured }) {
                     decoding="async"
                 />
             </div>
-            <div className="absolute top-4 left-4 flex gap-2">
-                {featured.categories.map((categorie) => {
-                    return (
-                        <span
-                            key={categorie}
-                            className=" bg-white px-2 rounded-full shadow-2xl"
-                        >
-                            {categorie}
-                        </span>
-                    );
-                })}
-            </div>
             <div className="flex flex-col p-4">
                 <p className="mb-2 font-head font-semibold text-lg text-foreground">
                     {featured.title}
@@ -40,9 +28,6 @@ function FeaturedCard({ featured }) {
                     <span className="text-sm text-muted-foreground">
                         ({featured.feedbacks} avaliações)
                     </span>
-                </p>
-                <p className="text-sm font-semibold text-blue-secondary">
-                    a partir de R$ {featured.from}
                 </p>
                 <div className="flex items-center gap-2 justify-between py-4">
                     <a

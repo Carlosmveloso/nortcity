@@ -722,11 +722,11 @@ const rawBusinesses = [
         instagram: 'mulheres.astanova',
     },
 
-    // Profissionais
+    // Profissionais (agora em Serviços)
     {
         id: 'veloso-corretor',
         name: 'Veloso',
-        category: 'profissionais',
+        category: 'servicos',
         subcategory: 'Corretor de Imóveis',
         description: 'Corretor de imóveis em Pitimbu.',
         address: null,
@@ -736,7 +736,7 @@ const rawBusinesses = [
     {
         id: 'carlos-eduardo-dev',
         name: 'Carlos Eduardo',
-        category: 'profissionais',
+        category: 'servicos',
         subcategory: 'Desenvolvedor Web',
         description: 'Desenvolvimento de sites e sistemas.',
         address: null,
@@ -746,7 +746,7 @@ const rawBusinesses = [
     {
         id: 'eliabe-crispim-podcaster',
         name: 'Eliabe Crispim',
-        category: 'profissionais',
+        category: 'servicos',
         subcategory: 'Podcaster',
         description: 'Podcast "O Assunto do Momento".',
         address: null,
@@ -756,7 +756,7 @@ const rawBusinesses = [
     {
         id: 'edielson-engenheiro',
         name: 'Edielson da Silva Araújo',
-        category: 'profissionais',
+        category: 'servicos',
         subcategory: 'Engenheiro Civil',
         description: 'Engenharia civil.',
         address: null,
@@ -766,7 +766,7 @@ const rawBusinesses = [
     {
         id: 'iremar-construtor',
         name: 'Iremar Antônio da Silva',
-        category: 'profissionais',
+        category: 'servicos',
         subcategory: 'Construtor',
         description: 'Serviços de construção.',
         address: null,
@@ -776,7 +776,7 @@ const rawBusinesses = [
     {
         id: 'banda-ekklesia',
         name: 'Banda Ekklésia',
-        category: 'profissionais',
+        category: 'servicos',
         subcategory: 'Música para Eventos',
         description: 'Banda para eventos, aniversários e casamentos.',
         address: null,
@@ -786,7 +786,7 @@ const rawBusinesses = [
     {
         id: 'cezar-paredao',
         name: 'Cezar Paredão',
-        category: 'profissionais',
+        category: 'servicos',
         subcategory: 'Cantor / Filmmaker',
         description: 'Cantor, filmmaker e storymaker.',
         address: null,
@@ -796,7 +796,7 @@ const rawBusinesses = [
     {
         id: 'ademir-mendes-musica',
         name: 'Ademir Mendes',
-        category: 'profissionais',
+        category: 'servicos',
         subcategory: 'Aula de Música',
         description: 'Aulas de música.',
         address: null,
