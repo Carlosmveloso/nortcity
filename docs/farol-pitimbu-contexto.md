@@ -425,7 +425,7 @@ src/
 - [x] Roteamento (React Router v7, 14 rotas, lazy loading)
 - [x] `/explorar` funcional (busca, filtro por categoria, paginação — sobre 78 negócios reais mockados)
 - [x] Páginas públicas restantes com UI completa e dados mockados (Sprint 1.5, 01/08/2026): Categorias,
-      Atrações, Eventos, Mapa (React-Leaflet + OpenStreetMap), Profissionais, Blog, Planos,
+      Atrações, Eventos, Praias e Mapa (React-Leaflet + OpenStreetMap), Profissionais, Blog, Planos,
       Cadastrar Negócio (wizard 4 passos), Sobre, Contato, Favoritos, Entrar
 - [ ] Auth (e-mail + Google) — UI de `/entrar` já pronta, falta ligar ao Supabase
 - [ ] Backend Supabase (tabelas, RLS) — `/explorar` ainda roda sobre dado estático em `data/businesses.js`

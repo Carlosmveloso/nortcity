@@ -6,7 +6,7 @@ import Logo from './Logo';
 const navLinks = [
     { label: 'Explorar', to: '/explorar' },
     { label: 'Categorias', to: '/categorias' },
-    { label: 'Mapa', to: '/mapa' },
+    { label: 'Praias e Mapa', to: '/mapa' },
     { label: 'Guia Local', to: '/guia-local' },
     { label: 'Contato', to: '/contato' },
     { label: 'Planos', to: '/planos' },

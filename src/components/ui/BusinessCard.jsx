@@ -1,4 +1,5 @@
-import { MapPin, Phone, MessageCircle, Globe, Store } from 'lucide-react';
+import { Check, MapPin, Phone, MessageCircle, Globe, Send, Store } from 'lucide-react';
+import { useState } from 'react';
 import { FaInstagram } from 'react-icons/fa6';
 
 function toWhatsappLink(phone) {
@@ -7,9 +8,36 @@ function toWhatsappLink(phone) {
 }
 
 function BusinessCard({ business }) {
+    const [copied, setCopied] = useState(false);
+
+    async function handleShare(event) {
+        event.preventDefault();
+        const shareUrl = `${window.location.origin}/explorar#${business.id}`;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: `${business.name} — Farol Pitimbu`,
+                    text: business.description,
+                    url: shareUrl,
+                });
+            } catch {
+                // usuário fechou o menu de compartilhamento sem escolher nada
+            }
+            return;
+        }
+
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }
+
     return (
-        <article className="group flex flex-col overflow-hidden rounded-3xl bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-            <div className="h-40 w-full overflow-hidden bg-sand-dark">
+        <article
+            id={business.id}
+            className="group relative flex scroll-mt-24 flex-col overflow-hidden rounded-3xl bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+        >
+            <div className="h-56 w-full overflow-hidden bg-sand-dark">
                 {business.image ? (
                     <img
                         src={business.image}
@@ -24,6 +52,18 @@ function BusinessCard({ business }) {
                     </div>
                 )}
             </div>
+
+            <button
+                type="button"
+                onClick={handleShare}
+                aria-label={`Compartilhar ${business.name}`}
+                className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-dark-ocean shadow-md backdrop-blur-sm transition-colors hover:bg-white"
+            >
+                {copied ? <Check size={18} aria-hidden="true" /> : <Send size={18} aria-hidden="true" />}
+            </button>
+            <span className="sr-only" role="status">
+                {copied ? 'Link copiado para a área de transferência' : ''}
+            </span>
 
             <div className="flex flex-col gap-3 p-5">
                 <div className="flex items-start justify-between gap-2">
