@@ -9,7 +9,7 @@ function Logo({ variantText = "ocean", variantBg = "gradient-ocean", showText = 
       <span className={`inline-flex items-center justify-center h-10 w-10 rounded-full ${bgColor}`}>
         <MapPin className="w-6 h-6 text-white" aria-hidden="true" />
       </span>
-      <span className={showText ? "hidden whitespace-nowrap sm:block" : "block"}>NortCity</span>
+      <span className={showText ? "hidden whitespace-nowrap sm:block" : "block"}>Farol Pitimbu</span>
     </Link>
   );
 }

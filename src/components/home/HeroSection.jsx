@@ -45,7 +45,7 @@ function HeroSection() {
                 <GlassButton>Tudo de Pitimbu em um só lugar!</GlassButton>
                 <h1 className="text-4xl font-head text-white text-center font-semibold text-shadow-lg">
                     Descubra Pitimbu com o{' '}
-                    <span className="text-turquoise ">NortCity</span>
+                    <span className="text-turquoise ">Farol Pitimbu</span>
                 </h1>
                 <p className="text-white text-center text-lg/7 font-semibold">
                     Encontre passeios, gastronomia, hospedagem e serviços locais em um só lugar!
