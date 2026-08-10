@@ -1,6 +1,7 @@
 import { ChevronRight, Mail, MapPin, MessageCircle, Phone, Check } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import emailjs from '@emailjs/browser';
 
 const inputClasses =
     'w-full rounded-2xl border border-sand-dark bg-white px-4 py-3 text-dark-ocean focus:border-turquoise focus:outline-none';
@@ -10,6 +11,7 @@ function Contato() {
     const [errors, setErrors] = useState({});
     const [sent, setSent] = useState(false);
     const [sending, setSending] = useState(false);
+    const [sendError, setSendError] = useState(false);
 
     const updateField = (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -25,14 +27,29 @@ function Contato() {
         return Object.keys(nextErrors).length === 0;
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         if (!validate()) return;
         setSending(true);
-        setTimeout(() => {
-            setSending(false);
+        setSendError(false);
+        try {
+            await emailjs.send(
+                import.meta.env.VITE_EMAILJS_SERVICE_ID,
+                import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+                {
+                    name: formData.name,
+                    email: formData.email,
+                    subject: formData.subject,
+                    message: formData.message,
+                },
+                { publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY },
+            );
             setSent(true);
-        }, 900);
+        } catch {
+            setSendError(true);
+        } finally {
+            setSending(false);
+        }
     };
 
     return (
@@ -155,6 +172,11 @@ function Contato() {
                                     />
                                     {errors.message && <p className="mt-1 text-sm text-red-600">{errors.message}</p>}
                                 </div>
+                                {sendError && (
+                                    <p className="mt-4 text-sm text-red-600">
+                                        Não foi possível enviar. Tente novamente ou fale pelo WhatsApp.
+                                    </p>
+                                )}
                                 <button
                                     type="submit"
                                     disabled={sending}

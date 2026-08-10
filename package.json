@@ -11,6 +11,7 @@
     "optimize-images": "node scripts/optimize-business-images.mjs"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@tailwindcss/vite": "^4.3.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.16.0",
