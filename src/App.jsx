@@ -1,6 +1,8 @@
 //* Monta a estrutura geral
 import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import Footer from "./components/layout/Footer";
 import Navbar from "./components/layout/Navbar";
 import ScrollToTop from "./components/layout/ScrollToTop";
@@ -48,6 +50,8 @@ function App() {
         </Routes>
       </Suspense>
       <Footer />
+      <Analytics />
+      <SpeedInsights />
     </>
   );
 }
