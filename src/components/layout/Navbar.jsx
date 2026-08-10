@@ -34,21 +34,21 @@ function Navbar() {
                     <Link
                         to="/favoritos"
                         aria-label="Favoritos"
-                        className="hidden h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50 xl:flex"
+                        className="hidden h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
                     >
                         <Heart className="h-5 w-5" aria-hidden="true" />
                     </Link>
                     <Link
                         to="/entrar"
                         aria-label="Entrar na conta"
-                        className="hidden h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50 xl:flex"
+                        className="hidden h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
                     >
                         <User className="h-5 w-5" aria-hidden="true" />
                     </Link>
 
                     <Link
                         to="/cadastrar-negocio"
-                        className="hidden shrink-0 rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap xl:block"
+                        className="hidden shrink-0 rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap"
                     >
                         Cadastrar meu negócio
                     </Link>
@@ -88,7 +88,7 @@ function Navbar() {
                         ))}
                     </ul>
 
-                    <ul className="border-ocean/10 mt-2 flex flex-col gap-1 border-t pt-2">
+                    <ul className="border-ocean/10 mt-2 hidden flex-col gap-1 border-t pt-2">
                         {[
                             { label: 'Favoritos', to: '/favoritos', icon: Heart },
                             { label: 'Entrar na conta', to: '/entrar', icon: User },
@@ -114,7 +114,7 @@ function Navbar() {
                     <Link
                         to="/cadastrar-negocio"
                         onClick={() => setMenuOpen(false)}
-                        className={`mx-3 mt-2 block rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap transition-all duration-300 ${
+                        className={`mx-3 mt-2 hidden rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap transition-all duration-300 ${
                             menuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
                         }`}
                         style={{ transitionDelay: menuOpen ? `${(navLinks.length + 2) * 40}ms` : '0ms' }}
