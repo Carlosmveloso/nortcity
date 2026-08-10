@@ -38,7 +38,7 @@ function Mapa() {
 
                     <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
                         {beaches.map((beach, index) => (
-                            <Reveal key={beach.id} delay={index * 60}>
+                            <Reveal key={beach.id} delay={index * 60} className="h-full">
                                 <BeachCard beach={beach} />
                             </Reveal>
                         ))}

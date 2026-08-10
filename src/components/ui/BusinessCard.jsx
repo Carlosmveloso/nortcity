@@ -35,7 +35,7 @@ function BusinessCard({ business }) {
     return (
         <article
             id={business.id}
-            className="group relative flex scroll-mt-24 flex-col overflow-hidden rounded-3xl bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+            className="group relative flex h-full scroll-mt-24 flex-col overflow-hidden rounded-3xl bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
         >
             <div className="h-56 w-full overflow-hidden bg-sand-dark">
                 {business.image ? (
@@ -65,7 +65,7 @@ function BusinessCard({ business }) {
                 {copied ? 'Link copiado para a área de transferência' : ''}
             </span>
 
-            <div className="flex flex-col gap-3 p-5">
+            <div className="flex flex-1 flex-col gap-3 p-5">
                 <div className="flex items-start justify-between gap-2">
                     <div>
                         <h3 className="font-head text-lg font-semibold text-foreground">{business.name}</h3>
@@ -85,7 +85,7 @@ function BusinessCard({ business }) {
                     </p>
                 )}
 
-                <div className="mt-2 flex flex-col gap-2">
+                <div className="mt-auto flex flex-col gap-2 pt-2">
                     <a
                         href={`tel:${business.phone.replace(/\D/g, '')}`}
                         className="flex w-full items-center justify-center gap-2 rounded-full bg-blue-primary py-2.5 text-sm text-muted"

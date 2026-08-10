@@ -29,7 +29,7 @@ function BeachCard({ beach }) {
     return (
         <article
             id={beach.id}
-            className="group relative flex scroll-mt-24 flex-col overflow-hidden rounded-3xl bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+            className="group relative flex h-full scroll-mt-24 flex-col overflow-hidden rounded-3xl bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
         >
             <div className="h-72 w-full overflow-hidden bg-sand-dark">
                 {beach.image ? (
@@ -59,7 +59,7 @@ function BeachCard({ beach }) {
                 {copied ? 'Link copiado para a área de transferência' : ''}
             </span>
 
-            <div className="flex flex-col gap-2 p-5">
+            <div className="flex flex-1 flex-col gap-2 p-5">
                 <h3 className="font-head text-lg font-semibold text-foreground">{beach.name}</h3>
                 <p className="text-sm text-foreground/80">{beach.description}</p>
                 {beach.subDescription && <p className="text-sm text-foreground/80">{beach.subDescription}</p>}

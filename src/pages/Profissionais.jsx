@@ -97,7 +97,7 @@ function Profissionais() {
                     {results.length > 0 ? (
                         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {results.map((professional, index) => (
-                                <Reveal key={professional.id} delay={index * 60}>
+                                <Reveal key={professional.id} delay={index * 60} className="h-full">
                                     <ProfessionalCard professional={professional} />
                                 </Reveal>
                             ))}

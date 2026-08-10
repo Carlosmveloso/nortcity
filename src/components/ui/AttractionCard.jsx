@@ -12,11 +12,11 @@ function AttractionCard({ attraction }) {
     const Icon = config.icon;
 
     return (
-        <article className="group flex flex-col overflow-hidden rounded-3xl bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+        <article className="group flex h-full flex-col overflow-hidden rounded-3xl bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
             <div className="flex h-36 w-full items-center justify-center bg-gradient-ocean">
                 <Icon className="h-12 w-12 text-card/90" aria-hidden="true" />
             </div>
-            <div className="flex flex-col gap-2 p-5">
+            <div className="flex flex-1 flex-col gap-2 p-5">
                 <span className="w-fit rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold tracking-wide text-turquoise uppercase">
                     {config.label}
                 </span>

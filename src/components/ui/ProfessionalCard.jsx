@@ -16,8 +16,8 @@ function initials(name) {
 
 function ProfessionalCard({ professional }) {
     return (
-        <article className="group flex flex-col overflow-hidden rounded-3xl bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-            <div className="flex flex-col gap-3 p-5">
+        <article className="group flex h-full flex-col overflow-hidden rounded-3xl bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div className="flex h-full flex-col gap-3 p-5">
                 <div className="flex items-center gap-3">
                     <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-ocean font-head text-lg font-bold text-card">
                         {initials(professional.name)}
@@ -43,7 +43,7 @@ function ProfessionalCard({ professional }) {
                     ))}
                 </div>
 
-                <div className="mt-1 flex items-center justify-between">
+                <div className="mt-auto flex items-center justify-between pt-1">
                     <span className="flex items-center gap-1 text-sm font-medium text-foreground">
                         <Star size={16} className="fill-sun-yellow text-sun-yellow" aria-hidden="true" />
                         {professional.rating}
