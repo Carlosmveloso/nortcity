@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import GlassButton from '../ui/GlassButton';
 
 const quickFilters = [
-    { label: 'Comer', emoji: '🍤', value: 'gastronomia' },
+    { label: 'Gastronomia', emoji: '🍤', value: 'gastronomia' },
     { label: 'Passeios', emoji: '🏖️', value: 'passeios' },
     { label: 'Hospedagem', emoji: '🛏️', value: 'hospedagem' },
     { label: 'Serviços', emoji: '🛠️', value: 'servicos' },
-    { label: 'Profissionais', emoji: '🧑‍🔧', value: 'profissionais' },
+    { label: 'Negócio', emoji: '🏢', value: 'negocio' },
 ];
 
 function HeroSection() {

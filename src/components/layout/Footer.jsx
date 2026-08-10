@@ -34,27 +34,32 @@ function Footer() {
             </a>
           </div>
         </div>
-          <nav aria-label="Links de exploração">
-            <p>Explorar</p>
+          <nav aria-label="Links do menu principal">
+            <p>Menu</p>
             <ul className="mt-3">
               <li className="py-2">
-                <Link to="/explorar?categoria=passeios" className="text-sand-dark">
-                  Passeios
+                <Link to="/explorar" className="text-sand-dark">
+                  Explorar
                 </Link>
               </li>
               <li className="py-2">
-                <Link to="/explorar?categoria=hospedagem" className="text-sand-dark">
-                  Hospedagem
+                <Link to="/categorias" className="text-sand-dark">
+                  Categorias
                 </Link>
               </li>
               <li className="py-2">
-                <Link to="/explorar?categoria=gastronomia" className="text-sand-dark">
-                  Gastronomia
+                <Link to="/mapa" className="text-sand-dark">
+                  Praias e Mapa
                 </Link>
               </li>
               <li className="py-2">
-                <Link to="/explorar?categoria=servicos" className="text-sand-dark">
-                  Serviços
+                <Link to="/guia-local" className="text-sand-dark">
+                  Informações
+                </Link>
+              </li>
+              <li className="py-2">
+                <Link to="/contato" className="text-sand-dark">
+                  Contato
                 </Link>
               </li>
             </ul>

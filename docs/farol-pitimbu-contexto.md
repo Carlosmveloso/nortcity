@@ -421,19 +421,36 @@ src/
 
 ### MVP (v1.0) — atual + curto prazo
 - [x] Home com todas as seções (revisada, sem bugs conhecidos em 01/08/2026)
+- [x] Estatísticas da home dinâmicas (calculadas a partir dos dados, sem prefixo "+")
 - [x] Design system completo
-- [x] Roteamento (React Router v7, 14 rotas, lazy loading)
+- [x] Roteamento (React Router v7, 15 rotas públicas + catch-all, lazy loading)
 - [x] `/explorar` funcional (busca, filtro por categoria, paginação — sobre 78 negócios reais mockados)
-- [x] Páginas públicas restantes com UI completa e dados mockados (Sprint 1.5, 01/08/2026): Categorias,
-      Atrações, Eventos, Praias e Mapa (React-Leaflet + OpenStreetMap), Profissionais, Blog, Planos,
-      Cadastrar Negócio (wizard 4 passos), Sobre, Contato, Favoritos, Entrar
-- [ ] Auth (e-mail + Google) — UI de `/entrar` já pronta, falta ligar ao Supabase
-- [ ] Backend Supabase (tabelas, RLS) — `/explorar` ainda roda sobre dado estático em `data/businesses.js`
+- [x] Páginas públicas com UI completa e dados mockados: Categorias, Atrações, Eventos, Mapa
+      (React-Leaflet + OpenStreetMap), Profissionais, Blog, Planos, Cadastrar Negócio (wizard 4 passos),
+      Sobre, Contato, Favoritos, Entrar
+- [x] Página **Guia Local** (nova, fora do escopo original deste doc): tábua de marés (`TideForecast`),
+      feiras livres, próximos eventos e telefones úteis
+- [x] Seção de praias com cards e botão de compartilhar, integrada ao Guia Local/Mapa
+- [x] Padronização de altura dos cards (negócios, praias, profissionais, atrações)
+- [x] Formulário de Contato funcional via EmailJS (envio real de e-mail, sem backend próprio)
+- [x] Vercel Analytics + Speed Insights integrados
+- [x] Favicon e rebranding completo de "Nortcity" para "Farol Pitimbu"
+- [x] Deploy configurado na Vercel (rewrite SPA para `main` e `develop`)
+- [ ] Auth (e-mail + Google) — UI de `/entrar` já pronta, falta ligar a um backend
+- [ ] Backend Supabase (tabelas, RLS) — `src/integrations/supabase/` ainda vazio (só `.gitkeep`);
+      `/explorar` e todas as páginas seguem rodando sobre dados estáticos em `src/data/*.js`
 - [ ] CRUD de negócios
-- [ ] Perfil público `/negocio/:slug`
+- [ ] Perfil público `/negocio/:slug` — ainda não existe rota; cards de negócio levam para `/explorar`
 - [ ] Dashboard básico do dono
+- [ ] Painel admin
 
-> Status detalhado: ver `docs/STATUS-ATUAL.md` e `docs/roadmap-mvp-v1.md`.
+> **Nota de stack:** a Seção 9.1 deste documento descreve um stack alvo (TypeScript, shadcn/ui, framer-motion,
+> react-query, react-hook-form+zod, Supabase Auth/Storage/Edge Functions). Na prática atual (10/08/2026) o
+> projeto está em **JavaScript puro** (nenhum arquivo `.ts`/`.tsx`), sem esses pacotes instalados, e o
+> Supabase ainda não foi conectado — ver `CLAUDE.md` para as convenções realmente em uso. Contato usa
+> EmailJS no lugar de Edge Function + Resend.
+>
+> `docs/STATUS-ATUAL.md` e `docs/roadmap-mvp-v1.md`, citados abaixo, ainda não existem neste repositório.
 
 ### v1.1 — Monetização
 - [ ] Integração Stripe + 4 planos

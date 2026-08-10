@@ -15,7 +15,7 @@ function dayLabel(date, index) {
 }
 
 function TideForecast() {
-    const { days, status } = useTideForecast();
+    const { days, status } = useTideForecast(undefined, 7);
     const [activeIndex, setActiveIndex] = useState(0);
 
     if (status === 'error') {
@@ -41,7 +41,7 @@ function TideForecast() {
 
     return (
         <div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
                 {days.map((day, index) => (
                     <button
                         key={day.date}

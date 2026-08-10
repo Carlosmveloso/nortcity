@@ -3,7 +3,7 @@ import {
     BedDouble,
     Waves,
     Wrench,
-    Users,
+    Briefcase,
     Truck,
     PartyPopper,
     Palette,
@@ -26,7 +26,7 @@ function countByCategory(slug) {
 export const popularCategories = [
     {
         slug: 'gastronomia',
-        label: 'Comer',
+        label: 'Gastronomia',
         description: 'Restaurantes, bares e lanchonetes',
         icon: UtensilsCrossed,
         count: countByCategory('gastronomia'),
@@ -57,11 +57,11 @@ export const popularCategories = [
         img: servicesCategory,
     },
     {
-        slug: 'profissionais',
-        label: 'Profissionais',
-        description: 'Guias, técnicos e especialistas',
-        icon: Users,
-        count: countByCategory('profissionais'),
+        slug: 'negocio',
+        label: 'Negócio',
+        description: 'Comércios e empreendedores locais',
+        icon: Briefcase,
+        count: countByCategory('negocio'),
         img: professionalsCategory,
     },
 ];

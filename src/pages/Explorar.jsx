@@ -5,11 +5,11 @@ import { businesses } from '../data/businesses';
 import BusinessCard from '../components/ui/BusinessCard';
 
 const quickFilters = [
-    { label: 'Comer', value: 'gastronomia' },
+    { label: 'Gastronomia', value: 'gastronomia' },
     { label: 'Passeios', value: 'passeios' },
     { label: 'Hospedagem', value: 'hospedagem' },
     { label: 'Serviços', value: 'servicos' },
-    { label: 'Profissionais', value: 'profissionais' },
+    { label: 'Negócio', value: 'negocio' },
 ];
 
 const PAGE_SIZE = 12;

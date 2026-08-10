@@ -7,7 +7,7 @@ const navLinks = [
     { label: 'Explorar', to: '/explorar' },
     { label: 'Categorias', to: '/categorias' },
     { label: 'Praias e Mapa', to: '/mapa' },
-    { label: 'Guia Local', to: '/guia-local' },
+    { label: 'Informações', to: '/guia-local' },
     { label: 'Contato', to: '/contato' },
     { label: 'Planos', to: '/planos', hidden: true },
 ];

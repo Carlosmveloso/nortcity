@@ -1,18 +1,15 @@
 import { Check, MapPin, Phone, MessageCircle, Globe, Send, Store } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { FaInstagram } from 'react-icons/fa6';
-
-function toWhatsappLink(phone) {
-    const digits = phone.replace(/\D/g, '');
-    return `https://wa.me/55${digits}`;
-}
+import { toWhatsappLink } from '../../lib/business';
 
 function BusinessCard({ business }) {
     const [copied, setCopied] = useState(false);
 
     async function handleShare(event) {
         event.preventDefault();
-        const shareUrl = `${window.location.origin}/explorar#${business.id}`;
+        const shareUrl = `${window.location.origin}/negocio/${business.id}`;
 
         if (navigator.share) {
             try {
@@ -57,7 +54,7 @@ function BusinessCard({ business }) {
                 type="button"
                 onClick={handleShare}
                 aria-label={`Compartilhar ${business.name}`}
-                className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-dark-ocean shadow-md backdrop-blur-sm transition-colors hover:bg-white"
+                className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-dark-ocean shadow-md backdrop-blur-sm transition-colors hover:bg-white"
             >
                 {copied ? <Check size={18} aria-hidden="true" /> : <Send size={18} aria-hidden="true" />}
             </button>
@@ -68,7 +65,16 @@ function BusinessCard({ business }) {
             <div className="flex flex-1 flex-col gap-3 p-5">
                 <div className="flex items-start justify-between gap-2">
                     <div>
-                        <h3 className="font-head text-lg font-semibold text-foreground">{business.name}</h3>
+                        <h3 className="font-head text-lg font-semibold text-foreground">
+                            {/* Link "esticado": cobre o card inteiro sem aninhar <a> dentro de <a>,
+                                mantendo os botões de contato clicáveis via z-10. */}
+                            <Link
+                                to={`/negocio/${business.id}`}
+                                className="transition-colors after:absolute after:inset-0 group-hover:text-turquoise"
+                            >
+                                {business.name}
+                            </Link>
+                        </h3>
                         <span className="text-sm text-muted-foreground">{business.subcategory}</span>
                     </div>
                     <span className="shrink-0 rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold text-turquoise">
@@ -85,7 +91,7 @@ function BusinessCard({ business }) {
                     </p>
                 )}
 
-                <div className="mt-auto flex flex-col gap-2 pt-2">
+                <div className="relative z-10 mt-auto flex flex-col gap-2 pt-2">
                     <a
                         href={`tel:${business.phone.replace(/\D/g, '')}`}
                         className="flex w-full items-center justify-center gap-2 rounded-full bg-blue-primary py-2.5 text-sm text-muted"

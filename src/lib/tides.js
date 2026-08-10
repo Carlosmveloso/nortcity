@@ -2,6 +2,15 @@ const MARINE_API_URL = 'https://marine-api.open-meteo.com/v1/marine';
 
 export const PITIMBU_COORDS = { latitude: -7.4699, longitude: -34.8143 };
 
+// A Open-Meteo retorna sea_level_height_msl relativo ao nível médio do mar (MSL),
+// que oscila em torno de zero e fica negativo na maré baixa. Tábuas de maré reais
+// (Marinha, tabuademares.com) usam o datum de redução de carta, sempre positivo.
+// Offset calibrado comparando a saída da API com tabuademares.com/Pitimbu em
+// 10-11/08/2026 (diferença consistente de ~1.10 a 1.33 m, média ~1.2 m). É uma
+// aproximação empírica, não harmônica oficial — revalidar se os números voltarem
+// a divergir muito de uma fonte de referência.
+const TIDE_DATUM_OFFSET_M = 1.2;
+
 function getISODateInSaoPaulo(date = new Date()) {
     return date.toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
 }
@@ -27,7 +36,10 @@ async function fetchTideCurve({ latitude, longitude, forecastDays }) {
     }
 
     const data = await response.json();
-    return { time: data.hourly.time, height: data.hourly.sea_level_height_msl };
+    return {
+        time: data.hourly.time,
+        height: data.hourly.sea_level_height_msl.map((h) => h + TIDE_DATUM_OFFSET_M),
+    };
 }
 
 // A curva de maré é aproximadamente senoidal, então um pico/vale local no dado

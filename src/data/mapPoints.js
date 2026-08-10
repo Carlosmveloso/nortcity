@@ -146,13 +146,13 @@ export const mapPoints = [
     { id: 'ama-marisqueiras-acau', name: 'AMA', category: 'servicos', lat: -7.54004, lng: -34.8266 }, // sem endereço; inferido pelo nome (Acaú)
     { id: 'coelho-pesca-acau', name: 'Coelho Pesca Acaú', category: 'servicos', lat: -7.54111, lng: -34.82589 }, // sem endereço; inferido pelo nome (Acaú)
 
-    // Profissionais (src/data/professionals.js)
-    { id: 'roberto-guia', name: 'Roberto Guia', category: 'profissionais', lat: -7.47499, lng: -34.8082 }, // location: 'Pitimbu' (genérico)
-    { id: 'fatima-manicure', name: 'Fátima Manicure', category: 'profissionais', lat: -7.47438, lng: -34.80962 }, // location: 'Centro, Pitimbu'
-    { id: 'ze-do-barco', name: 'Zé do Barco', category: 'profissionais', lat: -7.3986, lng: -34.80509 }, // location: 'Praia Bela'
-    { id: 'dona-rosa-artesa', name: 'Dona Rosa', category: 'profissionais', lat: -7.54102, lng: -34.82793 }, // location: 'Acaú'
-    { id: 'marcos-eletricista', name: 'Marcos Eletricista', category: 'profissionais', lat: -7.47446, lng: -34.80963 }, // location: 'Pitimbu' (genérico)
-    { id: 'creuza-diarista', name: 'Creuza Diarista', category: 'profissionais', lat: -7.47368, lng: -34.8085 }, // location: 'Centro, Pitimbu'
+    // Profissionais (src/data/professionals.js) — agora em Serviços
+    { id: 'roberto-guia', name: 'Roberto Guia', category: 'servicos', lat: -7.47499, lng: -34.8082 }, // location: 'Pitimbu' (genérico)
+    { id: 'fatima-manicure', name: 'Fátima Manicure', category: 'servicos', lat: -7.47438, lng: -34.80962 }, // location: 'Centro, Pitimbu'
+    { id: 'ze-do-barco', name: 'Zé do Barco', category: 'servicos', lat: -7.3986, lng: -34.80509 }, // location: 'Praia Bela'
+    { id: 'dona-rosa-artesa', name: 'Dona Rosa', category: 'servicos', lat: -7.54102, lng: -34.82793 }, // location: 'Acaú'
+    { id: 'marcos-eletricista', name: 'Marcos Eletricista', category: 'servicos', lat: -7.47446, lng: -34.80963 }, // location: 'Pitimbu' (genérico)
+    { id: 'creuza-diarista', name: 'Creuza Diarista', category: 'servicos', lat: -7.47368, lng: -34.8085 }, // location: 'Centro, Pitimbu'
 
     // Atrações adicionais (src/data/attractions.js)
     { id: 'trilha-piscinas-naturais', name: 'Trilha Piscinas Naturais', category: 'atracao', lat: -7.5407, lng: -34.82639 }, // location: 'Acaú'
@@ -166,5 +166,5 @@ export const mapCategories = [
     { value: 'gastronomia', label: 'Gastronomia', color: '#04c6db' },
     { value: 'passeios', label: 'Passeios', color: '#25d366' },
     { value: 'servicos', label: 'Serviços', color: '#6b7280' },
-    { value: 'profissionais', label: 'Profissionais', color: '#9333ea' },
+    { value: 'negocio', label: 'Negócio', color: '#9333ea' },
 ];
