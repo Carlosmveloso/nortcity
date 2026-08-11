@@ -63,7 +63,7 @@ function BusinessCard({ business }) {
             </span>
 
             <div className="flex flex-1 flex-col gap-3 p-5">
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                         <h3 className="font-head text-lg font-semibold text-foreground">
                             {/* Link "esticado": cobre o card inteiro sem aninhar <a> dentro de <a>,
@@ -77,7 +77,7 @@ function BusinessCard({ business }) {
                         </h3>
                         <span className="text-sm text-muted-foreground">{business.subcategory}</span>
                     </div>
-                    <div className="flex shrink-0 flex-wrap justify-end gap-1">
+                    <div className="flex flex-wrap justify-end gap-1">
                         {business.categories.map((slug) => (
                             <span
                                 key={slug}

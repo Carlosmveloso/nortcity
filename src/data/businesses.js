@@ -57,7 +57,7 @@ const rawBusinesses = [
     {
         id: 'pousada-beira-mar-pitimbu',
         name: 'Pousada Beira Mar Pitimbu',
-        categories: ['hospedagem'],
+        categories: ['hospedagem', 'gastronomia'],
         subcategory: 'Pousada e Restaurante',
         description: 'Hospedagem e restaurante à beira-mar em Pitimbu.',
         address: 'Av. Beira Mar, Praia de Pitimbu',
@@ -504,7 +504,7 @@ const rawBusinesses = [
     {
         id: 'jbc-serralharia',
         name: 'JBC Serralharia',
-        categories: ['neogcio', 'construcao'],
+        categories: ['negocio', 'construcao'],
         subcategory: 'Serralheria',
         description: 'Serviços de serralheria em Acaú.',
         address: 'Rua Bela Rosa, Acaú',
@@ -514,7 +514,7 @@ const rawBusinesses = [
     {
         id: 'pitimbu-vidros',
         name: 'Pitimbu Vidros',
-        categories: ['neogcio', 'construcao'],
+        categories: ['negocio', 'construcao'],
         subcategory: 'Vidraçaria',
         description: 'Serviços de vidraçaria.',
         address: 'Rua Vila José Maria Ribeiro, s/n, Centro',
