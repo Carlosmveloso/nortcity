@@ -83,7 +83,12 @@ function HeroSection() {
                             >
                                 <option value="">Categoria</option>
                                 {quickFilters.map((filter) => (
-                                    <option key={filter.value} value={filter.value}>
+                                    <option
+                                        key={filter.value}
+                                        value={filter.value}
+                                        className="notranslate"
+                                        translate="no"
+                                    >
                                         {filter.label}
                                     </option>
                                 ))}
@@ -109,7 +114,10 @@ function HeroSection() {
                             aria-pressed={category === filter.value}
                             className={category === filter.value ? 'justify-center bg-white/40' : 'justify-center'}
                         >
-                            <span aria-hidden="true">{filter.emoji}</span> {filter.label}
+                            <span aria-hidden="true">{filter.emoji}</span>{' '}
+                            <span className="notranslate" translate="no">
+                                {filter.label}
+                            </span>
                         </GlassButton>
                     ))}
                 </div>

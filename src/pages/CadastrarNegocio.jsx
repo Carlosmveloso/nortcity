@@ -234,7 +234,9 @@ function CadastrarNegocio() {
                                                     }`}
                                                 >
                                                     <Icon size={22} aria-hidden="true" />
-                                                    {category.label}
+                                                    <span className="notranslate" translate="no">
+                                                        {category.label}
+                                                    </span>
                                                 </button>
                                             );
                                         })}

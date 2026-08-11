@@ -27,7 +27,10 @@ function CategoryTile({ category, size = 'default' }) {
                     <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-turquoise/20 backdrop-blur-sm">
                         <Icon className="h-5 w-5 text-card" aria-hidden="true" />
                     </div>
-                    <h3 className="font-head text-sm leading-tight font-semibold break-words text-card sm:text-lg">
+                    <h3
+                        className="notranslate font-head text-sm leading-tight font-semibold break-words text-card sm:text-lg"
+                        translate="no"
+                    >
                         {category.label}
                     </h3>
                     <p className="text-sm text-card/80">{category.description}</p>
@@ -49,7 +52,12 @@ function CategoryTile({ category, size = 'default' }) {
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-turquoise/10 transition-colors group-hover:bg-turquoise/20">
                 <Icon className="h-6 w-6 text-turquoise" aria-hidden="true" />
             </div>
-            <h3 className="font-head mb-1 font-semibold break-words text-foreground">{category.label}</h3>
+            <h3
+                className="notranslate font-head mb-1 font-semibold break-words text-foreground"
+                translate="no"
+            >
+                {category.label}
+            </h3>
             <p className="mb-2 text-xs text-muted-foreground">{category.description}</p>
             {category.count > 0 && (
                 <span className="text-xs font-medium text-turquoise">+{category.count}</span>

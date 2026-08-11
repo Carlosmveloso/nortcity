@@ -133,7 +133,12 @@ function Explorar() {
                             >
                                 <option value="">Categoria</option>
                                 {quickFilters.map((filter) => (
-                                    <option key={filter.value} value={filter.value}>
+                                    <option
+                                        key={filter.value}
+                                        value={filter.value}
+                                        className="notranslate"
+                                        translate="no"
+                                    >
                                         {filter.label}
                                     </option>
                                 ))}
@@ -163,7 +168,9 @@ function Explorar() {
                                     : 'bg-white text-dark-ocean shadow-sm'
                             }`}
                         >
-                            {filter.label}
+                            <span className="notranslate" translate="no">
+                                {filter.label}
+                            </span>
                         </button>
                     ))}
                 </div>

@@ -58,7 +58,9 @@ function Mapa() {
                                     style={{ backgroundColor: category.color }}
                                     aria-hidden="true"
                                 />
-                                {category.label}
+                                <span className="notranslate" translate="no">
+                                    {category.label}
+                                </span>
                             </span>
                         ))}
                     </div>
