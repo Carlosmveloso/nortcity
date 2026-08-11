@@ -4,13 +4,10 @@ import {
     Waves,
     Wrench,
     Briefcase,
-    Truck,
     PartyPopper,
+    Store,
+    HardHat,
     Palette,
-    Car,
-    HeartPulse,
-    Scissors,
-    Hammer,
 } from 'lucide-react';
 import { businesses } from './businesses';
 import foodCategory from '../assets/images/category-food.jpg';
@@ -20,7 +17,7 @@ import servicesCategory from '../assets/images/category-services.jpg';
 import professionalsCategory from '../assets/images/category-professionals.jpg';
 
 function countByCategory(slug) {
-    return businesses.filter((business) => business.category === slug).length;
+    return businesses.filter((business) => business.categories.includes(slug)).length;
 }
 
 export const popularCategories = [
@@ -67,11 +64,32 @@ export const popularCategories = [
 ];
 
 export const otherCategories = [
-    { slug: 'delivery', label: 'Delivery', description: 'Comida e produtos em casa', icon: Truck },
-    { slug: 'eventos', label: 'Eventos', description: 'Festas, shows e celebrações', icon: PartyPopper },
-    { slug: 'artesanato', label: 'Artesanato', description: 'Cultura e tradição local', icon: Palette },
-    { slug: 'transporte', label: 'Transporte', description: 'Táxi, transfer e aluguel', icon: Car },
-    { slug: 'saude', label: 'Saúde', description: 'Clínicas, farmácias e bem-estar', icon: HeartPulse },
-    { slug: 'beleza', label: 'Beleza', description: 'Salões, barbearias e estética', icon: Scissors },
-    { slug: 'manutencao', label: 'Manutenção', description: 'Reparos e assistência técnica', icon: Hammer },
+    {
+        slug: 'eventos',
+        label: 'Eventos',
+        description: 'Festas, shows e celebrações',
+        icon: PartyPopper,
+        count: countByCategory('eventos'),
+    },
+    {
+        slug: 'lojas',
+        label: 'Lojas',
+        description: 'Comércio local e utilidades',
+        icon: Store,
+        count: countByCategory('lojas'),
+    },
+    {
+        slug: 'construcao',
+        label: 'Construção',
+        description: 'Construção civil e reformas',
+        icon: HardHat,
+        count: countByCategory('construcao'),
+    },
+    {
+        slug: 'artesanato',
+        label: 'Artesanato',
+        description: 'Artesãos e produtos locais feitos à mão',
+        icon: Palette,
+        count: countByCategory('artesanato'),
+    },
 ];

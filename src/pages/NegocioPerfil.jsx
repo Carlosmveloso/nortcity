@@ -44,7 +44,8 @@ function NegocioPerfil() {
     }
 
     const related = findRelatedBusinesses(business);
-    const label = categoryLabel(business.category);
+    const primaryCategory = business.categories[0];
+    const label = categoryLabel(primaryCategory);
 
     async function handleShare() {
         const shareUrl = `${window.location.origin}/negocio/${business.id}`;
@@ -79,7 +80,7 @@ function NegocioPerfil() {
                             Início
                         </Link>
                         <ChevronRight size={14} aria-hidden="true" />
-                        <Link to={`/explorar?categoria=${business.category}`} className="hover:text-card">
+                        <Link to={`/explorar?categoria=${primaryCategory}`} className="hover:text-card">
                             {label}
                         </Link>
                         <ChevronRight size={14} aria-hidden="true" />
@@ -121,9 +122,14 @@ function NegocioPerfil() {
                                     `${business.name} faz parte do guia de ${label.toLowerCase()} de Pitimbu.`}
                             </p>
                             <div className="mt-4 flex flex-wrap gap-2">
-                                <span className="rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold text-turquoise">
-                                    {label}
-                                </span>
+                                {business.categories.map((slug) => (
+                                    <span
+                                        key={slug}
+                                        className="rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold text-turquoise"
+                                    >
+                                        {categoryLabel(slug)}
+                                    </span>
+                                ))}
                                 {business.subcategory && (
                                     <span className="rounded-full bg-sand-dark px-3 py-1 text-xs font-semibold text-dark-ocean">
                                         {business.subcategory}
@@ -229,7 +235,7 @@ function NegocioPerfil() {
                                 Outros em {label}
                             </h2>
                             <Link
-                                to={`/explorar?categoria=${business.category}`}
+                                to={`/explorar?categoria=${primaryCategory}`}
                                 className="flex items-center gap-1 text-sm font-semibold text-turquoise"
                             >
                                 Ver todos

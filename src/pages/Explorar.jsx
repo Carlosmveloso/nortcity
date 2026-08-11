@@ -32,7 +32,7 @@ function Explorar() {
     const results = useMemo(() => {
         const normalizedQuery = normalize(initialQuery.trim());
         return businesses.filter((business) => {
-            const matchesCategory = !initialCategory || business.category === initialCategory;
+            const matchesCategory = !initialCategory || business.categories.includes(initialCategory);
             if (!matchesCategory) return false;
             if (!normalizedQuery) return true;
             const haystack = normalize(
