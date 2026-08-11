@@ -1,6 +1,7 @@
 import bgFood from '../assets/images/category-food.jpg';
-import bgTours from '../assets/images/category-tours.jpg';
-import bgServices from "../assets/images/category-services.jpg";
+import bgTours from '../assets/images/praias.jpeg';
+import bgServices from "../assets/images/artesanato.jpeg";
+import bgRoteiro from "../assets/images/roteiro.jpeg";
 
 
 export const experiencesSection = {
@@ -8,27 +9,27 @@ export const experiencesSection = {
     description: "Roteiros e guias especiais para aproveitar o melhor de Pitimbu.",
     experiences: [
         {
-            title: 'Roteiro 1 dia em Pitimbu',
-            description: 'O melhor de Pitimbu em 24 horas',
-            link: '/explorar?experiencia=roteiro-1-dia',
-            bgImg: '/hero-beach.jpg',
+            title: 'Roteiro',
+            description: 'Pontos turísticos',
+            link: '/experiencia/roteiro-1-dia',
+            bgImg: bgRoteiro,
         },
         {
-            title: 'Praias e Mirantes',
-            description: 'Os melhores pontos de vista',
-            link: '/explorar?experiencia=praias-mirantes',
+            title: 'Praias',
+            description: 'Algumas praias do litoral',
+            link: '/experiencia/praias-mirantes',
             bgImg: bgTours,
         },
         {
-            title: 'Onde comer bem',
+            title: 'Melhores restaurantes',
             description: 'Gastronomia local imperdível',
-            link: '/explorar?experiencia=onde-comer',
+            link: '/experiencia/onde-comer',
             bgImg: bgFood,
         },
         {
-            title: 'Artesanato local',
+            title: 'Artesanato e cultura',
             description: 'Cultura e tradição regional',
-            link: '/explorar?experiencia=artesanato-local',
+            link: '/experiencia/artesanato-local',
             bgImg: bgServices,
         },
     ]

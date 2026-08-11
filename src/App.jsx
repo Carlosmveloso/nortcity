@@ -9,6 +9,7 @@ import ScrollToTop from "./components/layout/ScrollToTop";
 import Home from "./pages/Home";
 
 const Explorar = lazy(() => import("./pages/Explorar"));
+const Experiencia = lazy(() => import("./pages/Experiencia"));
 const NegocioPerfil = lazy(() => import("./pages/NegocioPerfil"));
 const Categorias = lazy(() => import("./pages/Categorias"));
 const Atracoes = lazy(() => import("./pages/Atracoes"));
@@ -34,6 +35,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/explorar" element={<Explorar />} />
+          <Route path="/experiencia/:slug" element={<Experiencia />} />
           <Route path="/negocio/:slug" element={<NegocioPerfil />} />
           <Route path="/categorias" element={<Categorias />} />
           <Route path="/atracoes" element={<Atracoes />} />
