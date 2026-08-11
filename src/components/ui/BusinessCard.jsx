@@ -2,7 +2,7 @@ import { Check, MapPin, Phone, MessageCircle, Globe, Send, Store } from 'lucide-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaInstagram } from 'react-icons/fa6';
-import { toWhatsappLink } from '../../lib/business';
+import { categoryLabel, toWhatsappLink } from '../../lib/business';
 
 function BusinessCard({ business }) {
     const [copied, setCopied] = useState(false);
@@ -77,9 +77,16 @@ function BusinessCard({ business }) {
                         </h3>
                         <span className="text-sm text-muted-foreground">{business.subcategory}</span>
                     </div>
-                    <span className="shrink-0 rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold text-turquoise">
-                        {business.category}
-                    </span>
+                    <div className="flex shrink-0 flex-wrap justify-end gap-1">
+                        {business.categories.map((slug) => (
+                            <span
+                                key={slug}
+                                className="rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold text-turquoise"
+                            >
+                                {categoryLabel(slug)}
+                            </span>
+                        ))}
+                    </div>
                 </div>
 
                 {business.description && <p className="text-sm text-foreground/80">{business.description}</p>}

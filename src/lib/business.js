@@ -20,6 +20,9 @@ export function findBusinessBySlug(slug) {
 
 export function findRelatedBusinesses(business, limit = 3) {
     return businesses
-        .filter((other) => other.category === business.category && other.id !== business.id)
+        .filter(
+            (other) =>
+                other.id !== business.id && other.categories.some((slug) => business.categories.includes(slug))
+        )
         .slice(0, limit);
 }

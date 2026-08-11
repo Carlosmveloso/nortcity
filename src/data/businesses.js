@@ -16,7 +16,7 @@ const rawBusinesses = [
     {
         id: 'asenza-beach-resort',
         name: 'Asenza Beach Resort',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Hotel/Resort',
         description: 'Resort à beira-mar na Reserva do Abiaí.',
         address: 'Reserva do Abiaí, Faz. Cabeça, s/n',
@@ -27,7 +27,7 @@ const rawBusinesses = [
     {
         id: 'tekoha-vilas',
         name: 'Tekoha Vilas',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Studio',
         description: 'Studios à beira-mar na Praia dos Mariscos.',
         address: 'Beira Mar, Praia dos Mariscos',
@@ -37,7 +37,7 @@ const rawBusinesses = [
     {
         id: 'condominio-morada-das-falesias',
         name: 'Condomínio Morada das Falésias',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casa de Praia / Condomínio fechado',
         description: 'Aluguel por temporada em condomínio fechado à beira-mar.',
         address: 'Área beira-mar',
@@ -47,7 +47,7 @@ const rawBusinesses = [
     {
         id: 'paraiso-praia-azul',
         name: 'Paraíso Praia Azul',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casa de Praia',
         description: 'Casa à beira-mar em Praia Azul/Praia dos Mariscos.',
         address: 'Beira Mar, Praia Azul/Praia dos Mariscos',
@@ -57,7 +57,7 @@ const rawBusinesses = [
     {
         id: 'pousada-beira-mar-pitimbu',
         name: 'Pousada Beira Mar Pitimbu',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Pousada e Restaurante',
         description: 'Hospedagem e restaurante à beira-mar em Pitimbu.',
         address: 'Av. Beira Mar, Praia de Pitimbu',
@@ -67,7 +67,7 @@ const rawBusinesses = [
     {
         id: 'kasa-da-falesia',
         name: 'Kasa da Falésia',
-        category: 'hospedagem',
+        categories: ['negocio', 'eventos'],
         subcategory: 'Casamentos, Aniversários e Gravações',
         description: 'Espaço para casamentos, aniversários e gravações.',
         address: 'Rua das Falésias, Praia Bela',
@@ -77,7 +77,7 @@ const rawBusinesses = [
     {
         id: 'riviera-de-praia-bela',
         name: 'Riviera de Praia Bela',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casas mobiliadas / Condomínio fechado',
         description: 'Casas para temporada, day use e eventos.',
         address: 'Rua Projetada 01, Lot. Barra do Estoril, Praia Bela',
@@ -87,7 +87,7 @@ const rawBusinesses = [
     {
         id: 'pousada-aconchego',
         name: 'Pousada Aconchego',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Pousada',
         description: 'Pousada em Praia Bela.',
         address: 'Rua Peixe Boi, 216, Praia Bela',
@@ -97,7 +97,7 @@ const rawBusinesses = [
     {
         id: 'via-mar',
         name: 'Via Mar',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casa de Praia',
         description: 'Casa de temporada à beira-mar em Praia Azul.',
         address: 'Av. Antônio Tavares, s/n, Cond. Adalgisa Cavalcanti, Praia Azul',
@@ -107,7 +107,7 @@ const rawBusinesses = [
     {
         id: 'casa-de-praia-pitimbu',
         name: 'Casa de Praia Pitimbu',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casa de Praia',
         description: 'Casa de praia em Praia Azul.',
         address: 'Rua Projetada, Praia Azul',
@@ -117,7 +117,7 @@ const rawBusinesses = [
     {
         id: 'casa-praia-azul-beira-mar',
         name: 'Casa Praia Azul (Beira Mar)',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casa de Veraneio para Aluguel',
         description: 'Casa de veraneio para diárias, temporada e eventos.',
         address: 'Av. Antônio Tavares, Praia Azul',
@@ -127,7 +127,7 @@ const rawBusinesses = [
     {
         id: 'casa-praia-azul-residence',
         name: 'Casa Praia Azul Residence',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casa de Veraneio para Aluguel',
         description: 'Casa de veraneio à beira-mar em Praia Azul.',
         address: 'Av. Antônio Tavares, Praia Azul',
@@ -137,7 +137,7 @@ const rawBusinesses = [
     {
         id: 'casa-costa-de-marlin',
         name: 'Casa Costa de Marlin',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casa de Praia',
         description: 'Casa pé na areia para aluguel de temporada.',
         address: 'Av. Antônio Tavares, Praia Azul',
@@ -147,7 +147,7 @@ const rawBusinesses = [
     {
         id: 'pitihouse',
         name: 'Pitihouse',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casa de Praia',
         description: 'Casa de praia à beira-mar.',
         address: 'Av. Antônio Tavares, 55, Praia dos Mariscos',
@@ -157,7 +157,7 @@ const rawBusinesses = [
     {
         id: 'casa-de-praia-pontal',
         name: 'Casa de Praia (Pontal)',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casa de Praia',
         description: 'Aluguel de temporada a 30m do mar.',
         address: 'Praia do Pontal, a 30m do mar',
@@ -167,7 +167,7 @@ const rawBusinesses = [
     {
         id: 'casas-refugio',
         name: 'Casas Refúgio',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casa de Praia',
         description: 'Casas de praia à beira-mar em Praia dos Mariscos.',
         address: 'Av. Antônio Tavares, Praia dos Mariscos',
@@ -177,7 +177,7 @@ const rawBusinesses = [
     {
         id: 'casa-pitimbu10',
         name: 'Casa Pitimbu10',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casa Beira Mar',
         description: 'Casa à beira-mar em Praia Azul.',
         address: 'Av. Antônio Tavares, Praia Azul',
@@ -187,7 +187,7 @@ const rawBusinesses = [
     {
         id: 'casa-beira-mar-praia-azul',
         name: 'Casa Beira Mar Praia Azul',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casa das Janelas Azuis',
         description: 'Casa à beira-mar em Praia Azul.',
         address: 'Beira Mar, Praia Azul',
@@ -197,7 +197,7 @@ const rawBusinesses = [
     {
         id: 'casa-praia-azul',
         name: 'Casa Praia Azul',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Casa de Praia / Aluguel por Temporada',
         description: 'Casa de praia a 40m do mar.',
         address: 'Praia Azul, a 40m do mar',
@@ -207,7 +207,7 @@ const rawBusinesses = [
     {
         id: 'aluguel-pitimbu-pb',
         name: 'Aluguel Pitimbu-PB',
-        category: 'hospedagem',
+        categories: ['hospedagem'],
         subcategory: 'Aluguel de Casas',
         description: 'Aluguel de casas de temporada em Pitimbu.',
         address: null,
@@ -219,7 +219,7 @@ const rawBusinesses = [
     {
         id: 'sardinha-gastrobar',
         name: 'Sardinha Gastrobar',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Gastronomia Nordestina e Litorânea',
         description: 'Gastrobar com cozinha nordestina e litorânea.',
         address: 'Av. Beira Mar',
@@ -229,7 +229,7 @@ const rawBusinesses = [
     {
         id: 'assador-brasil-hispano',
         name: 'Assador Brasil Hispano',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Restaurante',
         description: 'Restaurante especializado em carnes na brasa.',
         address: 'Av. Antônio Tavares, Praia dos Mariscos',
@@ -239,7 +239,7 @@ const rawBusinesses = [
     {
         id: 'squina-mar',
         name: 'Squina Mar',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Bar e Restaurante',
         description: 'Bar e restaurante em Ponta de Coqueiro.',
         address: 'Av. Beira Mar, 6326, Ponta de Coqueiro',
@@ -249,7 +249,7 @@ const rawBusinesses = [
     {
         id: 'chacara-cozinha-da-roca',
         name: 'Chácara Cozinha da Roça',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Restaurante',
         description: 'Comida caseira na zona rural de Pitimbu.',
         address: 'Sítio Mucatú, Zona Rural',
@@ -259,7 +259,7 @@ const rawBusinesses = [
     {
         id: 'restaurante-e-bar-da-cioba',
         name: 'Restaurante e Bar da Cioba',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Restaurante e Bar',
         description: 'Restaurante e bar à beira-mar em Praia Bela.',
         address: 'Av. Beira Mar, Praia Bela',
@@ -269,7 +269,7 @@ const rawBusinesses = [
     {
         id: 'bar-e-restaurante-da-lagosta',
         name: 'Bar e Restaurante da Lagosta',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Restaurante e Bar',
         description: 'Restaurante e bar à beira-mar em Praia Bela.',
         address: 'Av. Beira Mar, Praia Bela',
@@ -279,7 +279,7 @@ const rawBusinesses = [
     {
         id: 'padaria-senhor-do-bonfim',
         name: 'Padaria Senhor do Bonfim',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Padaria',
         description: 'Padaria no centro de Pitimbu.',
         address: 'Rua PB 044, s/n, Centro',
@@ -289,7 +289,7 @@ const rawBusinesses = [
     {
         id: 'confeitaria-maia',
         name: 'Confeitaria Maia',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Confeitaria',
         description: 'Doces e bolos no centro de Pitimbu.',
         address: 'Rua Vereador José Henrique de Amorim, s/n',
@@ -299,7 +299,7 @@ const rawBusinesses = [
     {
         id: 'peixaria-do-chorao',
         name: 'Peixaria do Chorão',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Peixaria',
         description: 'Peixaria no centro de Pitimbu.',
         address: 'R. Simões Barbosa, Centro',
@@ -309,7 +309,7 @@ const rawBusinesses = [
     {
         id: 'peixaria-do-marconio',
         name: 'Peixaria do Marconio',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Peixaria',
         description: 'Peixaria no centro de Pitimbu.',
         address: 'Av. Antônio Tavares, Centro',
@@ -319,7 +319,7 @@ const rawBusinesses = [
     {
         id: 'edna-lanches',
         name: 'Edna Lanches',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Lanchonete',
         description: 'Lanches.',
         address: null,
@@ -329,7 +329,7 @@ const rawBusinesses = [
     {
         id: 'fitness-food',
         name: 'Fitness Food',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Lanches Naturais',
         description: 'Lanches naturais com delivery.',
         address: null,
@@ -339,7 +339,7 @@ const rawBusinesses = [
     {
         id: 'tiago-pastelaria',
         name: 'Tiago Pastelaria',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Pastelaria',
         description: 'Pastelaria e caldo de cana.',
         address: null,
@@ -349,7 +349,7 @@ const rawBusinesses = [
     {
         id: 'cakedesigner-tereu-ribeiro',
         name: 'CakeDesigner - Tereu Ribeiro',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Confeitaria',
         description: 'Bolos e gêneros alimentícios.',
         address: null,
@@ -359,7 +359,7 @@ const rawBusinesses = [
     {
         id: 'ubirajara-caranguejo',
         name: 'Ubirajara',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Fornecedor de Caranguejo',
         description: 'Fornecedor de caranguejo.',
         address: null,
@@ -369,7 +369,7 @@ const rawBusinesses = [
     {
         id: 'poupa-de-frutas-du-carlos',
         name: "Poupa de Frutas Du'Carlos",
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Polpa de Frutas',
         description: '100% natural e sem conservantes.',
         address: null,
@@ -379,7 +379,7 @@ const rawBusinesses = [
     {
         id: 'restaurante-eterno-ex-gordo',
         name: 'Restaurante Eterno Ex-Gordo',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Restaurante',
         description: 'A melhor peixada da região.',
         address: null,
@@ -389,7 +389,7 @@ const rawBusinesses = [
     {
         id: 'restaurante-nossa-praia',
         name: 'Restaurante Nossa Praia',
-        category: 'gastronomia',
+        categories: ['gastronomia'],
         subcategory: 'Restaurante',
         description: 'Peixada e buchada, os favoritos da casa.',
         address: null,
@@ -401,7 +401,7 @@ const rawBusinesses = [
     {
         id: 'passeios-pitimbu',
         name: 'Passeios Pitimbu',
-        category: 'passeios',
+        categories: ['passeios'],
         subcategory: 'Passeios de Barco e Jangada',
         description: 'Passeios de barco e jangada na Paraíba.',
         address: 'Av. Beira Mar, 1400',
@@ -411,7 +411,7 @@ const rawBusinesses = [
     {
         id: 'passeios-praia-bela',
         name: 'Passeios Praia Bela',
-        category: 'passeios',
+        categories: ['passeios'],
         subcategory: 'Passeios de Quadriciclo',
         description: 'Passeios de quadriciclo em Praia Bela.',
         address: 'Av. Oceano Atlântico, 603, Praia Bela',
@@ -421,7 +421,7 @@ const rawBusinesses = [
     {
         id: 'nova-quadritur-praia-bela',
         name: 'Nova Quadritur Praia Bela',
-        category: 'passeios',
+        categories: ['passeios'],
         subcategory: 'Passeios de Quadriciclo',
         description: 'Passeios de quadriciclo ao lado da tirolesa.',
         address: 'Beira Mar, Praia Bela, ao lado da Tirolesa',
@@ -431,7 +431,7 @@ const rawBusinesses = [
     {
         id: 'passeios-acau-beach',
         name: 'Passeios Acaú Beach',
-        category: 'passeios',
+        categories: ['passeios'],
         subcategory: 'Turismo',
         description: 'Passeios em Acaú e Pitimbu.',
         address: null,
@@ -441,7 +441,7 @@ const rawBusinesses = [
     {
         id: 'transporte-aquatico-acau',
         name: 'Transporte Aquático',
-        category: 'passeios',
+        categories: ['passeios'],
         subcategory: 'Travessia',
         description: 'Travessia Acaú-PB à Carne de Vaca-PE.',
         address: null,
@@ -451,7 +451,7 @@ const rawBusinesses = [
     {
         id: 'miqueias-guia',
         name: 'Miqueias',
-        category: 'passeios',
+        categories: ['passeios'],
         subcategory: 'Guia de Turismo',
         description: 'Guia de turismo local.',
         address: null,
@@ -461,7 +461,7 @@ const rawBusinesses = [
     {
         id: 'joao-passeios-barco',
         name: 'João',
-        category: 'passeios',
+        categories: ['passeios'],
         subcategory: 'Passeios de Barco',
         description: 'Passeios de barco.',
         address: null,
@@ -473,7 +473,7 @@ const rawBusinesses = [
     {
         id: 'veloso-rachel-imobiliaria',
         name: 'Veloso & Rachel',
-        category: 'servicos',
+        categories: ['servicos', 'negocio'],
         subcategory: 'Imobiliária',
         description: 'Corretagem e negociação de imóveis em Pitimbu.',
         address: 'Av. Antônio Tavares, s/n, Praia dos Mariscos',
@@ -484,7 +484,7 @@ const rawBusinesses = [
     {
         id: 'cantinho-da-construcao',
         name: 'Cantinho da Construção',
-        category: 'servicos',
+        categories: ['negocio', 'construcao'],
         subcategory: 'Material de Construção',
         description: 'Loja de material de construção.',
         address: 'Rua do Rio, Centro',
@@ -494,7 +494,7 @@ const rawBusinesses = [
     {
         id: 'guerra-construtor',
         name: 'Guerra Construtor',
-        category: 'servicos',
+        categories: ['negocio', 'construcao'],
         subcategory: 'Construção',
         description: 'Serviços de construção civil.',
         address: 'Av. Beira Mar, 556, Centro',
@@ -504,7 +504,7 @@ const rawBusinesses = [
     {
         id: 'jbc-serralharia',
         name: 'JBC Serralharia',
-        category: 'servicos',
+        categories: ['neogcio', 'construcao'],
         subcategory: 'Serralheria',
         description: 'Serviços de serralheria em Acaú.',
         address: 'Rua Bela Rosa, Acaú',
@@ -514,7 +514,7 @@ const rawBusinesses = [
     {
         id: 'pitimbu-vidros',
         name: 'Pitimbu Vidros',
-        category: 'servicos',
+        categories: ['neogcio', 'construcao'],
         subcategory: 'Vidraçaria',
         description: 'Serviços de vidraçaria.',
         address: 'Rua Vila José Maria Ribeiro, s/n, Centro',
@@ -524,7 +524,7 @@ const rawBusinesses = [
     {
         id: 'pitimbu-moveis',
         name: 'Pitimbu Móveis',
-        category: 'servicos',
+        categories: ['negocio', 'construcao'],
         subcategory: 'Móveis Planejados',
         description: 'Móveis planejados sob medida.',
         address: 'Travessa Simões Barbosa, 110',
@@ -534,7 +534,7 @@ const rawBusinesses = [
     {
         id: 'cartorio-de-pitimbu',
         name: 'Cartório de Pitimbu',
-        category: 'servicos',
+        categories: ['servicos', 'negocio'],
         subcategory: 'Serviço Notarial e Registral',
         description: 'Serviços notariais e registrais.',
         address: 'Rua João Bpo., 60, Centro',
@@ -544,7 +544,7 @@ const rawBusinesses = [
     {
         id: 'arataguy',
         name: 'Arataguy',
-        category: 'servicos',
+        categories: ['lojas', 'artesanato'],
         subcategory: 'Peças, Acessórios e Souvenirs',
         description: 'Loja de peças, acessórios e souvenirs.',
         address: 'Rua do Jangadeiro, 42, Centro',
@@ -554,7 +554,7 @@ const rawBusinesses = [
     {
         id: 'arataguy-artesanatos-rogerio',
         name: 'Arataguy Artesanatos - Rogério',
-        category: 'servicos',
+        categories: ['artesanato'],
         subcategory: 'Artesanato',
         description: 'Artesanato local.',
         address: 'Rua do Jangadeiro, 42, Centro',
@@ -564,7 +564,7 @@ const rawBusinesses = [
     {
         id: 'marcas-e-modas',
         name: 'Marcas e Modas',
-        category: 'servicos',
+        categories: ['negocio', 'lojas'],
         subcategory: 'Moda Masculina, Feminina e Infantil',
         description: 'Loja de roupas para toda a família.',
         address: 'Rua Dr. João Gonçalves, 183, Centro',
@@ -574,7 +574,7 @@ const rawBusinesses = [
     {
         id: 'barbearia-homem-moderno',
         name: 'Barbearia Homem Moderno',
-        category: 'servicos',
+        categories: ['servicos'],
         subcategory: 'Barbeiro',
         description: 'Barbearia na Guarita.',
         address: 'Rua Vereador João Quirino, Guarita',
@@ -584,7 +584,7 @@ const rawBusinesses = [
     {
         id: 'gazfit-academia',
         name: 'Gazfit Academia',
-        category: 'servicos',
+        categories: ['negocio'],
         subcategory: 'Academia',
         description: 'Academia em Acaú.',
         address: 'Rua Benício Lira Neto, s/n, Acaú',
@@ -594,7 +594,7 @@ const rawBusinesses = [
     {
         id: 'extra-popular-farma',
         name: 'Extra Popular Farma',
-        category: 'servicos',
+        categories: ['servicos', 'negocio'],
         subcategory: 'Farmácia',
         description: 'Farmácia no centro de Pitimbu.',
         address: 'Rua Dr. João Gonçalves, 426, Centro',
@@ -604,7 +604,7 @@ const rawBusinesses = [
     {
         id: 'sky-net',
         name: 'Sky Net',
-        category: 'servicos',
+        categories: ['servicos', 'negocio'],
         subcategory: 'Provedor de Internet',
         description: 'Provedor de internet no centro.',
         address: 'Rua PB 044, s/n, Centro',
@@ -614,7 +614,7 @@ const rawBusinesses = [
     {
         id: 'pitimbu-gas',
         name: 'Pitimbu Gás',
-        category: 'servicos',
+        categories: ['negocio', 'lojas'],
         subcategory: 'Depósito de Água e Gás',
         description: 'Depósito de água e gás.',
         address: 'Rua Vereador José da Silva Filho, Centro',
@@ -624,7 +624,7 @@ const rawBusinesses = [
     {
         id: 'eliane-trancados',
         name: 'Eliane',
-        category: 'servicos',
+        categories: ['servicos', 'artesanato'],
         subcategory: 'Artesanato - Trançado de Pitimbu',
         description: 'Trançado de Pitimbu.',
         address: null,
@@ -634,7 +634,7 @@ const rawBusinesses = [
     {
         id: 'edjane-trancados',
         name: 'Edjane',
-        category: 'servicos',
+        categories: ['servicos', 'artesanato'],
         subcategory: 'Artesanato - Trançados',
         description: 'Trançados artesanais.',
         address: null,
@@ -644,7 +644,7 @@ const rawBusinesses = [
     {
         id: 'ama-marisqueiras-acau',
         name: 'AMA',
-        category: 'servicos',
+        categories: ['servicos'],
         subcategory: 'Associação de Marisqueiras de Acaú',
         description: 'Associação de marisqueiras de Acaú.',
         address: null,
@@ -654,7 +654,7 @@ const rawBusinesses = [
     {
         id: 'ademir-mendes-manutencao',
         name: 'Ademir Mendes',
-        category: 'servicos',
+        categories: ['servicos', 'construcao'],
         subcategory: 'Manutenção (Elétrica, Pintura, Alvenaria)',
         description: 'Serviços de manutenção elétrica, pintura e alvenaria.',
         address: null,
@@ -664,7 +664,7 @@ const rawBusinesses = [
     {
         id: 'rogerio-gesso',
         name: 'Rogério',
-        category: 'servicos',
+        categories: ['servicos', 'construcao'],
         subcategory: 'Trabalhos em Gesso',
         description: 'Trabalhos em gesso.',
         address: null,
@@ -674,7 +674,7 @@ const rawBusinesses = [
     {
         id: 'zel-sonhos-criativos',
         name: 'Zel Sonhos Criativos',
-        category: 'servicos',
+        categories: ['servicos', 'eventos'],
         subcategory: 'Produtos Personalizados',
         description: 'Produtos personalizados.',
         address: null,
@@ -684,7 +684,7 @@ const rawBusinesses = [
     {
         id: 'coelho-pesca-acau',
         name: 'Coelho Pesca Acaú',
-        category: 'servicos',
+        categories: ['lojas'],
         subcategory: 'Materiais para Pesca',
         description: 'Venda de materiais para pesca esportiva e profissional.',
         address: null,
@@ -694,7 +694,7 @@ const rawBusinesses = [
     {
         id: 'neto-ar-condicionado',
         name: 'Neto',
-        category: 'servicos',
+        categories: ['servicos', 'construcao'],
         subcategory: 'Manutenção de Ar-Condicionado',
         description: 'Manutenção e conserto de ar-condicionado.',
         address: null,
@@ -704,7 +704,7 @@ const rawBusinesses = [
     {
         id: 'aruenda-da-saudade',
         name: 'Aruenda da Saudade',
-        category: 'servicos',
+        categories: ['servicos', 'eventos'],
         subcategory: 'Associação Cultural',
         description: 'Cultura de raiz e popular.',
         address: null,
@@ -714,7 +714,7 @@ const rawBusinesses = [
     {
         id: 'astanova',
         name: 'Astanova',
-        category: 'servicos',
+        categories: ['servicos'],
         subcategory: 'Associação de Mulheres Rurais',
         description: 'Assentamento Nova Vida - produtos rurais.',
         address: 'Zona Rural',
@@ -726,7 +726,7 @@ const rawBusinesses = [
     {
         id: 'veloso-corretor',
         name: 'Veloso',
-        category: 'servicos',
+        categories: ['servicos'],
         subcategory: 'Corretor de Imóveis',
         description: 'Corretor de imóveis em Pitimbu.',
         address: null,
@@ -736,7 +736,7 @@ const rawBusinesses = [
     {
         id: 'carlos-eduardo-dev',
         name: 'Carlos Eduardo',
-        category: 'servicos',
+        categories: ['servicos'],
         subcategory: 'Desenvolvedor Web',
         description: 'Desenvolvimento de sites e sistemas.',
         address: null,
@@ -746,7 +746,7 @@ const rawBusinesses = [
     {
         id: 'eliabe-crispim-podcaster',
         name: 'Eliabe Crispim',
-        category: 'servicos',
+        categories: ['servicos'],
         subcategory: 'Podcaster',
         description: 'Podcast "O Assunto do Momento".',
         address: null,
@@ -756,7 +756,7 @@ const rawBusinesses = [
     {
         id: 'edielson-engenheiro',
         name: 'Edielson da Silva Araújo',
-        category: 'servicos',
+        categories: ['servicos'],
         subcategory: 'Engenheiro Civil',
         description: 'Engenharia civil.',
         address: null,
@@ -766,7 +766,7 @@ const rawBusinesses = [
     {
         id: 'iremar-construtor',
         name: 'Iremar Antônio da Silva',
-        category: 'servicos',
+        categories: ['servicos'],
         subcategory: 'Construtor',
         description: 'Serviços de construção.',
         address: null,
@@ -776,7 +776,7 @@ const rawBusinesses = [
     {
         id: 'banda-ekklesia',
         name: 'Banda Ekklésia',
-        category: 'servicos',
+        categories: ['servicos', 'eventos'],
         subcategory: 'Música para Eventos',
         description: 'Banda para eventos, aniversários e casamentos.',
         address: null,
@@ -786,7 +786,7 @@ const rawBusinesses = [
     {
         id: 'cezar-paredao',
         name: 'Cezar Paredão',
-        category: 'servicos',
+        categories: ['servicos', 'eventos'],
         subcategory: 'Cantor / Filmmaker',
         description: 'Cantor, filmmaker e storymaker.',
         address: null,
@@ -796,7 +796,7 @@ const rawBusinesses = [
     {
         id: 'ademir-mendes-musica',
         name: 'Ademir Mendes',
-        category: 'servicos',
+        categories: ['servicos'],
         subcategory: 'Aula de Música',
         description: 'Aulas de música.',
         address: null,
