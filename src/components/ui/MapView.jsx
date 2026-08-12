@@ -73,7 +73,9 @@ function MapView({ points, categories, center = [-7.4733, -34.8083], zoom = 13, 
                         <Popup>
                             <strong>{point.name}</strong>
                             <br />
-                            {labelFor(point.category)}
+                            <span className="notranslate" translate="no">
+                                {labelFor(point.category)}
+                            </span>
                         </Popup>
                     </Marker>
                 ))}

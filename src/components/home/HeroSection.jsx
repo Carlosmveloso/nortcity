@@ -44,8 +44,10 @@ function HeroSection() {
             <div className={heroCta}>
                 <GlassButton>Tudo de Pitimbu em um só lugar!</GlassButton>
                 <h1 className="text-4xl font-head text-white text-center font-semibold text-shadow-lg">
-                    Descubra Pitimbu com o{' '}
-                    <span className="text-turquoise ">Farol Pitimbu</span>
+                    Descubra Pitimbu com o
+                    <span className="text-turquoise notranslate ml-2" translate="no">
+                        Farol Pitimbu
+                    </span>
                 </h1>
                 <p className="text-white text-center text-lg/7 font-semibold">
                     Encontre passeios, gastronomia, hospedagem e serviços locais em um só lugar!
@@ -100,7 +102,9 @@ function HeroSection() {
                             />
                         </div>
                         <button type="submit" className="shrink-0 bg-turquoise px-6 py-3 rounded-full">
-                            <span className="text-sand font-bold">Buscar</span>
+                            <span className="text-sand font-bold notranslate" translate="no">
+                                Buscar
+                            </span>
                         </button>
                     </div>
                 </form>
@@ -114,7 +118,7 @@ function HeroSection() {
                             aria-pressed={category === filter.value}
                             className={category === filter.value ? 'justify-center bg-white/40' : 'justify-center'}
                         >
-                            <span aria-hidden="true">{filter.emoji}</span>{' '}
+                            <span aria-hidden="true">{filter.emoji}</span>
                             <span className="notranslate" translate="no">
                                 {filter.label}
                             </span>

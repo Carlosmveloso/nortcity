@@ -81,7 +81,8 @@ function BusinessCard({ business }) {
                         {business.categories.map((slug) => (
                             <span
                                 key={slug}
-                                className="rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold text-turquoise"
+                                className="notranslate rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold text-turquoise"
+                                translate="no"
                             >
                                 {categoryLabel(slug)}
                             </span>

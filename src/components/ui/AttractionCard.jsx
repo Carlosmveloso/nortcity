@@ -17,7 +17,10 @@ function AttractionCard({ attraction }) {
                 <Icon className="h-12 w-12 text-card/90" aria-hidden="true" />
             </div>
             <div className="flex flex-1 flex-col gap-2 p-5">
-                <span className="w-fit rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold tracking-wide text-turquoise uppercase">
+                <span
+                    className="notranslate w-fit rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold tracking-wide text-turquoise uppercase"
+                    translate="no"
+                >
                     {config.label}
                 </span>
                 <h3 className="font-head text-lg font-semibold text-foreground">{attraction.name}</h3>

@@ -150,7 +150,9 @@ function Explorar() {
                             />
                         </div>
                         <button type="submit" className="shrink-0 rounded-full bg-turquoise px-6 py-3">
-                            <span className="font-bold text-sand">Buscar</span>
+                            <span className="font-bold text-sand notranslate" translate="no">
+                                Buscar
+                            </span>
                         </button>
                     </div>
                 </form>

@@ -80,7 +80,11 @@ function NegocioPerfil() {
                             Início
                         </Link>
                         <ChevronRight size={14} aria-hidden="true" />
-                        <Link to={`/explorar?categoria=${primaryCategory}`} className="hover:text-card">
+                        <Link
+                            to={`/explorar?categoria=${primaryCategory}`}
+                            className="notranslate hover:text-card"
+                            translate="no"
+                        >
                             {label}
                         </Link>
                         <ChevronRight size={14} aria-hidden="true" />
@@ -125,7 +129,8 @@ function NegocioPerfil() {
                                 {business.categories.map((slug) => (
                                     <span
                                         key={slug}
-                                        className="rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold text-turquoise"
+                                        className="notranslate rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold text-turquoise"
+                                        translate="no"
                                     >
                                         {categoryLabel(slug)}
                                     </span>

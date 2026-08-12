@@ -5,6 +5,7 @@ import kasaFalezia from "../assets/featuredClients/Kasa da Falésia.png";
 
 export const featureSection = [
     {
+        id: 'veloso-rachel-imobiliaria',
         title: 'Veloso & Rachel',
         local: 'Pitimbu',
         categories: ['Imóveis', 'Imobiliária'],
@@ -15,6 +16,7 @@ export const featureSection = [
         altText: 'Veloso & Rachel',
     },
     {
+        id: 'asenza-beach-resort',
         title: 'Asenza Beach Resort',
         local: 'Pitimbu',
         categories: ['Resort', 'Hospedagem'],
@@ -25,6 +27,7 @@ export const featureSection = [
         altText: 'Asenza Beach Resort',
     },
     {
+        id: 'cartorio-de-pitimbu',
         title: 'Cartório Pitimbu',
         local: 'Pitimbu',
         categories: ['Notas', 'Contratos'],
@@ -35,6 +38,7 @@ export const featureSection = [
         altText: 'Catório Pitimbu',
     },
     {
+        id: 'kasa-da-falesia',
         title: 'Kasa da Falésia',
         local: 'Pitimbu',
         categories: ['Imóveis', 'Temporada'],
