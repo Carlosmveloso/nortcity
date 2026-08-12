@@ -55,7 +55,9 @@ function Atracoes() {
                                         : 'bg-white text-dark-ocean shadow-sm'
                                 }`}
                             >
-                                {type.label}
+                                <span className="notranslate" translate="no">
+                                    {type.label}
+                                </span>
                             </button>
                         ))}
                     </div>

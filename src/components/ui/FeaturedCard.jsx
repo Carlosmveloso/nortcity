@@ -1,4 +1,5 @@
 import { MessageCircle, MapPin, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 function FeaturedCard({ featured }) {
     return (
@@ -30,12 +31,12 @@ function FeaturedCard({ featured }) {
                     </span>
                 </p>
                 <div className="flex items-center gap-2 justify-between py-4">
-                    <a
+                    <Link
                         className="w-full flex justify-center items-center text-muted text-center py-2 rounded-full bg-blue-primary"
-                        href="#"
+                        to={`/negocio/${featured.id}`}
                     >
-                        Ver detalhes
-                    </a>
+                        Ver mais
+                    </Link>
                     <a
                         className="w-1/4 py-3 flex justify-center bg-whatsapp-green text-white rounded-4xl"
                         href="#"

@@ -133,7 +133,12 @@ function Explorar() {
                             >
                                 <option value="">Categoria</option>
                                 {quickFilters.map((filter) => (
-                                    <option key={filter.value} value={filter.value}>
+                                    <option
+                                        key={filter.value}
+                                        value={filter.value}
+                                        className="notranslate"
+                                        translate="no"
+                                    >
                                         {filter.label}
                                     </option>
                                 ))}
@@ -145,7 +150,9 @@ function Explorar() {
                             />
                         </div>
                         <button type="submit" className="shrink-0 rounded-full bg-turquoise px-6 py-3">
-                            <span className="font-bold text-sand">Buscar</span>
+                            <span className="font-bold text-sand notranslate" translate="no">
+                                Buscar
+                            </span>
                         </button>
                     </div>
                 </form>
@@ -163,7 +170,9 @@ function Explorar() {
                                     : 'bg-white text-dark-ocean shadow-sm'
                             }`}
                         >
-                            {filter.label}
+                            <span className="notranslate" translate="no">
+                                {filter.label}
+                            </span>
                         </button>
                     ))}
                 </div>

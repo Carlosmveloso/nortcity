@@ -234,7 +234,9 @@ function CadastrarNegocio() {
                                                     }`}
                                                 >
                                                     <Icon size={22} aria-hidden="true" />
-                                                    {category.label}
+                                                    <span className="notranslate" translate="no">
+                                                        {category.label}
+                                                    </span>
                                                 </button>
                                             );
                                         })}
@@ -407,7 +409,7 @@ function CadastrarNegocio() {
                                         </div>
                                         <div className="flex justify-between gap-4">
                                             <dt>Categoria</dt>
-                                            <dd className="text-right font-medium">
+                                            <dd className="notranslate text-right font-medium" translate="no">
                                                 {businessCategories.find((c) => c.value === formData.category)?.label ?? '—'}
                                             </dd>
                                         </div>
