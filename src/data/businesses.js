@@ -224,7 +224,7 @@ const rawBusinesses = [
         description: 'Gastrobar com cozinha nordestina e litorânea.',
         address: 'Av. Beira Mar',
         phone: '(83) 98898-4699',
-        instagram: 'sardinhagastrobar',
+        instagram: 'sardinhaturismo',
     },
     {
         id: 'assador-brasil-hispano',
