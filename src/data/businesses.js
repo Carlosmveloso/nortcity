@@ -15,7 +15,7 @@ const rawBusinesses = [
     // Hospedagem
     {
         id: 'asenza-beach-resort',
-        name: 'Asenza Beach Resort',
+        name: 'Asenza Hotel',
         categories: ['hospedagem'],
         subcategory: 'Hotel/Resort',
         description: 'Resort à beira-mar na Reserva do Abiaí.',
