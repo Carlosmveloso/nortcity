@@ -42,24 +42,42 @@ async function fetchTideCurve({ latitude, longitude, forecastDays }) {
     };
 }
 
-// A curva de maré é aproximadamente senoidal, então um pico/vale local no dado
-// horário corresponde a uma maré alta/baixa real — não precisa de constantes harmônicas.
+// A curva de maré é aproximadamente senoidal, então uma mudança de direção (subindo
+// -> descendo ou vice-versa) no dado horário corresponde a uma maré alta/baixa real —
+// não precisa de constantes harmônicas. Detectamos a mudança de sinal da variação
+// hora a hora em vez de comparar só os vizinhos imediatos (curr > prev && curr > next)
+// porque em torno do pico/vale a maré por vezes fica "achatada" por 2h com a mesma
+// altura (empate) na resolução horária da API — a comparação estrita não detectava
+// esse platô e o evento inteiro sumia do dia (mostrando só 3 medições em vez de 4).
 export function extractTideExtremes({ time, height }) {
     const extremes = [];
+    let prevSign = 0;
 
-    for (let i = 1; i < height.length - 1; i += 1) {
-        const prev = height[i - 1];
-        const curr = height[i];
-        const next = height[i + 1];
+    for (let i = 1; i < height.length; i += 1) {
+        const diff = height[i] - height[i - 1];
+        if (diff === 0) continue;
 
-        if (curr > prev && curr > next) {
-            extremes.push({ time: time[i], height: curr, type: 'alta' });
-        } else if (curr < prev && curr < next) {
-            extremes.push({ time: time[i], height: curr, type: 'baixa' });
+        const sign = diff > 0 ? 1 : -1;
+        if (prevSign !== 0 && sign !== prevSign) {
+            extremes.push({ time: time[i - 1], height: height[i - 1], type: prevSign > 0 ? 'alta' : 'baixa' });
         }
+        prevSign = sign;
     }
 
     return extremes;
+}
+
+// O ciclo de maré semidiurno dura ~24h50min, um pouco mais que o dia de calendário
+// (24h). Isso faz com que, filtrando estritamente por data, alguns dias fiquem com
+// só 3 eventos e outros acumulem 5 — o 4º evento "escorrega" para o dia vizinho.
+// Para manter sempre 4 medições por dia, pegamos os 4 eventos mais próximos do
+// meio-dia de cada data (podendo pegar emprestado um evento do dia anterior/seguinte
+// quando necessário) em vez de exigir que caiam dentro do dia exato.
+function pickClosestExtremes(extremes, referenceTime, count) {
+    return [...extremes]
+        .sort((a, b) => Math.abs(new Date(a.time) - referenceTime) - Math.abs(new Date(b.time) - referenceTime))
+        .slice(0, count)
+        .sort((a, b) => a.time.localeCompare(b.time));
 }
 
 export async function fetchTideForecastByDay(coords = PITIMBU_COORDS, forecastDays = 3) {
@@ -69,6 +87,7 @@ export async function fetchTideForecastByDay(coords = PITIMBU_COORDS, forecastDa
     const today = getISODateInSaoPaulo();
     return Array.from({ length: forecastDays }, (_, i) => {
         const date = addDays(today, i);
-        return { date, extremes: extremes.filter((extreme) => extreme.time.startsWith(date)) };
+        const referenceTime = new Date(`${date}T12:00:00`).getTime();
+        return { date, extremes: pickClosestExtremes(extremes, referenceTime, 4) };
     });
 }
