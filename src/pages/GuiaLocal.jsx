@@ -76,7 +76,7 @@ function GuiaLocal() {
                         <InfoCard icon={CalendarDays} title="Próximos Eventos">
                             <div className="flex flex-col gap-3">
                                 {upcomingEvents.map((event) => (
-                                    <EventItem key={event.id} event={event} />
+                                    <EventItem key={event.id} event={event} showTime={false} />
                                 ))}
                             </div>
                             <Link

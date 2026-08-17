@@ -26,7 +26,7 @@ function formatFullMonth(dateStr) {
     return fullMonthLabels[month - 1];
 }
 
-function EventItem({ event }) {
+function EventItem({ event, showTime = true }) {
     const { month } = formatDateBadge(event.date);
 
     return (
@@ -48,7 +48,8 @@ function EventItem({ event }) {
                 <div className="flex flex-col gap-1 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-1">
                     <span className="flex items-center gap-1.5">
                         <Clock size={15} className="shrink-0 text-turquoise" aria-hidden="true" />
-                        {formatFullMonth(event.date)}, {event.time}
+                        {formatFullMonth(event.date)}
+                        {showTime && `, ${event.time}`}
                     </span>
                     <span className="flex items-center gap-1.5">
                         <MapPin size={15} className="shrink-0 text-turquoise" aria-hidden="true" />

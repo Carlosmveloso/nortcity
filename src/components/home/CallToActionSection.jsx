@@ -18,12 +18,14 @@ function CallToActionSection() {
                                 <CtaPromisse key={promisse.promisse} promisse={promisse} />
                             ))}
                         </ul>
-                        <button
-                            type="button"
+                        <a
+                            href="https://wa.me/5583991134990?text=Ol%C3%A1!%20Quero%20cadastrar%20meu%20neg%C3%B3cio%20no%20Farol%20Pitimbu."
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-secondary px-6 py-4 text-base font-medium text-secondary-foreground shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:bg-turquoise-light hover:shadow-xl sm:px-10 sm:text-lg lg:w-auto"
                         >
                             {callToAction.cta} <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" />
-                        </button>
+                        </a>
                     </div>
                     <div className="hidden md:flex items-center justify-center">
                         <div className="relative flex items-center justify-center">
