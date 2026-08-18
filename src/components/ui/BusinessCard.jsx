@@ -1,7 +1,7 @@
 import { Check, MapPin, Phone, MessageCircle, Globe, Send, Store } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaInstagram } from 'react-icons/fa6';
+import { InstagramIcon } from './BrandIcons';
 import { categoryLabel, toWhatsappLink } from '../../lib/business';
 
 function BusinessCard({ business }) {
@@ -75,7 +75,6 @@ function BusinessCard({ business }) {
                                 {business.name}
                             </Link>
                         </h3>
-                        <span className="text-sm text-muted-foreground">{business.subcategory}</span>
                     </div>
                     <div className="flex flex-wrap justify-end gap-1">
                         {business.categories.map((slug) => (
@@ -125,7 +124,7 @@ function BusinessCard({ business }) {
                                 className="flex flex-1 items-center justify-center rounded-full bg-sand-dark p-2.5 text-dark-ocean"
                                 aria-label={`Instagram de ${business.name}`}
                             >
-                                <FaInstagram size={18} aria-hidden="true" />
+                                <InstagramIcon size={18} aria-hidden="true" />
                             </a>
                         )}
                         {business.website && (

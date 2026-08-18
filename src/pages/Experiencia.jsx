@@ -5,6 +5,7 @@ import ExperienceListItem from '../components/ui/ExperienceListItem';
 import Reveal from '../components/ui/Reveal';
 import ComingSoon from '../components/ui/ComingSoon';
 import ShareButton from '../components/ui/ShareButton';
+import SEO from '../components/SEO';
 
 function Experiencia() {
     const { slug } = useParams();
@@ -23,12 +24,14 @@ function Experiencia() {
 
     return (
         <>
+            <SEO title={title} description={description} />
             <section className="relative overflow-hidden bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
                 {heroImg && (
                     <img
                         src={heroImg}
                         alt=""
                         aria-hidden="true"
+                        loading="eager"
                         className="absolute inset-0 h-full w-full object-cover opacity-20"
                     />
                 )}

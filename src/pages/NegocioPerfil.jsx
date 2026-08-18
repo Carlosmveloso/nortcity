@@ -14,9 +14,10 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { FaInstagram } from 'react-icons/fa6';
+import { InstagramIcon } from '../components/ui/BrandIcons';
 import BusinessCard from '../components/ui/BusinessCard';
 import Reveal from '../components/ui/Reveal';
+import SEO from '../components/SEO';
 import {
     categoryLabel,
     findBusinessBySlug,
@@ -70,6 +71,10 @@ function NegocioPerfil() {
 
     return (
         <>
+            <SEO
+                title={business.name}
+                description={business.description ?? `${business.name} faz parte do guia de ${label.toLowerCase()} de Pitimbu.`}
+            />
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
                 <div className="container mx-auto max-w-5xl">
                     <nav
@@ -90,9 +95,6 @@ function NegocioPerfil() {
                         <ChevronRight size={14} aria-hidden="true" />
                         <span className="text-card">{business.name}</span>
                     </nav>
-                    <p className="text-sm font-bold tracking-wide text-turquoise-light uppercase">
-                        {business.subcategory}
-                    </p>
                     <h1 className="mt-2 font-head text-3xl font-extrabold text-card md:text-4xl">
                         {business.name}
                     </h1>
@@ -110,6 +112,7 @@ function NegocioPerfil() {
                                 <img
                                     src={business.image}
                                     alt={business.name}
+                                    loading="eager"
                                     className="h-full w-full object-cover"
                                 />
                             ) : (
@@ -135,11 +138,6 @@ function NegocioPerfil() {
                                         {categoryLabel(slug)}
                                     </span>
                                 ))}
-                                {business.subcategory && (
-                                    <span className="rounded-full bg-sand-dark px-3 py-1 text-xs font-semibold text-dark-ocean">
-                                        {business.subcategory}
-                                    </span>
-                                )}
                             </div>
                         </div>
 
@@ -203,7 +201,7 @@ function NegocioPerfil() {
                                 rel="noopener noreferrer"
                                 className="flex w-full items-center justify-center gap-2 rounded-full bg-sand-dark py-3 text-sm font-semibold text-dark-ocean"
                             >
-                                <FaInstagram size={18} aria-hidden="true" />@{business.instagram}
+                                <InstagramIcon size={18} aria-hidden="true" />@{business.instagram}
                             </a>
                         )}
 

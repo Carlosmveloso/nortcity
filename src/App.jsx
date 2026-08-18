@@ -6,6 +6,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import Footer from "./components/layout/Footer";
 import Navbar from "./components/layout/Navbar";
 import ScrollToTop from "./components/layout/ScrollToTop";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./pages/Home";
 
 const Explorar = lazy(() => import("./pages/Explorar"));
@@ -29,30 +30,40 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 function App() {
   return (
     <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-full focus:bg-turquoise focus:px-4 focus:py-2 focus:font-semibold focus:text-sand"
+      >
+        Pular para o conteúdo
+      </a>
       <ScrollToTop />
       <Navbar />
-      <Suspense fallback={<div className="min-h-screen" />}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/explorar" element={<Explorar />} />
-          <Route path="/experiencia/:slug" element={<Experiencia />} />
-          <Route path="/negocio/:slug" element={<NegocioPerfil />} />
-          <Route path="/categorias" element={<Categorias />} />
-          <Route path="/atracoes" element={<Atracoes />} />
-          <Route path="/eventos" element={<Eventos />} />
-          <Route path="/mapa" element={<Mapa />} />
-          <Route path="/profissionais" element={<Profissionais />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/planos" element={<Planos />} />
-          <Route path="/guia-local" element={<GuiaLocal />} />
-          <Route path="/cadastrar-negocio" element={<CadastrarNegocio />} />
-          <Route path="/sobre" element={<Sobre />} />
-          <Route path="/contato" element={<Contato />} />
-          <Route path="/favoritos" element={<Favoritos />} />
-          <Route path="/entrar" element={<Entrar />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
+      <ErrorBoundary>
+        <main id="main-content">
+          <Suspense fallback={<div className="min-h-screen" />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/explorar" element={<Explorar />} />
+              <Route path="/experiencia/:slug" element={<Experiencia />} />
+              <Route path="/negocio/:slug" element={<NegocioPerfil />} />
+              <Route path="/categorias" element={<Categorias />} />
+              <Route path="/atracoes" element={<Atracoes />} />
+              <Route path="/eventos" element={<Eventos />} />
+              <Route path="/mapa" element={<Mapa />} />
+              <Route path="/profissionais" element={<Profissionais />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/planos" element={<Planos />} />
+              <Route path="/guia-local" element={<GuiaLocal />} />
+              <Route path="/cadastrar-negocio" element={<CadastrarNegocio />} />
+              <Route path="/sobre" element={<Sobre />} />
+              <Route path="/contato" element={<Contato />} />
+              <Route path="/favoritos" element={<Favoritos />} />
+              <Route path="/entrar" element={<Entrar />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </main>
+      </ErrorBoundary>
       <Footer />
       <Analytics />
       <SpeedInsights />
