@@ -197,6 +197,15 @@ const rawBusinesses = [
 
     // Gastronomia
     {
+        id: 'restaurante-lia',
+        name: 'Restaurante da Lia',
+        categories: ['gastronomia'],
+        description: null,
+        address: null,
+        phone: '(83) 99804-9503',
+        instagram: null,
+    },
+    {
         id: 'sardinha-gastrobar',
         name: 'Sardinha Gastrobar',
         categories: ['gastronomia'],
@@ -425,6 +434,15 @@ const rawBusinesses = [
     },
 
     // Serviços
+    {
+        id: 'jn-gessos',
+        name: 'JN Gessos',
+        categories: ['construcao', 'servicos'],
+        description: 'Gesso, Revestimentos e Drywall.',
+        address: 'Rua da Grama, Acaú',
+        phone: '(83) 99605-7329',
+        instagram: 'jn_gessosk9',
+    },
     {
         id: 'veloso-rachel-imobiliaria',
         name: 'Veloso & Rachel',

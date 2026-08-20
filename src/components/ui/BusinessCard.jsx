@@ -1,4 +1,4 @@
-import { Check, MapPin, Phone, MessageCircle, Globe, Send, Store } from 'lucide-react';
+import { Check, MapPin, MessageCircle, Globe, Send, Store } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { InstagramIcon } from './BrandIcons';
@@ -99,13 +99,12 @@ function BusinessCard({ business }) {
                 )}
 
                 <div className="relative z-10 mt-auto flex flex-col gap-2 pt-2">
-                    <a
-                        href={`tel:${business.phone.replace(/\D/g, '')}`}
+                    <Link
+                        to={`/negocio/${business.id}`}
                         className="flex w-full items-center justify-center gap-2 rounded-full bg-blue-primary py-2.5 text-sm text-muted"
                     >
-                        <Phone size={16} aria-hidden="true" />
-                        {business.phone}
-                    </a>
+                        Ver mais
+                    </Link>
                     <div className="flex items-center gap-2">
                         <a
                             href={toWhatsappLink(business.phone)}
