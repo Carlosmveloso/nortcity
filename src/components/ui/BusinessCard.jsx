@@ -1,6 +1,6 @@
 import { MapPin, Phone, MessageCircle, Globe, Store } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { FaInstagram } from 'react-icons/fa6';
+import { InstagramIcon } from './BrandIcons';
 import { categoryLabel, toWhatsappLink } from '../../lib/business';
 import { businessShare } from '../../lib/share';
 import ShareButton from './ShareButton';
@@ -44,7 +44,6 @@ function BusinessCard({ business }) {
                                 {business.name}
                             </Link>
                         </h3>
-                        <span className="text-sm text-muted-foreground">{business.subcategory}</span>
                     </div>
                     <div className="flex flex-wrap justify-end gap-1">
                         {business.categories.map((slug) => (
@@ -69,13 +68,12 @@ function BusinessCard({ business }) {
                 )}
 
                 <div className="relative z-10 mt-auto flex flex-col gap-2 pt-2">
-                    <a
-                        href={`tel:${business.phone.replace(/\D/g, '')}`}
+                    <Link
+                        to={`/negocio/${business.id}`}
                         className="flex w-full items-center justify-center gap-2 rounded-full bg-blue-primary py-2.5 text-sm text-muted"
                     >
-                        <Phone size={16} aria-hidden="true" />
-                        {business.phone}
-                    </a>
+                        Ver mais
+                    </Link>
                     <div className="flex items-center gap-2">
                         <a
                             href={toWhatsappLink(business.phone)}
@@ -94,7 +92,7 @@ function BusinessCard({ business }) {
                                 className="flex flex-1 items-center justify-center rounded-full bg-sand-dark p-2.5 text-dark-ocean"
                                 aria-label={`Instagram de ${business.name}`}
                             >
-                                <FaInstagram size={18} aria-hidden="true" />
+                                <InstagramIcon size={18} aria-hidden="true" />
                             </a>
                         )}
                         {business.website && (

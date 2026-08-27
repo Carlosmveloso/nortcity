@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { businesses } from '../data/businesses';
 import BusinessCard from '../components/ui/BusinessCard';
+import SEO from '../components/SEO';
 
 const quickFilters = [
     { label: 'Gastronomia', value: 'gastronomia' },
@@ -36,7 +37,7 @@ function Explorar() {
             if (!matchesCategory) return false;
             if (!normalizedQuery) return true;
             const haystack = normalize(
-                [business.name, business.subcategory, business.description].filter(Boolean).join(' ')
+                [business.name, business.description].filter(Boolean).join(' ')
             );
             return haystack.includes(normalizedQuery);
         });
@@ -80,6 +81,10 @@ function Explorar() {
 
     return (
         <>
+            <SEO
+                title="Explorar"
+                description="Explore negócios, passeios, gastronomia e serviços de Pitimbu no Farol Pitimbu."
+            />
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
                 <div className="container mx-auto max-w-5xl">
                     <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-sm text-card/70">

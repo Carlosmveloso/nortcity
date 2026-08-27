@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Logo from "./Logo";
-import { FaInstagram, FaTiktok } from "react-icons/fa6";
+import { InstagramIcon, TiktokIcon } from "../ui/BrandIcons";
 import { Mail, MapPin, Phone, Heart } from "lucide-react";
 import { businesses } from "../../data/businesses";
 
@@ -22,7 +22,7 @@ function Footer() {
               rel="noopener noreferrer"
               aria-label="Instagram do Farol Pitimbu"
             >
-              <FaInstagram className="w-9 h-9 p-2 text-white bg-sand/20 rounded-full" />
+              <InstagramIcon className="w-9 h-9 p-2 text-white bg-sand/20 rounded-full" />
             </a>
             <a
               href="https://www.tiktok.com/@farolpitimbu"
@@ -30,7 +30,7 @@ function Footer() {
               rel="noopener noreferrer"
               aria-label="TikTok do Farol Pitimbu"
             >
-              <FaTiktok className="w-9 h-9 p-2 text-white bg-sand/20 rounded-full" />
+              <TiktokIcon className="w-9 h-9 p-2 text-white bg-sand/20 rounded-full" />
             </a>
           </div>
         </div>
