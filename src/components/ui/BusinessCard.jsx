@@ -1,4 +1,4 @@
-import { MapPin, Phone, MessageCircle, Globe, Store } from 'lucide-react';
+import { MapPin, MessageCircle, Globe, Store } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { InstagramIcon } from './BrandIcons';
 import { categoryLabel, toWhatsappLink } from '../../lib/business';

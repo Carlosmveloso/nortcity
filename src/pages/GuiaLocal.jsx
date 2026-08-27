@@ -6,6 +6,8 @@ import { localMarkets, localMarketsSchedule } from '../data/localMarkets';
 import EventItem from '../components/ui/EventItem';
 import Reveal from '../components/ui/Reveal';
 import TideForecast from '../components/ui/TideForecast';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 const upcomingEvents = [...events].sort((a, b) => a.date.localeCompare(b.date)).slice(0, 3);
 
@@ -24,6 +26,8 @@ function InfoCard({ icon: Icon, title, children }) {
 }
 
 function GuiaLocal() {
+    usePageMeta(staticPageMeta('/guia-local'));
+
     return (
         <>
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">

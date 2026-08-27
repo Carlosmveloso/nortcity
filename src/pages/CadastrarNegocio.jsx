@@ -13,7 +13,8 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import SEO from '../components/SEO';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 const businessCategories = [
     { value: 'passeios', label: 'Passeios', icon: Waves },
@@ -82,6 +83,8 @@ const inputClasses =
     'w-full rounded-2xl border border-sand-dark bg-white px-4 py-3 text-dark-ocean focus:border-turquoise focus:outline-none';
 
 function CadastrarNegocio() {
+    usePageMeta(staticPageMeta('/cadastrar-negocio'));
+
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState(initialFormData);
     const [photos, setPhotos] = useState([]);
@@ -155,7 +158,6 @@ function CadastrarNegocio() {
     if (submitted) {
         return (
             <section className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4 py-32 text-center">
-                <SEO title="Cadastro recebido" />
                 <span className="flex h-16 w-16 items-center justify-center rounded-full bg-turquoise/10 text-turquoise">
                     <Check size={32} aria-hidden="true" />
                 </span>
@@ -176,10 +178,6 @@ function CadastrarNegocio() {
 
     return (
         <>
-            <SEO
-                title="Cadastrar meu negócio"
-                description="Cadastre seu negócio no Farol Pitimbu e alcance turistas e moradores do litoral sul da Paraíba."
-            />
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
                 <div className="container mx-auto max-w-3xl">
                     <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-sm text-card/70">

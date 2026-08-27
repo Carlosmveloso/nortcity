@@ -10,6 +10,7 @@ import {
     OG_IMAGE_WIDTH,
     SITE_NAME,
     SITE_URL,
+    indexableRoutes,
     prerenderedRoutes,
 } from '../src/lib/siteMeta.js';
 
@@ -23,7 +24,7 @@ function escapeHtml(value) {
         .replace(/"/g, '&quot;');
 }
 
-function buildHead({ path, title, description, image, imageAlt }) {
+function buildHead({ path, title, description, image, imageAlt, noindex }) {
     const url = `${SITE_URL}${path}`;
     const imageUrl = `${SITE_URL}${image}`;
 
@@ -47,7 +48,9 @@ function buildHead({ path, title, description, image, imageAlt }) {
         `<meta name="twitter:title" content="${escapeHtml(title)}" />`,
         `<meta name="twitter:description" content="${escapeHtml(description)}" />`,
         `<meta name="twitter:image" content="${escapeHtml(imageUrl)}" />`,
+        noindex ? `<meta name="robots" content="noindex, follow" />` : null,
     ]
+        .filter(Boolean)
         .map((tag) => `    ${tag}`)
         .join('\n');
 }
@@ -57,7 +60,8 @@ function stripDefaultMeta(html) {
     return html
         .replace(/\s*<title>[\s\S]*?<\/title>/, '')
         .replace(/\s*<meta\s+(?:name|property)="(?:description|og:[^"]*|twitter:[^"]*)"[^>]*>/g, '')
-        .replace(/\s*<link\s+rel="canonical"[^>]*>/g, '');
+        .replace(/\s*<link\s+rel="canonical"[^>]*>/g, '')
+        .replace(/\s*<meta\s+name="robots"[^>]*>/g, '');
 }
 
 export async function prerenderMeta(distDir) {
@@ -69,13 +73,38 @@ export async function prerenderMeta(distDir) {
         const html = base.replace(/\s*<\/head>/, `\n${buildHead(route)}\n  </head>`);
         // Arquivo plano + "cleanUrls" na Vercel: /negocio/<slug> serve
         // negocio/<slug>.html, e o rewrite catch-all só pega o que sobrar.
-        const outFile = join(distDir, `${route.path}.html`);
+        // A home reescreve o próprio index.html, que também é o fallback da SPA.
+        const outFile =
+            route.path === '/' ? join(distDir, 'index.html') : join(distDir, `${route.path}.html`);
 
         await mkdir(dirname(outFile), { recursive: true });
         await writeFile(outFile, html);
     }
 
+    await writeSitemap(distDir);
+    await writeRobots(distDir);
+
     return routes.length;
+}
+
+// Sitemap e robots apontando para o domínio de produção. Só entram as rotas
+// que devem ser indexadas (fora: /favoritos e /entrar).
+async function writeSitemap(distDir) {
+    const urls = indexableRoutes()
+        .map((route) => `    <url><loc>${escapeHtml(`${SITE_URL}${route.path}`)}</loc></url>`)
+        .join('\n');
+
+    await writeFile(
+        join(distDir, 'sitemap.xml'),
+        `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`
+    );
+}
+
+async function writeRobots(distDir) {
+    await writeFile(
+        join(distDir, 'robots.txt'),
+        ['User-agent: *', 'Allow: /', 'Disallow: /favoritos', 'Disallow: /entrar', '', `Sitemap: ${SITE_URL}/sitemap.xml`, ''].join('\n')
+    );
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

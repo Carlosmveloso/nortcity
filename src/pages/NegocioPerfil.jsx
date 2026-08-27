@@ -23,7 +23,7 @@ import {
     toWhatsappLink,
 } from '../lib/business';
 import { businessShare } from '../lib/share';
-import { businessPageMeta } from '../lib/siteMeta';
+import { businessPageMeta, notFoundMeta } from '../lib/siteMeta';
 import NotFound from './NotFound';
 
 // Recursos que dependem de dados que ainda não temos (galeria, horários, coordenadas,
@@ -39,7 +39,7 @@ function NegocioPerfil() {
     const { slug } = useParams();
     const business = findBusinessBySlug(slug);
 
-    usePageMeta(business && businessPageMeta(business));
+    usePageMeta(business ? businessPageMeta(business) : notFoundMeta());
 
     if (!business) {
         return <NotFound />;
@@ -53,10 +53,6 @@ function NegocioPerfil() {
 
     return (
         <>
-            <SEO
-                title={business.name}
-                description={business.description ?? `${business.name} faz parte do guia de ${label.toLowerCase()} de Pitimbu.`}
-            />
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
                 <div className="container mx-auto max-w-5xl">
                     <nav

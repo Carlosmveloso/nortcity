@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { plans, planBenefits } from '../data/plans';
 import PricingCard from '../components/ui/PricingCard';
 import Reveal from '../components/ui/Reveal';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 const faq = [
     {
@@ -20,6 +22,8 @@ const faq = [
 ];
 
 function Planos() {
+    usePageMeta(staticPageMeta('/planos'));
+
     return (
         <>
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">

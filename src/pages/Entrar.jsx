@@ -1,11 +1,15 @@
 import { ArrowLeft, LogIn, Mail, Lock } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 const inputClasses =
     'w-full rounded-2xl border border-sand-dark bg-white py-3 pr-4 pl-11 text-dark-ocean focus:border-turquoise focus:outline-none';
 
 function Entrar() {
+    usePageMeta(staticPageMeta('/entrar'));
+
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [errors, setErrors] = useState({});
     const [status, setStatus] = useState('idle');
