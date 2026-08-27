@@ -2,6 +2,7 @@ import bgFood from '../assets/images/category-food.jpg';
 import bgTours from '../assets/images/praias.jpeg';
 import bgServices from '../assets/images/artesanato.jpeg';
 import bgRoteiro from '../assets/images/roteiro.jpeg';
+import { experienceMeta } from './experienceMeta';
 import { beaches } from './beaches';
 import { businesses } from './businesses';
 
@@ -10,9 +11,7 @@ const extraArtesanatoIds = ['ama-marisqueiras-acau', 'astanova'];
 
 export const experiencePages = {
     'roteiro-1-dia': {
-        eyebrow: 'Roteiro',
-        title: 'O melhor de Pitimbu em 24 horas',
-        description: 'Pontos turísticos',
+        ...experienceMeta['roteiro-1-dia'],
         heroImg: bgRoteiro,
         items: [
             { id: 'mirante-senhor-do-bonfim', title: 'Mirante Senhor do Bonfim' },
@@ -32,9 +31,7 @@ export const experiencePages = {
         ],
     },
     'praias-mirantes': {
-        eyebrow: 'Praias',
-        title: 'Praias e mirantes',
-        description: 'Algumas praias do litoral',
+        ...experienceMeta['praias-mirantes'],
         heroImg: bgTours,
         mapLink: '/mapa',
         items: beaches.map((beach) => ({
@@ -45,9 +42,7 @@ export const experiencePages = {
         })),
     },
     'onde-comer': {
-        eyebrow: 'Gastronomia',
-        title: 'Melhores restaurantes',
-        description: 'Gastronomia local imperdível',
+        ...experienceMeta['onde-comer'],
         heroImg: bgFood,
         items: businesses
             .filter((business) => restaurantIds.includes(business.id))
@@ -61,9 +56,7 @@ export const experiencePages = {
             })),
     },
     'artesanato-local': {
-        eyebrow: 'Cultura',
-        title: 'Artesanato e cultura',
-        description: 'Cultura e tradição regional',
+        ...experienceMeta['artesanato-local'],
         heroImg: bgServices,
         items: businesses
             .filter(

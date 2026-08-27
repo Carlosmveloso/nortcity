@@ -1,9 +1,5 @@
 import { businesses } from '../data/businesses';
-import { popularCategories, otherCategories } from '../data/categories';
-
-const categoryLabels = new Map(
-    [...popularCategories, ...otherCategories].map((category) => [category.slug, category.label])
-);
+import { categoryLabels } from '../data/categoryLabels';
 
 export function toWhatsappLink(phone) {
     const digits = phone.replace(/\D/g, '');
@@ -11,7 +7,7 @@ export function toWhatsappLink(phone) {
 }
 
 export function categoryLabel(slug) {
-    return categoryLabels.get(slug) ?? slug;
+    return categoryLabels[slug] ?? slug;
 }
 
 export function findBusinessBySlug(slug) {
