@@ -154,23 +154,27 @@ function NegocioPerfil() {
                             </p>
                         )}
 
-                        <a
-                            href={`tel:${business.phone.replace(/\D/g, '')}`}
-                            className="flex w-full items-center justify-center gap-2 rounded-full bg-blue-primary py-3 text-sm text-muted"
-                        >
-                            <Phone size={16} aria-hidden="true" />
-                            {business.phone}
-                        </a>
+                        {business.phone && (
+                            <>
+                                <a
+                                    href={`tel:${business.phone.replace(/\D/g, '')}`}
+                                    className="flex w-full items-center justify-center gap-2 rounded-full bg-blue-primary py-3 text-sm text-muted"
+                                >
+                                    <Phone size={16} aria-hidden="true" />
+                                    {business.phone}
+                                </a>
 
-                        <a
-                            href={toWhatsappLink(business.phone)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex w-full items-center justify-center gap-2 rounded-full bg-whatsapp-green py-3 text-sm font-semibold text-white"
-                        >
-                            <MessageCircle size={18} aria-hidden="true" />
-                            Conversar no WhatsApp
-                        </a>
+                                <a
+                                    href={toWhatsappLink(business.phone)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex w-full items-center justify-center gap-2 rounded-full bg-whatsapp-green py-3 text-sm font-semibold text-white"
+                                >
+                                    <MessageCircle size={18} aria-hidden="true" />
+                                    Conversar no WhatsApp
+                                </a>
+                            </>
+                        )}
 
                         {business.instagram && (
                             <a

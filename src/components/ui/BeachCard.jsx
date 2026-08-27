@@ -1,4 +1,5 @@
 import { Waves } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { beachShare } from '../../lib/share';
 import ShareButton from './ShareButton';
 
@@ -29,7 +30,16 @@ function BeachCard({ beach }) {
             <ShareButton {...share} variant="icon" label={`Compartilhar ${beach.name}`} />
 
             <div className="flex flex-1 flex-col gap-2 p-5">
-                <h3 className="font-head text-lg font-semibold text-foreground">{beach.name}</h3>
+                <h3 className="font-head text-lg font-semibold text-foreground">
+                    {/* Link "esticado": cobre o card inteiro sem aninhar <a> dentro de <a>,
+                        mantendo o botão de compartilhar clicável via z-10. */}
+                    <Link
+                        to={`/praia/${beach.id}`}
+                        className="transition-colors after:absolute after:inset-0 group-hover:text-turquoise"
+                    >
+                        {beach.name}
+                    </Link>
+                </h3>
                 <p className="text-sm text-foreground/80">{beach.description}</p>
                 {beach.subDescription && <p className="text-sm text-foreground/80">{beach.subDescription}</p>}
             </div>

@@ -1,10 +1,11 @@
 // Fonte única das meta tags de SEO/compartilhamento.
 // Sem imports de imagem nem de React: também é lido por Node nos scripts de build.
+import { rawBeaches } from '../data/beaches.data.js';
 import { rawBusinesses } from '../data/businesses.data.js';
 import { experienceMeta } from '../data/experienceMeta.js';
 import { categoryLabels } from '../data/categoryLabels.js';
 
-export const SITE_URL = 'https://www.farolpitimbu.com.br';
+export const SITE_URL = 'https://farolpitimbu.com.br';
 export const SITE_NAME = 'Farol Pitimbu';
 export const DEFAULT_TITLE = 'Farol Pitimbu — O guia digital do litoral sul da Paraíba';
 export const DEFAULT_DESCRIPTION =
@@ -157,6 +158,16 @@ export function businessPageMeta(business) {
     };
 }
 
+export function beachPageMeta(beach) {
+    return {
+        path: `/praia/${beach.id}`,
+        title: `${beach.name} — ${SITE_NAME}`,
+        description: `${sentence(beach.description)} Veja o guia completo no Farol Pitimbu.`,
+        image: `/og/${beach.id}.jpg`,
+        imageAlt: `${beach.name}, Pitimbu — ${SITE_NAME}`,
+    };
+}
+
 export function experiencePageMeta(slug) {
     const meta = experienceMeta[slug];
 
@@ -178,6 +189,7 @@ export function prerenderedRoutes() {
     return [
         ...staticPages.map((page) => withDefaults(page)),
         ...rawBusinesses.map((business) => businessPageMeta(business)),
+        ...rawBeaches.map((beach) => beachPageMeta(beach)),
         ...Object.keys(experienceMeta).map((slug) => experiencePageMeta(slug)),
     ];
 }
