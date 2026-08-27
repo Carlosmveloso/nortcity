@@ -12,6 +12,7 @@ import Home from "./pages/Home";
 const Explorar = lazy(() => import("./pages/Explorar"));
 const Experiencia = lazy(() => import("./pages/Experiencia"));
 const NegocioPerfil = lazy(() => import("./pages/NegocioPerfil"));
+const PraiaPerfil = lazy(() => import("./pages/PraiaPerfil"));
 const Categorias = lazy(() => import("./pages/Categorias"));
 const Atracoes = lazy(() => import("./pages/Atracoes"));
 const Eventos = lazy(() => import("./pages/Eventos"));
@@ -46,6 +47,7 @@ function App() {
               <Route path="/explorar" element={<Explorar />} />
               <Route path="/experiencia/:slug" element={<Experiencia />} />
               <Route path="/negocio/:slug" element={<NegocioPerfil />} />
+              <Route path="/praia/:slug" element={<PraiaPerfil />} />
               <Route path="/categorias" element={<Categorias />} />
               <Route path="/atracoes" element={<Atracoes />} />
               <Route path="/eventos" element={<Eventos />} />

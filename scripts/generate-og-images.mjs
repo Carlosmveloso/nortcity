@@ -9,6 +9,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
+import { rawBeaches } from '../src/data/beaches.data.js';
 import { rawBusinesses } from '../src/data/businesses.data.js';
 import { experienceMeta } from '../src/data/experienceMeta.js';
 import { OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH } from '../src/lib/siteMeta.js';
@@ -75,6 +76,15 @@ async function buildCard(inputPath, outFile) {
 export async function generateOgImages(outDir) {
     await mkdir(outDir, { recursive: true });
 
+    // Negócios e praias dividem a pasta og/: um id repetido sobrescreveria a
+    // imagem do outro e o link errado apareceria no WhatsApp.
+    const ids = new Set(rawBusinesses.map((business) => business.id));
+    const colisoes = rawBeaches.filter((beach) => ids.has(beach.id)).map((beach) => beach.id);
+
+    if (colisoes.length > 0) {
+        throw new Error(`id repetido entre negócio e praia: ${colisoes.join(', ')}`);
+    }
+
     await buildCard(join(root, 'public/hero-beach.jpg'), join(outDir, 'default.jpg'));
 
     for (const business of rawBusinesses) {
@@ -84,11 +94,18 @@ export async function generateOgImages(outDir) {
         );
     }
 
+    for (const beach of rawBeaches) {
+        await buildCard(
+            join(root, 'src/assets/beaches', `${beach.id}.webp`),
+            join(outDir, `${beach.id}.jpg`)
+        );
+    }
+
     for (const [slug, meta] of Object.entries(experienceMeta)) {
         await buildCard(join(root, 'src/assets/images', meta.image), join(outDir, `experiencia-${slug}.jpg`));
     }
 
-    return rawBusinesses.length + Object.keys(experienceMeta).length + 1;
+    return rawBusinesses.length + rawBeaches.length + Object.keys(experienceMeta).length + 1;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
