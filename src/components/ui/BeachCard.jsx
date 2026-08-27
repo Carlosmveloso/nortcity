@@ -1,30 +1,9 @@
-import { Check, Send, Waves } from 'lucide-react';
-import { useState } from 'react';
+import { Waves } from 'lucide-react';
+import { beachShare } from '../../lib/share';
+import ShareButton from './ShareButton';
 
 function BeachCard({ beach }) {
-    const [copied, setCopied] = useState(false);
-
-    async function handleShare(event) {
-        event.preventDefault();
-        const shareUrl = `${window.location.origin}/mapa#${beach.id}`;
-
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: `${beach.name} — Farol Pitimbu`,
-                    text: beach.description,
-                    url: shareUrl,
-                });
-            } catch {
-                // usuário fechou o menu de compartilhamento sem escolher nada
-            }
-            return;
-        }
-
-        await navigator.clipboard.writeText(shareUrl);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    }
+    const share = beachShare(beach);
 
     return (
         <article
@@ -47,17 +26,7 @@ function BeachCard({ beach }) {
                 )}
             </div>
 
-            <button
-                type="button"
-                onClick={handleShare}
-                aria-label={`Compartilhar ${beach.name}`}
-                className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-dark-ocean shadow-md backdrop-blur-sm transition-colors hover:bg-white"
-            >
-                {copied ? <Check size={18} aria-hidden="true" /> : <Send size={18} aria-hidden="true" />}
-            </button>
-            <span className="sr-only" role="status">
-                {copied ? 'Link copiado para a área de transferência' : ''}
-            </span>
+            <ShareButton {...share} variant="icon" label={`Compartilhar ${beach.name}`} />
 
             <div className="flex flex-1 flex-col gap-2 p-5">
                 <h3 className="font-head text-lg font-semibold text-foreground">{beach.name}</h3>

@@ -1,33 +1,12 @@
-import { Check, MapPin, Phone, MessageCircle, Globe, Send, Store } from 'lucide-react';
-import { useState } from 'react';
+import { MapPin, Phone, MessageCircle, Globe, Store } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { FaInstagram } from 'react-icons/fa6';
 import { categoryLabel, toWhatsappLink } from '../../lib/business';
+import { businessShare } from '../../lib/share';
+import ShareButton from './ShareButton';
 
 function BusinessCard({ business }) {
-    const [copied, setCopied] = useState(false);
-
-    async function handleShare(event) {
-        event.preventDefault();
-        const shareUrl = `${window.location.origin}/negocio/${business.id}`;
-
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: `${business.name} — Farol Pitimbu`,
-                    text: business.description,
-                    url: shareUrl,
-                });
-            } catch {
-                // usuário fechou o menu de compartilhamento sem escolher nada
-            }
-            return;
-        }
-
-        await navigator.clipboard.writeText(shareUrl);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    }
+    const share = businessShare(business);
 
     return (
         <article
@@ -50,17 +29,7 @@ function BusinessCard({ business }) {
                 )}
             </div>
 
-            <button
-                type="button"
-                onClick={handleShare}
-                aria-label={`Compartilhar ${business.name}`}
-                className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-dark-ocean shadow-md backdrop-blur-sm transition-colors hover:bg-white"
-            >
-                {copied ? <Check size={18} aria-hidden="true" /> : <Send size={18} aria-hidden="true" />}
-            </button>
-            <span className="sr-only" role="status">
-                {copied ? 'Link copiado para a área de transferência' : ''}
-            </span>
+            <ShareButton {...share} variant="icon" label={`Compartilhar ${business.name}`} />
 
             <div className="flex flex-1 flex-col gap-3 p-5">
                 <div className="flex flex-wrap items-start justify-between gap-2">

@@ -1,5 +1,4 @@
 import {
-    Check,
     ChevronRight,
     Clock,
     Globe,
@@ -8,21 +7,23 @@ import {
     MapPin,
     MessageCircle,
     Phone,
-    Send,
     Star,
     Store,
 } from 'lucide-react';
-import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FaInstagram } from 'react-icons/fa6';
 import BusinessCard from '../components/ui/BusinessCard';
 import Reveal from '../components/ui/Reveal';
+import ShareButton from '../components/ui/ShareButton';
+import { usePageMeta } from '../hooks/usePageMeta';
 import {
     categoryLabel,
     findBusinessBySlug,
     findRelatedBusinesses,
     toWhatsappLink,
 } from '../lib/business';
+import { businessShare } from '../lib/share';
+import { businessPageMeta } from '../lib/siteMeta';
 import NotFound from './NotFound';
 
 // Recursos que dependem de dados que ainda não temos (galeria, horários, coordenadas,
@@ -37,7 +38,8 @@ const upcomingFeatures = [
 function NegocioPerfil() {
     const { slug } = useParams();
     const business = findBusinessBySlug(slug);
-    const [copied, setCopied] = useState(false);
+
+    usePageMeta(business && businessPageMeta(business));
 
     if (!business) {
         return <NotFound />;
@@ -47,26 +49,7 @@ function NegocioPerfil() {
     const primaryCategory = business.categories[0];
     const label = categoryLabel(primaryCategory);
 
-    async function handleShare() {
-        const shareUrl = `${window.location.origin}/negocio/${business.id}`;
-
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: `${business.name} — Farol Pitimbu`,
-                    text: business.description,
-                    url: shareUrl,
-                });
-            } catch {
-                // usuário fechou o menu de compartilhamento sem escolher nada
-            }
-            return;
-        }
-
-        await navigator.clipboard.writeText(shareUrl);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    }
+    const share = businessShare(business);
 
     return (
         <>
@@ -219,17 +202,10 @@ function NegocioPerfil() {
                             </a>
                         )}
 
-                        <button
-                            type="button"
-                            onClick={handleShare}
-                            className="flex w-full items-center justify-center gap-2 rounded-full border border-dark-ocean/15 py-3 text-sm font-semibold text-dark-ocean"
-                        >
-                            {copied ? <Check size={18} aria-hidden="true" /> : <Send size={18} aria-hidden="true" />}
-                            {copied ? 'Link copiado' : 'Compartilhar'}
-                        </button>
-                        <span className="sr-only" role="status">
-                            {copied ? 'Link copiado para a área de transferência' : ''}
-                        </span>
+                        <ShareButton
+                            {...share}
+                            className="w-full border border-dark-ocean/15 py-3 text-dark-ocean"
+                        />
                     </aside>
                 </div>
 

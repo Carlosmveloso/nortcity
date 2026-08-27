@@ -10,6 +10,7 @@ import {
     Palette,
 } from 'lucide-react';
 import { businesses } from './businesses';
+import { categoryLabels } from './categoryLabels';
 import foodCategory from '../assets/images/category-food.jpg';
 import accommodationCategory from '../assets/images/category-accommodation.jpg';
 import toursCategory from '../assets/images/category-tours.jpg';
@@ -23,7 +24,7 @@ function countByCategory(slug) {
 export const popularCategories = [
     {
         slug: 'gastronomia',
-        label: 'Gastronomia',
+        label: categoryLabels.gastronomia,
         description: 'Restaurantes, bares e lanchonetes',
         icon: UtensilsCrossed,
         count: countByCategory('gastronomia'),
@@ -31,7 +32,7 @@ export const popularCategories = [
     },
     {
         slug: 'hospedagem',
-        label: 'Hospedagem',
+        label: categoryLabels.hospedagem,
         description: 'Pousadas, hotéis e casas',
         icon: BedDouble,
         count: countByCategory('hospedagem'),
@@ -39,7 +40,7 @@ export const popularCategories = [
     },
     {
         slug: 'passeios',
-        label: 'Passeios',
+        label: categoryLabels.passeios,
         description: 'Ilhas, trilhas e aventuras',
         icon: Waves,
         count: countByCategory('passeios'),
@@ -47,7 +48,7 @@ export const popularCategories = [
     },
     {
         slug: 'servicos',
-        label: 'Serviços',
+        label: categoryLabels.servicos,
         description: 'Lojas e utilidades gerais',
         icon: Wrench,
         count: countByCategory('servicos'),
@@ -55,7 +56,7 @@ export const popularCategories = [
     },
     {
         slug: 'negocio',
-        label: 'Negócio',
+        label: categoryLabels.negocio,
         description: 'Comércios e empreendedores locais',
         icon: Briefcase,
         count: countByCategory('negocio'),
@@ -66,28 +67,28 @@ export const popularCategories = [
 export const otherCategories = [
     {
         slug: 'eventos',
-        label: 'Eventos',
+        label: categoryLabels.eventos,
         description: 'Festas, shows e celebrações',
         icon: PartyPopper,
         count: countByCategory('eventos'),
     },
     {
         slug: 'lojas',
-        label: 'Lojas',
+        label: categoryLabels.lojas,
         description: 'Comércio local e utilidades',
         icon: Store,
         count: countByCategory('lojas'),
     },
     {
         slug: 'construcao',
-        label: 'Construção',
+        label: categoryLabels.construcao,
         description: 'Construção civil e reformas',
         icon: HardHat,
         count: countByCategory('construcao'),
     },
     {
         slug: 'artesanato',
-        label: 'Artesanato',
+        label: categoryLabels.artesanato,
         description: 'Artesãos e produtos locais feitos à mão',
         icon: Palette,
         count: countByCategory('artesanato'),
