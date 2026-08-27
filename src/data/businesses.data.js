@@ -126,13 +126,13 @@ export const rawBusinesses = [
     },
     {
         id: 'casa-costa-de-marlin',
-        name: 'Casa Costa de Marlin',
+        name: 'Casa Costa de Marlim',
         categories: ['hospedagem'],
         subcategory: 'Casa de Praia',
         description: 'Casa pé na areia para aluguel de temporada.',
         address: 'Av. Antônio Tavares, Praia Azul',
         phone: '(61) 98125-7474',
-        instagram: 'casacostadomarlin',
+        instagram: 'casacostadomarlim',
     },
     {
         id: 'pitihouse',
