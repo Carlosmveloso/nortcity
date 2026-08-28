@@ -65,18 +65,24 @@ function TideForecast() {
                 {activeDay.extremes.map((extreme) => (
                     <li
                         key={extreme.time}
-                        className="flex items-center justify-between gap-3 rounded-xl bg-sand px-3 py-2 text-sm"
+                        className="flex items-center justify-between gap-2 rounded-xl bg-sand px-2.5 py-2 text-xs sm:px-3 sm:text-sm"
                     >
-                        <span className="flex items-center gap-2 font-semibold text-foreground">
+                        <span className="flex min-w-0 items-center gap-1.5 font-semibold text-foreground sm:gap-2">
                             {extreme.type === 'alta' ? (
                                 <ArrowUp size={15} className="shrink-0 text-turquoise" aria-hidden="true" />
                             ) : (
                                 <ArrowDown size={15} className="shrink-0 text-turquoise" aria-hidden="true" />
                             )}
-                            Maré {extreme.type}
+                            <span className="truncate">Maré {extreme.type}</span>
                         </span>
-                        <span className="text-muted-foreground">{extreme.time.slice(11, 16)}</span>
-                        <span className="font-semibold text-dark-ocean">{extreme.height.toFixed(1)} m</span>
+                        <span className="flex shrink-0 items-center gap-2 tabular-nums sm:gap-3">
+                            <span className="w-10 text-right text-muted-foreground sm:w-12">
+                                {extreme.time.slice(11, 16)}
+                            </span>
+                            <span className="w-12 text-right font-semibold text-dark-ocean sm:w-14">
+                                {extreme.height.toFixed(1)} m
+                            </span>
+                        </span>
                     </li>
                 ))}
             </ul>
