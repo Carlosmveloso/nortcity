@@ -146,7 +146,7 @@ export const rawBusinesses = [
     },
     {
         id: 'casa-de-praia-pontal',
-        name: 'Casa de Praia (Pontal)',
+        name: 'Casa de Praia Pitimbu (Pontal)',
         categories: ['hospedagem'],
         subcategory: 'Casa de Praia',
         description: 'Aluguel de temporada a 30m do mar.',
