@@ -31,6 +31,7 @@ function Entrar() {
     const [errors, setErrors] = useState({});
     const [status, setStatus] = useState('idle');
     const [formError, setFormError] = useState('');
+    const [confirmacaoPendente, setConfirmacaoPendente] = useState(false);
 
     const updateField = (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -54,9 +55,10 @@ function Entrar() {
         }
 
         setFormError('');
+        setConfirmacaoPendente(false);
         setStatus('loading');
 
-        const { error } =
+        const { data, error } =
             mode === 'signIn'
                 ? await supabase.auth.signInWithPassword({
                       email: formData.email,
@@ -75,6 +77,17 @@ function Entrar() {
         }
 
         setStatus('idle');
+
+        // O projeto exige confirmação de e-mail, então signUp devolve sucesso
+        // SEM sessão: a conta existe mas só vale depois do link enviado por
+        // e-mail. Antes o código descartava o `data` e redirecionava para a
+        // home mesmo assim — quem se cadastrava caía numa página deslogada,
+        // sem mensagem nenhuma, e concluía que o cadastro não funcionou.
+        if (!data?.session) {
+            setConfirmacaoPendente(true);
+            return;
+        }
+
         navigate(redirectTo, { replace: true });
     };
 
@@ -157,6 +170,15 @@ function Entrar() {
                             {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
                         </div>
 
+                        {confirmacaoPendente && (
+                            <p className="rounded-2xl bg-turquoise/10 px-4 py-3 text-sm text-dark-ocean">
+                                <strong className="font-semibold">Conta criada!</strong> Enviamos um link de
+                                confirmação para <strong className="font-semibold">{formData.email}</strong>. Abra o
+                                link para ativar a conta e depois volte aqui para entrar. Se não achar, confira a
+                                caixa de spam.
+                            </p>
+                        )}
+
                         {formError && (
                             <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{formError}</p>
                         )}
@@ -177,7 +199,7 @@ function Entrar() {
                                 Ainda não tem conta?{' '}
                                 <button
                                     type="button"
-                                    onClick={() => setMode('signUp')}
+                                    onClick={() => { setMode('signUp'); setConfirmacaoPendente(false); setFormError(''); }}
                                     className="font-semibold text-turquoise"
                                 >
                                     Cadastre-se
@@ -188,7 +210,7 @@ function Entrar() {
                                 Já tem conta?{' '}
                                 <button
                                     type="button"
-                                    onClick={() => setMode('signIn')}
+                                    onClick={() => { setMode('signIn'); setConfirmacaoPendente(false); setFormError(''); }}
                                     className="font-semibold text-turquoise"
                                 >
                                     Entrar
