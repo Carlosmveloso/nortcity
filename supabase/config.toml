@@ -151,6 +151,16 @@ max_indexes = 5
 # Vector Buckets is available to Supabase Pro plan.
 # [storage.vector.buckets.documents-openai]
 
+# ATENÇÃO — NÃO rode `supabase config push` sem antes conferir esta seção.
+# Os valores abaixo são os de DESENVOLVIMENTO LOCAL. Empurrá-los como estão
+# sobrescreveria a configuração de produção e quebraria o login:
+#   site_url = 127.0.0.1  -> os links de confirmação de e-mail apontariam para
+#                            a máquina de quem rodou o comando;
+#   enable_confirmations = false (em [auth.email]) -> desligaria a confirmação
+#                            de e-mail, que em produção está LIGADA.
+# O CLI não tem --dry-run e envia a seção [auth] inteira, então qualquer ajuste
+# pontual (SMTP, por exemplo) deve ser feito pelo painel do Supabase:
+# Authentication -> Emails -> SMTP Settings.
 [auth]
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
