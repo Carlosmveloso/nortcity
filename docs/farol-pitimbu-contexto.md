@@ -83,6 +83,10 @@ Documento base para gerar a documentação oficial do projeto (visão geral, req
 
 ## 3. Regras de Negócio
 
+> **Estado implementado (06/09/2026):** ver `docs/regras-de-negocio.md`, que separa o que está valendo
+> do que continua intenção. Esta seção 3 descreve o desenho original do produto e permanece como
+> referência de roadmap; onde os dois divergirem, vale o documento de regras.
+
 ### 3.1 Planos de Divulgação
 | Plano | Preço/mês | Limite fotos | Posição em listagens | Selo | Destaque semanal | WhatsApp clicável | Estatísticas |
 |---|---|---|---|---|---|---|---|
@@ -182,56 +186,94 @@ Documento base para gerar a documentação oficial do projeto (visão geral, req
 
 ## 6. Modelagem de Dados
 
-### 6.1 Tabelas Principais
+> **Atualizado em 03/09/2026.** O backend Supabase saiu do papel nesta data — as subseções abaixo
+> distinguem o que está **implementado e rodando em produção** do que ainda é **desenho/planejado**.
+> Ver roadmap (seção 10) para o histórico de como isso avançou.
 
-**profiles** (1:1 com auth.users)
+### 6.1 Tabelas implementadas (Supabase/Postgres)
+
+**profiles** (1:1 com auth.users) — ✅ implementada
 - id (uuid, PK, FK auth.users)
 - full_name (text)
 - avatar_url (text)
 - phone (text)
 - created_at, updated_at
+- Trigger `handle_new_user()` cria a linha automaticamente a cada signup (junto com a role `user`).
 
-**user_roles**
+**user_roles** — ✅ implementada
 - id (uuid, PK)
 - user_id (uuid, FK auth.users)
-- role (enum: admin | moderator | owner | professional | user)
+- role (enum `app_role`: admin | moderator | owner | professional | user)
 - UNIQUE(user_id, role)
+- Função `has_role(_user_id, _role) SECURITY DEFINER` — usada em todas as policies de RLS do projeto.
+- Hoje só os roles `user` (automático) e `admin` (promovido manualmente via SQL) são usados de fato.
 
-**categories**
-- id (uuid, PK)
-- slug (text, unique) — ex: "gastronomia"
-- name (text)
-- description (text)
-- icon (text) — nome do ícone lucide
-- image_url (text)
-- featured (bool)
-- order_index (int)
+**categories** — ✅ implementada
+- id (uuid, PK), slug (unique), name, description, icon, image_url, featured (bool), order_index (int)
+- Seed inicial: 9 categorias (gastronomia, hospedagem, passeios, serviços, negócio, eventos, lojas, construção, artesanato).
+- CRUD completo (criar, editar, excluir) pelo painel `/admin`.
 
-**businesses**
-- id (uuid, PK)
-- owner_id (uuid, FK profiles)
-- category_id (uuid, FK categories)
-- slug (text, unique)
-- name (text)
-- description (text)
-- short_description (text)
-- cover_image (text)
-- gallery (text[])
-- address (text)
-- neighborhood (text)
-- lat, lng (numeric)
-- phone, whatsapp (text)
-- email, website (text)
-- instagram, facebook (text)
-- hours (jsonb) — `{mon: "08:00-18:00", ...}`
-- price_range (enum: $, $$, $$$, $$$$)
-- status (enum: pending | active | suspended | rejected)
-- verified (bool)
-- plan_id (uuid, FK plans, nullable)
-- avg_rating (numeric, computed)
-- review_count (int, computed)
-- views_count (int)
-- created_at, updated_at
+**businesses** — ✅ implementada, com diferenças do desenho original (ver notas)
+- id (uuid, PK), owner_id (uuid, FK profiles, nullable), slug (unique), name, subcategory, description,
+  address, neighborhood, lat, lng, phone, whatsapp, email, website, instagram, facebook, hours (jsonb),
+  price_range, status (enum: pending | active | suspended | rejected), **cover_image (text)**,
+  created_at, updated_at
+- **Diferença 1 — sem `category_id` único:** negócios reais têm mais de uma categoria (ex.: uma pousada
+  que também é restaurante), então a relação virou N:N via `business_categories` (ver abaixo) em vez de
+  uma FK única.
+- **Diferença 2 — colunas ainda fora da tabela:** `short_description`, `gallery`, `verified`, `plan_id`,
+  `avg_rating`, `review_count`, `views_count` não existem ainda — entram via `ALTER TABLE` quando Storage
+  com galeria, reviews, planos pagos e analytics forem implementados (fases v1.1/v1.2 do roadmap).
+- Trigger `businesses_guard_status()`: força `status='pending'` em insert/update feito por usuário
+  autenticado não-admin (RN05); não se aplica a escrita direta (seed, SQL Editor, admin).
+- Os 78 negócios do catálogo original foram migrados para esta tabela via seed (`scripts/generate-supabase-seed.mjs`), todos com `status='active'`.
+
+**business_categories** — ✅ implementada (não estava no desenho original)
+- business_id (FK businesses), category_id (FK categories), is_primary (bool)
+- PK composta (business_id, category_id); índice único parcial garante no máximo 1 `is_primary=true` por negócio.
+- Substitui o `category_id` único do desenho original (ver Diferença 1 acima).
+
+### 6.2 Storage — ✅ implementado (parcial)
+- Bucket `business-photos`: leitura pública; escrita via RLS em `storage.objects` — admin pode
+  insert/update/delete em qualquer caminho, e o **dono do negócio** pode insert/update só na pasta do
+  próprio negócio (`{business_id}/cover.<ext>`, conferido via `storage.foldername(name)` contra
+  `businesses.owner_id`).
+- Os 78 negócios já têm `cover_image` migrado do bundle estático (`src/assets/businesses/*.webp`) para o
+  Storage — migração de dados única, feita em 03/09/2026 (`scripts/migrate-business-images-to-storage.sh`).
+- O painel `/admin` permite trocar a imagem de qualquer negócio; o wizard `/cadastrar-negocio` permite ao
+  dono subir a própria foto de capa no ato do cadastro (função compartilhada em
+  `src/lib/uploadBusinessCoverImage.js`).
+- Bucket `avatars` (previsto no desenho original) — **não implementado ainda**.
+- Galeria de fotos (múltiplas imagens por negócio, coluna `gallery`) — **não implementada ainda**; existe
+  só uma imagem de capa por negócio.
+
+### 6.3 Auth e Admin — ✅ implementado (parcial)
+- Supabase Auth por e-mail/senha (login e cadastro) ligado à UI de `/entrar`. **Google OAuth ainda não.**
+- `AuthContext`/`useAuth` (React) expõem sessão, usuário e roles (`isAdmin`) para toda a aplicação.
+- `/cadastrar-negocio` exige login (`ProtectedRoute`) e insere de verdade em `businesses` (com `slug`
+  gerado via `slugify()` a partir do nome — ver `src/lib/business.js`), sempre como `pending`.
+- `/admin` (`AdminRoute`, exige role `admin`): aprovar/rejeitar negócios pendentes, editar qualquer negócio
+  (inclusive trocar a imagem), CRUD de categorias, busca por nome. **Moderação de avaliações e AI image
+  check (RF20, RN13) ainda não existem** — ficam para quando `reviews` for implementada.
+- Honeypot anti-spam (campo-armadilha invisível, `src/components/HoneypotField.jsx`) nos formulários
+  públicos de contato, cadastro de conta e cadastro de negócio. Não substitui um CAPTCHA de verdade
+  (hCaptcha/reCAPTCHA), que exigiria conta própria em serviço externo — ainda não configurado.
+
+### 6.3.1 Tabelas e funções acrescentadas em 06/09/2026
+
+- **`business_private_locations`** — endereço/coordenadas privados de quem atende sem endereço público.
+  Sem GRANT para `anon`; RLS de dono/admin.
+- **`business_change_requests`** — propostas de alteração sensível de negócio publicado (autor, campos
+  propostos, snapshot da base, categorias, capa proposta, decisão).
+- **`businesses`** ganhou `service_area`, `submitted_at`, `moderation_reason` (enum
+  `business_moderation_reason`), `moderation_note`, `moderated_at`, `moderated_by`,
+  `duplicate_candidates`, `duplicate_reviewed_at`. **`profiles`** ganhou `email`.
+- **Camada de RPC** (`submit_business`, `update_own_business`, `resubmit_business`,
+  `moderate_business`, `admin_*`, `request_business_changes`, `review_business_change_request`,
+  `search_businesses`): `authenticated` perdeu o GRANT de escrita direta em `businesses` e
+  `business_categories`, porque as invariantes exigem transação entre as duas tabelas.
+
+### 6.4 Tabelas planejadas, ainda não implementadas
 
 **professionals** (subtipo / extensão)
 - id (uuid, PK, FK profiles)
@@ -296,22 +338,23 @@ Documento base para gerar a documentação oficial do projeto (visão geral, req
 - message (text)
 - created_at
 
-### 6.2 Diagrama Resumido
+### 6.5 Diagrama Resumido (estado atual)
 ```
-auth.users 1—1 profiles 1—* businesses *—1 categories
+auth.users 1—1 profiles 1—* businesses *—* categories (via business_categories)
                        1—* user_roles
-businesses 1—* reviews *—1 profiles
-businesses 1—* analytics_events
-businesses 1—1 subscriptions *—1 plans
-businesses 1—* favorites *—1 profiles
-businesses *—* weekly_highlights
 ```
+> As relações com `reviews`, `analytics_events`, `subscriptions`, `favorites` e `weekly_highlights` do
+> desenho original ainda não existem — dependem das tabelas da seção 6.4.
 
-### 6.3 RLS (resumo)
-- `businesses`: SELECT público se status=active; INSERT/UPDATE/DELETE só owner ou admin (via has_role).
-- `reviews`: SELECT público; INSERT autenticado; UPDATE/DELETE só autor ou admin.
-- `user_roles`: SELECT só próprio user_id ou admin; INSERT/UPDATE só admin.
-- `analytics_events`: INSERT público; SELECT só owner do business ou admin.
+### 6.6 RLS (resumo, implementado)
+- `businesses`: SELECT público se `status='active'`, ou dono (`owner_id = auth.uid()`), ou admin. INSERT
+  autenticado (`owner_id = auth.uid()`, sempre vira `pending` via trigger). UPDATE dono ou admin. DELETE só admin.
+- `business_categories`: espelha a visibilidade de `businesses`; escrita só dono/admin do negócio.
+- `categories`: SELECT público; INSERT/UPDATE/DELETE só admin.
+- `user_roles`: SELECT só próprio `user_id` ou admin; INSERT/UPDATE/DELETE só admin.
+- `profiles`: SELECT próprio ou admin; UPDATE só próprio.
+- `storage.objects` (bucket `business-photos`): SELECT público; INSERT/UPDATE/DELETE só admin.
+> RLS de `reviews`/`analytics_events`/etc. (do desenho original) ainda não existe — tabelas não implementadas.
 
 ---
 
@@ -335,6 +378,12 @@ businesses *—* weekly_highlights
 | `/dashboard/plano` | Minha assinatura | Auth (owner) | Status + upgrade/cancel |
 | `/admin` | Admin | Auth (admin) | Painel geral |
 | `/admin/aprovacoes` | Moderação | Auth (admin/mod) | Fila pendente |
+
+> **Nota (03/09/2026):** rotas realmente implementadas hoje diferem desta tabela em alguns pontos: login/
+> cadastro é `/entrar` (não `/auth`); filtro por categoria é `/explorar?categoria=slug` (não existe rota
+> `/categoria/:slug` separada); `/admin` existe e funciona como um painel único com abas (Negócios/
+> Categorias), sem sub-rota `/admin/aprovacoes`; `/dashboard*` (dono) e `/profissional/:slug` ainda não
+> existem. `/negocio/:slug` está implementado e funcional.
 
 ---
 
@@ -389,17 +438,23 @@ businesses *—* weekly_highlights
 ### 9.4 Arquitetura de Pastas (frontend)
 ```
 src/
-  assets/            # imagens locais
+  assets/            # imagens locais — só para OG/compartilhamento e 2 páginas de
+                      # experiência (onde-comer, artesanato-local); não é mais o
+                      # fallback de imagem dos negócios (isso já é 100% Storage)
   components/
-    ui/              # shadcn
+    ui/              # componentes reutilizáveis (sem shadcn/Radix instalado)
     layout/          # Navbar, Footer
     home/            # seções da home
-    business/        # cards, badges
-  hooks/
-  lib/               # utils, supabase client
-  pages/
+    AdminRoute.jsx, ProtectedRoute.jsx  # guards de rota (auth / admin)
+    HoneypotField.jsx  # campo-armadilha anti-spam (+ HoneypotField.test.jsx)
+  contexts/          # AuthContext (sessão, roles, isAdmin)
+  hooks/             # useAuth, useBusiness(es), useAdminBusinesses, useAdminCategories
+  lib/               # utils (categoryLabel, toWhatsappLink, slugify, normalize, etc.)
+                      # — testados em *.test.js ao lado de cada arquivo
+  pages/             # inclui Admin.jsx (painel /admin)
   integrations/
-    supabase/        # client + types
+    supabase/        # client.js + types.js (JSDoc, não .ts — ver nota de stack)
+  test/              # setup.js do Vitest (jest-dom matchers)
 ```
 
 ### 9.5 Diagrama de Arquitetura (texto)
@@ -436,19 +491,44 @@ src/
 - [x] Vercel Analytics + Speed Insights integrados
 - [x] Favicon e rebranding completo de "Nortcity" para "Farol Pitimbu"
 - [x] Deploy configurado na Vercel (rewrite SPA para `main` e `develop`)
-- [ ] Auth (e-mail + Google) — UI de `/entrar` já pronta, falta ligar a um backend
-- [ ] Backend Supabase (tabelas, RLS) — `src/integrations/supabase/` ainda vazio (só `.gitkeep`);
-      `/explorar` e todas as páginas seguem rodando sobre dados estáticos em `src/data/*.js`
-- [ ] CRUD de negócios
-- [ ] Perfil público `/negocio/:slug` — ainda não existe rota; cards de negócio levam para `/explorar`
-- [ ] Dashboard básico do dono
-- [ ] Painel admin
+- [x] **Backend Supabase (tabelas, RLS)** — implementado em 03/09/2026: `profiles`, `user_roles`,
+      `categories`, `businesses`, `business_categories`, todas com RLS. `/explorar` e `/negocio/:slug`
+      leem direto do Supabase (não usam mais `src/data/*.js` em runtime — ver seção 6).
+- [x] **Auth (e-mail/senha)** — login e cadastro reais via Supabase Auth, ligados a `/entrar`.
+      **Google OAuth ainda pendente** (configuração externa no Google Cloud Console + Supabase Dashboard).
+- [x] **CRUD de negócios (parcial)** — criação via `/cadastrar-negocio` (autenticado, entra como `pending`,
+      incluindo a própria foto de capa); leitura pública real; edição de campos e mudança de status só pelo
+      admin por enquanto (dono ainda não edita o próprio negócio depois de cadastrado — falta dashboard do
+      dono).
+- [x] Perfil público `/negocio/:slug` — confirmado implementado e funcional (a entrada anterior deste
+      roadmap estava desatualizada em relação ao código).
+- [x] **Painel admin (parcial)** — `/admin`: aprovar/rejeitar negócios pendentes, editar qualquer negócio
+      (incluindo trocar imagem de capa), busca por nome, CRUD de categorias. Falta: moderação de
+      avaliações e destaques semanais (dependem de `reviews`/`weekly_highlights`, ainda não implementadas).
+- [x] **Upload de imagens (Storage)** — bucket `business-photos` no Supabase Storage; os 78 negócios
+      seedados já têm `cover_image` migrada do bundle estático para o Storage; dono e admin podem trocar
+      a imagem (ver seção 6.2).
+- [x] **Honeypot anti-spam** nos formulários públicos (contato, cadastro de conta, cadastro de negócio).
+- [x] **Testes automatizados** — Vitest + Testing Library configurados (`npm run test`), 16 testes
+      cobrindo utils puros (`slugify`, `toWhatsappLink`, `categoryLabel`, `normalize`) e um componente.
+- [x] **Otimização de bundle** — chunk principal caiu de ~586kB para ~136kB via `manualChunks`
+      (React e Supabase em chunks de vendor separados e cacheáveis).
+- [x] Dados fabricados removidos de `/profissionais` (nota/avaliações inventadas não existem mais).
+- [x] 3 links mortos (`href="#"`) corrigidos: "Ver todos" da home, botão de contato dos destaques, FAQ do rodapé.
+- [ ] Dashboard do dono do negócio — dono ainda não consegue editar/ver métricas do próprio negócio.
 
-> **Nota de stack:** a Seção 9.1 deste documento descreve um stack alvo (TypeScript, shadcn/ui, framer-motion,
-> react-query, react-hook-form+zod, Supabase Auth/Storage/Edge Functions). Na prática atual (10/08/2026) o
-> projeto está em **JavaScript puro** (nenhum arquivo `.ts`/`.tsx`), sem esses pacotes instalados, e o
-> Supabase ainda não foi conectado — ver `CLAUDE.md` para as convenções realmente em uso. Contato usa
-> EmailJS no lugar de Edge Function + Resend.
+> **Bug crítico corrigido (03/09/2026):** o cadastro de negócio (`/cadastrar-negocio`) esteve quebrado
+> desde que foi implementado — a coluna `slug` de `businesses` é obrigatória, mas o formulário nunca a
+> preenchia, então todo envio falhava. Corrigido com `slugify()` (nome + sufixo aleatório) em
+> `src/lib/business.js`; testado de ponta a ponta no navegador antes de fechar.
+
+> **Nota de stack (atualizada em 03/09/2026):** a Seção 9.1 deste documento descreve um stack alvo
+> (TypeScript, shadcn/ui, framer-motion, react-query, react-hook-form+zod). Na prática o projeto continua
+> em **JavaScript puro** (tipagem leve via JSDoc em `src/integrations/supabase/types.js`, sem `.ts`/`.tsx`),
+> e esses pacotes (shadcn, framer-motion, react-query, react-hook-form, zod) seguem não instalados — ver
+> `CLAUDE.md` para as convenções realmente em uso. O Supabase **já está conectado** (Auth, Postgres+RLS,
+> Storage) desde 03/09/2026; só Edge Functions e Realtime seguem não implementados. Contato usa EmailJS no
+> lugar de Edge Function + Resend. Alias de import `@/` foi configurado (`vite.config.js` + `jsconfig.json`).
 >
 > `docs/STATUS-ATUAL.md` e `docs/roadmap-mvp-v1.md`, citados abaixo, ainda não existem neste repositório.
 
@@ -463,8 +543,10 @@ src/
 - [ ] Notificações por e-mail (Resend)
 
 ### v1.3 — Admin
-- [ ] Painel admin (aprovações, categorias, destaques)
-- [ ] Moderação de conteúdo + AI image check
+- [x] Painel admin — aprovações/rejeições de negócios, CRUD de categorias, edição de negócios e imagem
+      (entregue como parte do MVP v1.0, adiantado do roadmap original — ver seção acima)
+- [ ] Destaques semanais (depende de `weekly_highlights`, não implementada)
+- [ ] Moderação de conteúdo + AI image check (depende de `reviews`, não implementada)
 
 ### v2.0 — Crescimento
 - [ ] Eventos e agenda da cidade
