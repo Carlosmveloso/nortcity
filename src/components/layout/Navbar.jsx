@@ -1,6 +1,8 @@
-import { Heart, Menu, User, X } from 'lucide-react';
+import { Heart, LogOut, Menu, Shield, Store, User, X } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import Logo from './Logo';
 
 const navLinks = [
@@ -13,6 +15,7 @@ const navLinks = [
 ];
 
 function Navbar() {
+    const { user, isAdmin } = useAuth();
     const [menuOpen, setMenuOpen] = useState(false);
 
     return (
@@ -34,21 +37,53 @@ function Navbar() {
                     <Link
                         to="/favoritos"
                         aria-label="Favoritos"
-                        className="hidden h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
                     >
                         <Heart className="h-5 w-5" aria-hidden="true" />
                     </Link>
-                    <Link
-                        to="/entrar"
-                        aria-label="Entrar na conta"
-                        className="hidden h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
-                    >
-                        <User className="h-5 w-5" aria-hidden="true" />
-                    </Link>
+                    {user ? (
+                        <>
+                            <Link
+                                to="/meu-negocio"
+                                aria-label="Meu Negócio"
+                                title="Meu Negócio"
+                                className="inline-flex h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
+                            >
+                                <Store className="h-5 w-5" aria-hidden="true" />
+                            </Link>
+                            {isAdmin && (
+                                <Link
+                                    to="/admin"
+                                    aria-label="Painel admin"
+                                    title="Painel admin"
+                                    className="inline-flex h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
+                                >
+                                    <Shield className="h-5 w-5" aria-hidden="true" />
+                                </Link>
+                            )}
+                            <button
+                                type="button"
+                                onClick={() => supabase.auth.signOut()}
+                                aria-label="Sair da conta"
+                                title={user.email}
+                                className="inline-flex h-10 w-10 items-center justify-center rounded-full text-turquoise hover:bg-sand-dark/50"
+                            >
+                                <LogOut className="h-5 w-5" aria-hidden="true" />
+                            </button>
+                        </>
+                    ) : (
+                        <Link
+                            to="/entrar"
+                            aria-label="Entrar na conta"
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
+                        >
+                            <User className="h-5 w-5" aria-hidden="true" />
+                        </Link>
+                    )}
 
                     <Link
                         to="/cadastrar-negocio"
-                        className="hidden shrink-0 rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap"
+                        className="shrink-0 rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap"
                     >
                         Cadastrar meu negócio
                     </Link>
@@ -88,36 +123,93 @@ function Navbar() {
                         ))}
                     </ul>
 
-                    <ul className="border-ocean/10 mt-2 hidden flex-col gap-1 border-t pt-2">
-                        {[
-                            { label: 'Favoritos', to: '/favoritos', icon: Heart },
-                            { label: 'Entrar na conta', to: '/entrar', icon: User },
-                        ].map((link, index) => (
+                    <ul className="border-ocean/10 mt-2 flex flex-col gap-1 border-t pt-2">
+                        <li
+                            className={`px-3 py-3 transition-all duration-300 ${
+                                menuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
+                            }`}
+                            style={{ transitionDelay: menuOpen ? `${navLinks.length * 40}ms` : '0ms' }}
+                        >
+                            <Link
+                                to="/favoritos"
+                                onClick={() => setMenuOpen(false)}
+                                className="flex items-center gap-2 text-dark-ocean/70"
+                            >
+                                <Heart className="h-4 w-4" aria-hidden="true" />
+                                Favoritos
+                            </Link>
+                        </li>
+                        {user && (
                             <li
-                                key={link.to}
                                 className={`px-3 py-3 transition-all duration-300 ${
                                     menuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
                                 }`}
-                                style={{ transitionDelay: menuOpen ? `${(navLinks.length + index) * 40}ms` : '0ms' }}
+                                style={{ transitionDelay: menuOpen ? `${(navLinks.length + 1) * 40}ms` : '0ms' }}
                             >
                                 <Link
-                                    to={link.to}
+                                    to="/meu-negocio"
                                     onClick={() => setMenuOpen(false)}
                                     className="flex items-center gap-2 text-dark-ocean/70"
                                 >
-                                    <link.icon className="h-4 w-4" aria-hidden="true" />
-                                    {link.label}
+                                    <Store className="h-4 w-4" aria-hidden="true" />
+                                    Meu Negócio
                                 </Link>
                             </li>
-                        ))}
+                        )}
+                        {user && isAdmin && (
+                            <li
+                                className={`px-3 py-3 transition-all duration-300 ${
+                                    menuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
+                                }`}
+                                style={{ transitionDelay: menuOpen ? `${(navLinks.length + 1) * 40}ms` : '0ms' }}
+                            >
+                                <Link
+                                    to="/admin"
+                                    onClick={() => setMenuOpen(false)}
+                                    className="flex items-center gap-2 text-dark-ocean/70"
+                                >
+                                    <Shield className="h-4 w-4" aria-hidden="true" />
+                                    Painel admin
+                                </Link>
+                            </li>
+                        )}
+                        <li
+                            className={`px-3 py-3 transition-all duration-300 ${
+                                menuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
+                            }`}
+                            style={{ transitionDelay: menuOpen ? `${(navLinks.length + 2) * 40}ms` : '0ms' }}
+                        >
+                            {user ? (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setMenuOpen(false);
+                                        supabase.auth.signOut();
+                                    }}
+                                    className="flex items-center gap-2 text-dark-ocean/70"
+                                >
+                                    <LogOut className="h-4 w-4" aria-hidden="true" />
+                                    Sair ({user.email})
+                                </button>
+                            ) : (
+                                <Link
+                                    to="/entrar"
+                                    onClick={() => setMenuOpen(false)}
+                                    className="flex items-center gap-2 text-dark-ocean/70"
+                                >
+                                    <User className="h-4 w-4" aria-hidden="true" />
+                                    Entrar na conta
+                                </Link>
+                            )}
+                        </li>
                     </ul>
                     <Link
                         to="/cadastrar-negocio"
                         onClick={() => setMenuOpen(false)}
-                        className={`mx-3 mt-2 hidden rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap transition-all duration-300 ${
+                        className={`mx-3 mt-2 flex justify-center rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap transition-all duration-300 ${
                             menuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
                         }`}
-                        style={{ transitionDelay: menuOpen ? `${(navLinks.length + 2) * 40}ms` : '0ms' }}
+                        style={{ transitionDelay: menuOpen ? `${(navLinks.length + 3) * 40}ms` : '0ms' }}
                     >
                         Cadastrar meu negócio
                     </Link>

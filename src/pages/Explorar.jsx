@@ -1,74 +1,67 @@
 import { Search, ChevronDown, ChevronRight } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { businesses } from '../data/businesses';
+import { useCategories } from '../hooks/useCategories';
+import { SEARCH_PAGE_SIZE, useBusinessSearch, useNeighborhoods } from '../hooks/useBusinessSearch';
 import BusinessCard from '../components/ui/BusinessCard';
 import SEO from '../components/SEO';
 
-const quickFilters = [
-    { label: 'Gastronomia', value: 'gastronomia' },
-    { label: 'Passeios', value: 'passeios' },
-    { label: 'Hospedagem', value: 'hospedagem' },
-    { label: 'Serviços', value: 'servicos' },
-    { label: 'Negócio', value: 'negocio' },
-];
-
-const PAGE_SIZE = 12;
-
-function normalize(text) {
-    return text
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[̀-ͯ]/g, '');
-}
-
+// Ordenação, relevância e paginação são resolvidas pela RPC search_businesses:
+// a lista de categorias vem do banco (não mais de uma constante no arquivo) e
+// a ordem vale sobre o conjunto inteiro, não sobre a página já baixada.
 function Explorar() {
     const [searchParams, setSearchParams] = useSearchParams();
     const initialQuery = searchParams.get('q') ?? '';
     const initialCategory = searchParams.get('categoria') ?? '';
+    const initialNeighborhood = searchParams.get('bairro') ?? '';
+
+    const { categories } = useCategories();
+    const neighborhoods = useNeighborhoods();
 
     const [query, setQuery] = useState(initialQuery);
     const [category, setCategory] = useState(initialCategory);
 
-    const results = useMemo(() => {
-        const normalizedQuery = normalize(initialQuery.trim());
-        return businesses.filter((business) => {
-            const matchesCategory = !initialCategory || business.categories.includes(initialCategory);
-            if (!matchesCategory) return false;
-            if (!normalizedQuery) return true;
-            const haystack = normalize(
-                [business.name, business.description].filter(Boolean).join(' ')
-            );
-            return haystack.includes(normalizedQuery);
-        });
-    }, [initialQuery, initialCategory]);
-
-    const filterKey = `${initialQuery}|${initialCategory}`;
+    const filterKey = `${initialQuery}|${initialCategory}|${initialNeighborhood}`;
     const [appliedFilterKey, setAppliedFilterKey] = useState(filterKey);
-    const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+    const [page, setPage] = useState(0);
 
     if (filterKey !== appliedFilterKey) {
         setAppliedFilterKey(filterKey);
-        setVisibleCount(PAGE_SIZE);
+        setPage(0);
     }
 
-    const visibleResults = results.slice(0, visibleCount);
-    const hasMore = visibleCount < results.length;
+    const { results, total, loading } = useBusinessSearch({
+        query: initialQuery,
+        category: initialCategory,
+        neighborhood: initialNeighborhood,
+        page,
+    });
+
+    const totalPages = Math.max(1, Math.ceil(total / SEARCH_PAGE_SIZE));
+    const quickFilters = categories.slice(0, 5);
+
+    const updateParams = (next) => {
+        const params = {};
+        const merged = {
+            q: initialQuery,
+            categoria: initialCategory,
+            bairro: initialNeighborhood,
+            ...next,
+        };
+        Object.entries(merged).forEach(([key, value]) => {
+            if (value) params[key] = value;
+        });
+        setSearchParams(params);
+    };
 
     const handleSearchSubmit = (event) => {
         event.preventDefault();
-        const nextParams = {};
-        if (query) nextParams.q = query;
-        if (category) nextParams.categoria = category;
-        setSearchParams(nextParams);
+        updateParams({ q: query, categoria: category });
     };
 
     const applyCategory = (nextCategory) => {
         setCategory(nextCategory);
-        const nextParams = {};
-        if (initialQuery) nextParams.q = initialQuery;
-        if (nextCategory) nextParams.categoria = nextCategory;
-        setSearchParams(nextParams);
+        updateParams({ categoria: nextCategory });
     };
 
     const handleQuickFilter = (value) => {
@@ -137,14 +130,14 @@ function Explorar() {
                                 className="h-full w-full appearance-none rounded-full bg-sand-dark/50 py-3 pl-5 pr-10 text-dark-ocean focus:outline-none sm:w-40"
                             >
                                 <option value="">Categoria</option>
-                                {quickFilters.map((filter) => (
+                                {categories.map((item) => (
                                     <option
-                                        key={filter.value}
-                                        value={filter.value}
+                                        key={item.id}
+                                        value={item.slug}
                                         className="notranslate"
                                         translate="no"
                                     >
-                                        {filter.label}
+                                        {item.name}
                                     </option>
                                 ))}
                             </select>
@@ -165,42 +158,79 @@ function Explorar() {
                 <div className="mt-8 flex flex-wrap items-center gap-2">
                     {quickFilters.map((filter) => (
                         <button
-                            key={filter.value}
+                            key={filter.id}
                             type="button"
-                            onClick={() => handleQuickFilter(filter.value)}
-                            aria-pressed={initialCategory === filter.value}
+                            onClick={() => handleQuickFilter(filter.slug)}
+                            aria-pressed={initialCategory === filter.slug}
                             className={`rounded-full px-4 py-2 text-sm font-semibold ${
-                                initialCategory === filter.value
+                                initialCategory === filter.slug
                                     ? 'bg-turquoise text-sand'
                                     : 'bg-white text-dark-ocean shadow-sm'
                             }`}
                         >
                             <span className="notranslate" translate="no">
-                                {filter.label}
+                                {filter.name}
                             </span>
                         </button>
                     ))}
                 </div>
 
+                {/* Filtros de dimensões diferentes se somam: categoria + bairro
+                    valem juntos, e não um substituindo o outro. */}
+                {neighborhoods.length > 0 && (
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <label htmlFor="explorar-neighborhood" className="text-sm font-semibold text-dark-ocean/70">
+                            Bairro
+                        </label>
+                        <select
+                            id="explorar-neighborhood"
+                            value={initialNeighborhood}
+                            onChange={(event) => updateParams({ bairro: event.target.value })}
+                            className="rounded-full bg-white py-2 pr-8 pl-4 text-sm text-dark-ocean shadow-sm focus:outline-none"
+                        >
+                            <option value="">Todos</option>
+                            {neighborhoods.map((item) => (
+                                <option key={item.neighborhood} value={item.neighborhood}>
+                                    {item.neighborhood} ({item.total})
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+
                 <p className="mt-6 text-sm text-dark-ocean/70">
-                    {results.length} {results.length === 1 ? 'resultado encontrado' : 'resultados encontrados'}
+                    {loading
+                        ? 'Carregando...'
+                        : `${total} ${total === 1 ? 'resultado encontrado' : 'resultados encontrados'}`}
                 </p>
 
-                {results.length > 0 ? (
+                {loading ? null : results.length > 0 ? (
                     <>
                         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {visibleResults.map((business) => (
+                            {results.map((business) => (
                                 <BusinessCard key={business.id} business={business} />
                             ))}
                         </div>
-                        {hasMore && (
-                            <div className="mt-8 flex justify-center">
+                        {totalPages > 1 && (
+                            <div className="mt-8 flex items-center justify-center gap-3">
                                 <button
                                     type="button"
-                                    onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
-                                    className="rounded-full bg-white px-6 py-3 font-semibold text-dark-ocean shadow-sm"
+                                    onClick={() => setPage((current) => Math.max(0, current - 1))}
+                                    disabled={page === 0}
+                                    className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-dark-ocean shadow-sm disabled:opacity-40"
                                 >
-                                    Carregar mais
+                                    Anterior
+                                </button>
+                                <span className="text-sm text-dark-ocean/70">
+                                    Página {page + 1} de {totalPages}
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => setPage((current) => Math.min(totalPages - 1, current + 1))}
+                                    disabled={page >= totalPages - 1}
+                                    className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-dark-ocean shadow-sm disabled:opacity-40"
+                                >
+                                    Próxima
                                 </button>
                             </div>
                         )}

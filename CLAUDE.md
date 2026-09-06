@@ -232,12 +232,28 @@ Siga o padrão **Conventional Commits**:
 - [ ] Verificar **performance:** LCP < 2.5s (Google PageSpeed).
 - [ ] Testar funcionalidades interativas: cliques, forms, filtros.
 
-### Automatizado (se aplicável)
+### Automatizado
 
 ```bash
-npm run test          # Jest (se configurado)
+npm run test          # Vitest (unitários + testes de banco)
+npm run test:watch    # Vitest em modo watch
 npm run lint          # ESLint
 ```
+
+Duas camadas de teste:
+
+- **Funções puras e utilitários** (`src/lib/`, `src/hooks/mapBusinessRow.js`) e um componente simples
+  (`HoneypotField`) — arquivos `*.test.js`/`*.test.jsx` ao lado do arquivo testado.
+- **Banco de verdade** (`src/test/db/`) — RLS, autorização, invariantes e concorrência rodando contra
+  Postgres real e descartável (PGlite, Postgres em WASM: esta máquina não tem Docker, então
+  `supabase start` não sobe). `src/test/db/harness.js` recria o mínimo dos schemas `auth` e `storage`
+  do Supabase e aplica **todas** as migrations do zero a cada suíte. É onde se testa "usuário A não lê
+  negócio de B", "duas submissões simultâneas não criam dois negócios" e afins.
+
+**Nunca teste escrita contra o Supabase de produção** — o `.env` local aponta para o mesmo projeto.
+Escreva o teste em `src/test/db/`, onde o banco é descartável.
+
+Ainda não existe teste E2E de navegador.
 
 ---
 
@@ -269,7 +285,66 @@ npm run lint          # ESLint
 
 ## 9. Melhorias Recentes e Lições Aprendidas
 
-### Home Page Refinements (Recent)
+### Backend Supabase (03/09/2026)
+
+Primeira etapa do backend real: schema + RLS + Storage + Auth + painel admin (ver seção 11 e
+`docs/farol-pitimbu-contexto.md` seção 6/10 para detalhes completos). Duas lições que valem lembrar:
+
+- **Tabelas criadas via CLI/migrations não recebem GRANT automático para `anon`/`authenticated`** — só
+  criar a tabela + RLS não basta; sem `grant select/insert/... on <tabela> to anon, authenticated`, o
+  Postgres nega a operação antes mesmo de avaliar as policies. Isso já causou `/explorar` retornar 0
+  resultados com o banco populado corretamente.
+- **`auth.uid()` é `null` em conexões diretas** (seed via `db push`, SQL Editor, `service_role`) — um
+  trigger que checa `has_role(auth.uid(), 'admin')` sem primeiro checar `auth.uid() is not null` trata
+  essas conexões como "usuário não-admin" e pode sobrescrever dados do seed (aconteceu com `status` dos
+  negócios seedados virando `pending` em vez de `active`).
+- **Coluna `not null` sem valor no formulário = bug silencioso até testar de ponta a ponta.**
+  `businesses.slug` é obrigatória, mas `/cadastrar-negocio` nunca a preenchia — o cadastro esteve
+  quebrado desde que foi implementado e só foi descoberto testando o fluxo completo no navegador (editar
+  negócios já seedados no admin não expõe esse tipo de bug, porque eles já têm slug). Lição: sempre testar
+  o caminho de **criação** de dado novo, não só leitura/edição de dado que já existe.
+
+### Auditoria e melhorias (03/09/2026)
+
+Revisão do projeto inteiro (não só do código novo desta sessão) pedida explicitamente pelo usuário.
+Resultado: 3 links mortos (`href="#"`) corrigidos, dados fabricados removidos de `/profissionais`,
+honeypot anti-spam adicionado nos formulários públicos, Vitest configurado do zero (16 testes em
+utils puros), e bundle principal reduzido de ~586kB pra ~136kB via `manualChunks` no Vite — ver
+`docs/farol-pitimbu-contexto.md` seção 10 para a lista completa. Lição: pedir pra revisar "o projeto
+todo" acha bugs que revisões focadas na mudança do momento não acham (nenhum dos 3 links mortos e o
+bug do slug tinham relação com o que estava sendo implementado ali).
+
+### Regras de negócio do diretório (06/09/2026)
+
+Implementação das fases 0 a 4 do núcleo funcional: um negócio por conta, categorias do banco também no
+formulário público, motivo obrigatório de rejeição/suspensão, área `/meu-negocio`, cadastro de
+profissional autônomo sem endereço público, busca ordenada no servidor, sinalização de duplicidade,
+vínculo manual de proprietário e edição de negócio ativo com moderação. Ver `docs/regras-de-negocio.md`
+(o que vale hoje), `docs/plano-migracao-regras-negocio.md` (como aplicar) e
+`supabase/diagnostics/business_data_audit.sql` (diagnóstico antes de aplicar).
+
+Lições que valem para o próximo trabalho no banco:
+
+- **`GRANT` esquecido continua sendo o erro mais caro, e ele se repete.** Depois do caso de
+  `businesses` (migration 0009), a mesma armadilha estava em `categories`: só `select` foi concedido,
+  então o CRUD de categorias do painel admin **nunca funcionou** — a policy `categories_admin_write`
+  existia, mas o Postgres nega a operação antes de avaliar policy. Ao criar tabela por migration,
+  conceda os GRANTs na mesma migration e escreva um teste que exercite a escrita como o papel real.
+- **Subquery dentro de policy captura coluna do escopo de fora.** As policies de upload usavam
+  `storage.foldername(name)` dentro de `exists (select 1 from businesses b ...)`, e `name` resolveu
+  para `b.name` — o nome do negócio. A policy comparava o uuid do negócio com um pedaço do nome dele:
+  o upload de capa pelo dono foi negado por RLS desde que foi escrito, em silêncio. Qualifique sempre
+  (`objects.name`) quando a policy tiver subquery.
+- **Invariante que envolve duas tabelas não cabe no PostgREST.** Negócio + categorias precisam de uma
+  transação; por isso a escrita direta foi revogada e tudo passa por RPC `SECURITY DEFINER`. Guard
+  trigger é segunda barreira, não a primeira — e deve levantar erro, não reverter em silêncio, senão o
+  app acha que deu certo.
+- **Restrição nova encontra dado velho.** Exigir 40 caracteres de descrição em toda escrita impediria
+  o admin de corrigir um telefone dos 78 cadastros do seed. A descrição passou a ser validada quando é
+  criada ou alterada, nunca como pedágio para mexer em outro campo. Antes de ativar restrição, rode o
+  diagnóstico e decida o que fazer com o que não se encaixa — sem escolher em silêncio pelo usuário.
+
+### Home Page Refinements
 
 **6 problemas identificados e em processo de resolução:**
 
@@ -310,9 +385,11 @@ Antes de abrir PR:
 
 ## 11. Integração com Supabase
 
+**Status:** conectado desde 03/09/2026 (Postgres + RLS, Auth por e-mail/senha, Storage). Edge Functions e Realtime ainda não usados.
+
 ### Cliente Supabase
 
-Importar do `src/integrations/supabase/client.js`:
+Importar do `src/integrations/supabase/client.js` (alias `@/` configurado em `vite.config.js` + `jsconfig.json`):
 ```jsx
 import { supabase } from '@/integrations/supabase/client';
 
@@ -324,7 +401,39 @@ const { data, error } = await supabase
 
 ### Types
 
-Tipos TypeScript gerados automaticamente em `src/integrations/supabase/types.ts`.
+O projeto é **JavaScript puro** (sem TypeScript) — `src/integrations/supabase/types.js` tem `@typedef` em
+JSDoc (`Business`, `Category`, `Profile`, `BusinessCategory`), mantidos manualmente. **Não** há
+`types.ts` gerado automaticamente.
+
+### Schema e migrations
+
+Migrations SQL vivem em `supabase/migrations/` (aplicadas com `npx supabase db push`). Tabelas
+implementadas hoje: `profiles`, `user_roles` (+ função `has_role()`), `categories`, `businesses`,
+`business_categories` (junção N:N), `business_private_locations` e `business_change_requests`.
+Detalhamento completo e o que ainda falta (reviews, plans, etc.) em `docs/farol-pitimbu-contexto.md`,
+seção 6.
+
+**Escrita em `businesses`/`business_categories` é só por RPC.** `authenticated` não tem GRANT de
+insert/update nessas tabelas: use `submit_business`, `update_own_business`, `resubmit_business`,
+`set_business_cover_image`, `update_own_active_business`, `request_business_changes`,
+`cancel_business_change_request`, `moderate_business`, `admin_create_business`,
+`admin_update_business`, `admin_delete_business`, `admin_link_business_owner`,
+`admin_unlink_business_owner`, `admin_resolve_duplicate`, `review_business_change_request`. Leitura
+pública de listagem passa por `search_businesses`. As RPCs levantam erro com `message` = código
+estável em inglês e `detail` = frase em PT-BR; `src/lib/businessErrors.js` traduz para a UI.
+
+Seed de dados (`supabase/seed.sql`, gerado por `scripts/generate-supabase-seed.mjs`) e migração de imagens
+estáticas pro Storage (`scripts/migrate-business-images-to-storage.sh`) são scripts únicos, não fazem
+parte do build normal.
+
+### Auth e Admin
+
+- `AuthContext`/`useAuth` (`src/contexts/`, `src/hooks/useAuth.js`) expõem `user`, `session`, `roles`, `isAdmin`.
+- `ProtectedRoute` exige login; `AdminRoute` exige login + role `admin`.
+- Painel admin em `/admin` (`src/pages/Admin.jsx`): moderação com motivo, revisão de alterações de
+  negócios publicados, CRUD de categorias, vínculo de proprietário e resolução de duplicatas.
+- Área do proprietário em `/meu-negocio` (`src/pages/MeuNegocio.jsx`), disponível no plano Gratuito:
+  status, motivo da decisão, correção de pendente, reenvio de rejeitado e edição de ativo.
 
 ### Environment Variables
 
@@ -332,6 +441,9 @@ Tipos TypeScript gerados automaticamente em `src/integrations/supabase/types.ts`
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
+
+Sem essas variáveis, `src/integrations/supabase/client.js` usa uma URL de placeholder para não derrubar o
+app inteiro — mas nenhuma chamada ao Supabase funciona.
 
 ---
 
@@ -356,5 +468,5 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 
 ---
 
-**Última atualização:** 2026-08-01
-**Versão:** 1.0 (pós-home-refinement)
+**Última atualização:** 2026-09-06
+**Versão:** 1.2 (regras de negócio do diretório: propriedade, moderação, Meu Negócio, busca e propostas)

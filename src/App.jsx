@@ -7,7 +7,11 @@ import Footer from "./components/layout/Footer";
 import Navbar from "./components/layout/Navbar";
 import ScrollToTop from "./components/layout/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 import Home from "./pages/Home";
+
+const Admin = lazy(() => import("./pages/Admin"));
 
 const Explorar = lazy(() => import("./pages/Explorar"));
 const Experiencia = lazy(() => import("./pages/Experiencia"));
@@ -21,6 +25,7 @@ const Blog = lazy(() => import("./pages/Blog"));
 const Planos = lazy(() => import("./pages/Planos"));
 const GuiaLocal = lazy(() => import("./pages/GuiaLocal"));
 const CadastrarNegocio = lazy(() => import("./pages/CadastrarNegocio"));
+const MeuNegocio = lazy(() => import("./pages/MeuNegocio"));
 const Sobre = lazy(() => import("./pages/Sobre"));
 const Contato = lazy(() => import("./pages/Contato"));
 const Favoritos = lazy(() => import("./pages/Favoritos"));
@@ -54,11 +59,34 @@ function App() {
               <Route path="/blog" element={<Blog />} />
               <Route path="/planos" element={<Planos />} />
               <Route path="/guia-local" element={<GuiaLocal />} />
-              <Route path="/cadastrar-negocio" element={<CadastrarNegocio />} />
+              <Route
+                path="/cadastrar-negocio"
+                element={
+                  <ProtectedRoute>
+                    <CadastrarNegocio />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meu-negocio"
+                element={
+                  <ProtectedRoute>
+                    <MeuNegocio />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/sobre" element={<Sobre />} />
               <Route path="/contato" element={<Contato />} />
               <Route path="/favoritos" element={<Favoritos />} />
               <Route path="/entrar" element={<Entrar />} />
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <Admin />
+                  </AdminRoute>
+                }
+              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

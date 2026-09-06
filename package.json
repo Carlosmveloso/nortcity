@@ -8,10 +8,14 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "optimize-images": "node scripts/optimize-business-images.mjs"
+    "optimize-images": "node scripts/optimize-business-images.mjs",
+    "generate-supabase-seed": "node scripts/generate-supabase-seed.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@supabase/supabase-js": "^2.115.0",
     "@tailwindcss/vite": "^4.3.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
@@ -24,7 +28,10 @@
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@eslint/js": "^10.0.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
@@ -32,8 +39,10 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "jsdom": "^30.0.1",
     "prettier": "^3.8.3",
     "sharp": "^0.35.3",
-    "vite": "^8.0.12"
+    "vite": "^8.0.12",
+    "vitest": "^5.0.0"
   }
 }

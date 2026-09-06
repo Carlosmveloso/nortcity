@@ -1,4 +1,3 @@
-import { businesses } from '../data/businesses';
 import { categoryLabels } from '../data/categoryLabels';
 
 export function toWhatsappLink(phone) {
@@ -10,15 +9,7 @@ export function categoryLabel(slug) {
     return categoryLabels[slug] ?? slug;
 }
 
-export function findBusinessBySlug(slug) {
-    return businesses.find((business) => business.id === slug) ?? null;
-}
-
-export function findRelatedBusinesses(business, limit = 3) {
-    return businesses
-        .filter(
-            (other) =>
-                other.id !== business.id && other.categories.some((slug) => business.categories.includes(slug))
-        )
-        .slice(0, limit);
-}
+// O slug é gerado no banco por generate_business_slug(): sufixo numérico só
+// quando há colisão real, e o UNIQUE de businesses.slug como autoridade sob
+// concorrência. A versão anterior aqui sempre acrescentava 5 caracteres
+// aleatórios ao nome, o que deixava toda URL ilegível.

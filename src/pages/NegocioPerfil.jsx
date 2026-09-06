@@ -3,6 +3,7 @@ import {
     Clock,
     Globe,
     Images,
+    Mail,
     Map,
     MapPin,
     MessageCircle,
@@ -15,13 +16,9 @@ import { InstagramIcon } from '../components/ui/BrandIcons';
 import BusinessCard from '../components/ui/BusinessCard';
 import Reveal from '../components/ui/Reveal';
 import ShareButton from '../components/ui/ShareButton';
+import { useBusiness } from '../hooks/useBusiness';
 import { usePageMeta } from '../hooks/usePageMeta';
-import {
-    categoryLabel,
-    findBusinessBySlug,
-    findRelatedBusinesses,
-    toWhatsappLink,
-} from '../lib/business';
+import { categoryLabel, toWhatsappLink } from '../lib/business';
 import { businessShare } from '../lib/share';
 import { businessPageMeta } from '../lib/siteMeta';
 import NotFound from './NotFound';
@@ -37,26 +34,28 @@ const upcomingFeatures = [
 
 function NegocioPerfil() {
     const { slug } = useParams();
-    const business = findBusinessBySlug(slug);
+    const { business, related, loading, notFound } = useBusiness(slug);
 
     usePageMeta(business && businessPageMeta(business));
 
-    if (!business) {
+    if (notFound) {
         return <NotFound />;
     }
 
-    const related = findRelatedBusinesses(business);
+    if (loading || !business) {
+        return <div className="min-h-screen bg-background" />;
+    }
+
     const primaryCategory = business.categories[0];
-    const label = categoryLabel(primaryCategory);
+    // Rótulo vem do banco; categoryLabel() só cobre categoria antiga sem nome
+    // carregado.
+    const label = business.categoryNames?.[0] ?? categoryLabel(primaryCategory);
+    const whatsappNumber = business.whatsapp ?? business.phone;
 
     const share = businessShare(business);
 
     return (
         <>
-            <SEO
-                title={business.name}
-                description={business.description ?? `${business.name} faz parte do guia de ${label.toLowerCase()} de Pitimbu.`}
-            />
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
                 <div className="container mx-auto max-w-5xl">
                     <nav
@@ -111,13 +110,13 @@ function NegocioPerfil() {
                                     `${business.name} faz parte do guia de ${label.toLowerCase()} de Pitimbu.`}
                             </p>
                             <div className="mt-4 flex flex-wrap gap-2">
-                                {business.categories.map((slug) => (
+                                {business.categories.map((slug, index) => (
                                     <span
                                         key={slug}
                                         className="notranslate rounded-full bg-turquoise/10 px-3 py-1 text-xs font-semibold text-turquoise"
                                         translate="no"
                                     >
-                                        {categoryLabel(slug)}
+                                        {business.categoryNames?.[index] ?? categoryLabel(slug)}
                                     </span>
                                 ))}
                             </div>
@@ -151,30 +150,51 @@ function NegocioPerfil() {
                     <aside className="flex flex-col gap-4 rounded-3xl bg-card p-6 shadow-sm lg:h-fit lg:sticky lg:top-24">
                         <h2 className="font-head text-xl font-bold text-foreground">Contato</h2>
 
-                        {business.address && (
+                        {business.address ? (
                             <p className="flex items-start gap-2 text-sm text-muted-foreground">
                                 <MapPin size={16} className="mt-0.5 shrink-0 text-turquoise" aria-hidden="true" />
                                 {business.address}
                             </p>
+                        ) : (
+                            business.serviceArea && (
+                                <p className="flex items-start gap-2 text-sm text-muted-foreground">
+                                    <MapPin size={16} className="mt-0.5 shrink-0 text-turquoise" aria-hidden="true" />
+                                    Atende em {business.serviceArea}
+                                </p>
+                            )
                         )}
 
-                        <a
-                            href={`tel:${business.phone.replace(/\D/g, '')}`}
-                            className="flex w-full items-center justify-center gap-2 rounded-full bg-blue-primary py-3 text-sm text-muted"
-                        >
-                            <Phone size={16} aria-hidden="true" />
-                            {business.phone}
-                        </a>
+                        {business.phone && (
+                            <a
+                                href={`tel:${business.phone.replace(/\D/g, '')}`}
+                                className="flex w-full items-center justify-center gap-2 rounded-full bg-blue-primary py-3 text-sm text-muted"
+                            >
+                                <Phone size={16} aria-hidden="true" />
+                                {business.phone}
+                            </a>
+                        )}
 
-                        <a
-                            href={toWhatsappLink(business.phone)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex w-full items-center justify-center gap-2 rounded-full bg-whatsapp-green py-3 text-sm font-semibold text-white"
-                        >
-                            <MessageCircle size={18} aria-hidden="true" />
-                            Conversar no WhatsApp
-                        </a>
+                        {whatsappNumber && (
+                            <a
+                                href={toWhatsappLink(whatsappNumber)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex w-full items-center justify-center gap-2 rounded-full bg-whatsapp-green py-3 text-sm font-semibold text-white"
+                            >
+                                <MessageCircle size={18} aria-hidden="true" />
+                                Conversar no WhatsApp
+                            </a>
+                        )}
+
+                        {business.email && (
+                            <a
+                                href={`mailto:${business.email}`}
+                                className="flex w-full items-center justify-center gap-2 rounded-full bg-sand-dark py-3 text-sm font-semibold text-dark-ocean"
+                            >
+                                <Mail size={18} aria-hidden="true" />
+                                {business.email}
+                            </a>
+                        )}
 
                         {business.instagram && (
                             <a
