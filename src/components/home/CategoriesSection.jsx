@@ -8,7 +8,7 @@ function CategoriesSection() {
         <section className='py-16 md:py-24 bg-background'>
             <div className="container">
                 <div className='flex flex-col items-center pb-10'>
-                    <h1 className='text-center pb-5 font-head font-extrabold text-3xl font-stretch-expanded'>{categoriesSection.title}</h1>
+                    <h2 className='text-center pb-5 font-head font-extrabold text-3xl font-stretch-expanded'>{categoriesSection.title}</h2>
                     <p className='text-center text-balance text-dark-ocean/80'>{categoriesSection.description}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4 md:gap-6 p-4 md:grid-cols-3 lg:grid-cols-5">

@@ -6,6 +6,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
+    DEFAULT_DESCRIPTION,
+    DEFAULT_OG_IMAGE,
     OG_IMAGE_HEIGHT,
     OG_IMAGE_WIDTH,
     SITE_NAME,
@@ -81,10 +83,32 @@ export async function prerenderMeta(distDir) {
         await writeFile(outFile, html);
     }
 
+    await write404(distDir, base);
     await writeSitemap(distDir);
     await writeRobots(distDir);
 
     return routes.length;
+}
+
+// URL que não casa com nenhum arquivo caía no 404 cru da Vercel ("NOT_FOUND"),
+// em vez da página do site: o rewrite catch-all do vercel.json não chega a ser
+// aplicado. Com um 404.html no output, a Vercel o serve automaticamente — e
+// como ele é o mesmo bundle da SPA, o React Router renderiza a página
+// NotFound do projeto. O status HTTP continua sendo 404, que é o certo para
+// buscadores; um rewrite para index.html devolveria 200 para qualquer lixo.
+async function write404(distDir, base) {
+    const html = base.replace(
+        /\s*<\/head>/,
+        `\n${buildHead({
+            path: '/404',
+            title: `Página não encontrada — ${SITE_NAME}`,
+            description: DEFAULT_DESCRIPTION,
+            image: DEFAULT_OG_IMAGE,
+            noindex: true,
+        })}\n  </head>`
+    );
+
+    await writeFile(join(distDir, '404.html'), html);
 }
 
 // Sitemap e robots apontando para o domínio de produção. Só entram as rotas

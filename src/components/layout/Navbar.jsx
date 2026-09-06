@@ -81,9 +81,13 @@ function Navbar() {
                         </Link>
                     )}
 
+                    {/* Some abaixo de sm: com largura fixa (shrink-0 + whitespace-nowrap)
+                        este botão ocupa ~217px e empurrava o "Abrir menu" para fora da
+                        tela em qualquer celular (até ~430px), deixando o menu inteiro
+                        inalcançável. O mesmo CTA já existe dentro do menu mobile. */}
                     <Link
                         to="/cadastrar-negocio"
-                        className="shrink-0 rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap"
+                        className="hidden shrink-0 rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap sm:inline-block"
                     >
                         Cadastrar meu negócio
                     </Link>
