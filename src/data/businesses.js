@@ -5,7 +5,7 @@ const images = import.meta.glob('../assets/businesses/*.webp', {
     import: 'default',
 });
 
-function getImage(id) {
+export function getImage(id) {
     const entry = Object.entries(images).find(([path]) => path.includes(`/${id}.`));
     return entry ? entry[1] : null;
 }

@@ -78,9 +78,9 @@ function Footer() {
                 </Link>
               </li>
               <li className="py-2">
-                <a href="#" className="text-sand-dark">
+                <Link to="/planos#perguntas-frequentes" className="text-sand-dark">
                   FAQ
-                </a>
+                </Link>
               </li>
             </ul>
           </nav>

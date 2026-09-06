@@ -8,8 +8,6 @@ export const professionals = [
         location: 'Pitimbu',
         description: '12 anos de experiência em passeios de barco e trilhas pela região.',
         tags: ['Passeios de barco', 'Trilhas', 'Português/Inglês'],
-        rating: 4.9,
-        reviews: 94,
         phone: '(83) 99900-1001',
     },
     {
@@ -19,8 +17,6 @@ export const professionals = [
         location: 'Centro, Pitimbu',
         description: 'Atendimento em domicílio com produtos de qualidade.',
         tags: ['Domicílio', 'Pix', 'Unhas em gel'],
-        rating: 4.8,
-        reviews: 61,
         phone: '(83) 99900-1002',
     },
     {
@@ -30,8 +26,6 @@ export const professionals = [
         location: 'Praia Bela',
         description: 'Pesca esportiva e passeios de barco tradicionais.',
         tags: ['Pesca', 'Passeios', 'Local nativo'],
-        rating: 4.7,
-        reviews: 38,
         phone: '(83) 99900-1003',
     },
     {
@@ -41,8 +35,6 @@ export const professionals = [
         location: 'Acaú',
         description: 'Trançados e produtos artesanais com materiais regionais.',
         tags: ['Artesanato', 'Souvenirs', 'Encomendas'],
-        rating: 4.9,
-        reviews: 103,
         phone: '(83) 99900-1004',
     },
     {
@@ -52,8 +44,6 @@ export const professionals = [
         location: 'Pitimbu',
         description: 'Instalações e reparos elétricos residenciais.',
         tags: ['Emergência', '24h', 'Orçamento grátis'],
-        rating: 4.6,
-        reviews: 29,
         phone: '(83) 99900-1005',
     },
     {
@@ -63,8 +53,6 @@ export const professionals = [
         location: 'Centro, Pitimbu',
         description: 'Limpeza residencial e organização de ambientes.',
         tags: ['Limpeza', 'Organização', 'Pix'],
-        rating: 4.8,
-        reviews: 72,
         phone: '(83) 99900-1006',
     },
 ];

@@ -37,13 +37,13 @@ function FeaturedCard({ featured }) {
                     >
                         Ver mais
                     </Link>
-                    <a
+                    <Link
                         className="w-1/4 py-3 flex justify-center bg-whatsapp-green text-white rounded-4xl"
-                        href="#"
-                        aria-label={`Contatar ${featured.title} pelo WhatsApp`}
+                        to={`/negocio/${featured.id}`}
+                        aria-label={`Ver contato de ${featured.title}`}
                     >
                         <MessageCircle size={18} aria-hidden="true" />
-                    </a>
+                    </Link>
                 </div>
             </div>
         </article>

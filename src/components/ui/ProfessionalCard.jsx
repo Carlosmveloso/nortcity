@@ -1,4 +1,4 @@
-import { Star, MapPin, MessageCircle } from 'lucide-react';
+import { MapPin, MessageCircle } from 'lucide-react';
 
 function toWhatsappLink(phone) {
     const digits = phone.replace(/\D/g, '');
@@ -43,12 +43,7 @@ function ProfessionalCard({ professional }) {
                     ))}
                 </div>
 
-                <div className="mt-auto flex items-center justify-between pt-1">
-                    <span className="flex items-center gap-1 text-sm font-medium text-foreground">
-                        <Star size={16} className="fill-sun-yellow text-sun-yellow" aria-hidden="true" />
-                        {professional.rating}
-                        <span className="text-muted-foreground">({professional.reviews})</span>
-                    </span>
+                <div className="mt-auto flex items-center justify-end pt-1">
                     <a
                         href={toWhatsappLink(professional.phone)}
                         target="_blank"

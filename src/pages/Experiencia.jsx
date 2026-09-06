@@ -28,7 +28,6 @@ function Experiencia() {
 
     return (
         <>
-            <SEO title={title} description={description} />
             <section className="relative overflow-hidden bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
                 {heroImg && (
                     <img

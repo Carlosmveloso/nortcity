@@ -2,6 +2,7 @@ import { ChevronRight, Mail, MapPin, MessageCircle, Phone, Check } from 'lucide-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
+import HoneypotField from '../components/HoneypotField';
 import SEO from '../components/SEO';
 
 const inputClasses =
@@ -9,6 +10,7 @@ const inputClasses =
 
 function Contato() {
     const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+    const [honeypot, setHoneypot] = useState('');
     const [errors, setErrors] = useState({});
     const [sent, setSent] = useState(false);
     const [sending, setSending] = useState(false);
@@ -31,6 +33,13 @@ function Contato() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!validate()) return;
+
+        if (honeypot) {
+            // Bot: finge sucesso sem enviar nada de verdade.
+            setSent(true);
+            return;
+        }
+
         setSending(true);
         setSendError(false);
         try {
@@ -124,6 +133,7 @@ function Contato() {
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} noValidate className="rounded-3xl bg-card p-6 shadow-sm sm:p-8">
+                                <HoneypotField value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
                                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                                     <div>
                                         <label htmlFor="contato-name" className="mb-1.5 block text-sm font-semibold text-foreground">

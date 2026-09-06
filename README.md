@@ -9,34 +9,38 @@
 git clone https://github.com/Carlosmveloso/nortcity.git
 cd nortcity
 npm install
+cp .env.example .env   # preencha VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY
 npm run dev
 ```
 
 Acessa em `http://localhost:5173/`.
 
-### Build
+> Sem as variáveis do Supabase preenchidas, o app carrega mas `/explorar`, `/negocio/:slug` e login/cadastro não funcionam (ver `.env.example`).
+
+### Build e testes
 ```bash
 npm run build
 npm run preview
 npm run lint
+npm run test        # Vitest (unitários)
 ```
 
 ## 📚 Documentação
 
 - **[CLAUDE.md](./CLAUDE.md)** — Guia de desenvolvimento, convenções, fluxo de Git e boas práticas.
 - **[docs/farol-pitimbu-contexto.md](./docs/farol-pitimbu-contexto.md)** — Especificação completa do projeto (requisitos, fluxos, modelagem, roadmap, stack).
-- **[docs/comportamento-codex.md](./docs/comportamento-codex.md)** — Padrões comportamentais e consensos da equipe.
 
 ## 🛠 Tech Stack
 
-- **Frontend:** React 18 + Vite 5 + TypeScript
-- **Styling:** Tailwind CSS v3 + shadcn/ui
-- **Backend:** Supabase (PostgreSQL + Auth + Storage + Edge Functions)
-- **Animations:** framer-motion
-- **Routing:** react-router-dom v6
-- **Data:** @tanstack/react-query
-- **Forms:** react-hook-form + zod
+- **Frontend:** React 19 + Vite 8 + JavaScript (sem TypeScript — tipagem leve via JSDoc)
+- **Styling:** Tailwind CSS v4
+- **Backend:** Supabase — PostgreSQL + RLS, Auth (e-mail/senha) e Storage já conectados; Edge Functions e Realtime ainda não
+- **Routing:** react-router-dom v7
+- **Mapa:** react-leaflet
 - **Icons:** lucide-react
+- **Testes:** Vitest + Testing Library
+
+> Stack alvo descrito em `docs/farol-pitimbu-contexto.md` (TypeScript, shadcn/ui, framer-motion, react-query, react-hook-form+zod) ainda não foi adotado — ver a "Nota de stack" nesse documento.
 
 ## 🎨 Design System
 
@@ -55,12 +59,14 @@ Ver [CLAUDE.md](./CLAUDE.md#5-design-system-litoral-premium) para detalhes.
 
 ```
 src/
-├── components/       # Componentes React reutilizáveis
-├── pages/           # Páginas/rotas
-├── hooks/           # React hooks customizados
-├── integrations/    # Integrações (Supabase, etc)
+├── components/       # Componentes React reutilizáveis (inclui AdminRoute, ProtectedRoute)
+├── contexts/         # AuthContext (sessão, roles, isAdmin)
+├── pages/           # Páginas/rotas (inclui Admin.jsx)
+├── hooks/           # React hooks customizados (useAuth, useBusiness(es), useAdmin*)
+├── integrations/    # Cliente Supabase (client.js) + tipos JSDoc (types.js)
 ├── lib/             # Utilitários
-└── assets/          # Imagens e estáticos
+└── assets/          # Imagens estáticas — só compartilhamento (OG) e 2 páginas de experiência;
+                     # negócios já usam Supabase Storage
 ```
 
 ## 🔄 Fluxo de Desenvolvimento
@@ -78,11 +84,15 @@ Ver [CLAUDE.md — Fluxo de Git e PRs](./CLAUDE.md#6-fluxo-de-git-e-prs).
 - [x] Home + páginas institucionais (Explorar, Categorias, Profissionais, Sobre, Contato, Planos)
 - [x] Design system completo
 - [x] Animações, hover effects, header
-- [ ] Auth (e-mail + Google)
-- [ ] CRUD de negócios
-- [ ] Dashboard do dono
+- [x] Backend Supabase (Postgres + RLS) — negócios e categorias reais, não mais mockados
+- [x] Auth (e-mail/senha) — Google ainda pendente
+- [x] CRUD de negócios (parcial) — criação e leitura reais; edição de negócio já cadastrado só pelo admin por enquanto
+- [x] Painel admin — aprovar/rejeitar negócios, editar negócios e imagem, CRUD de categorias
+- [x] Upload de imagens (Supabase Storage) — os 78 negócios já migrados; dono também pode subir a própria foto no cadastro
+- [x] Honeypot anti-spam nos formulários públicos
+- [x] Testes automatizados (Vitest) e bundle otimizado (~136kB no chunk principal)
+- [ ] Dashboard do dono do negócio
 - [ ] Sistema de pagamentos (Stripe)
-- [ ] Admin panel
 
 Ver roadmap completo em [contexto do projeto](./docs/farol-pitimbu-contexto.md#10-roadmap).
 
