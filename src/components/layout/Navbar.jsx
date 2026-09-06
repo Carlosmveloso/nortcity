@@ -34,6 +34,10 @@ function Navbar() {
                 </nav>
 
                 <div className="flex items-center gap-2 xl:justify-self-end">
+                    {/* No celular o cabeçalho fica só com logo e menu: favoritos, conta,
+                        Meu Negócio e painel admin já existem dentro do menu, e repetidos
+                        aqui eles disputavam espaço com o botão "Abrir menu". */}
+                    <div className="hidden items-center gap-2 sm:flex">
                     <Link
                         to="/favoritos"
                         aria-label="Favoritos"
@@ -80,6 +84,7 @@ function Navbar() {
                             <User className="h-5 w-5" aria-hidden="true" />
                         </Link>
                     )}
+                    </div>
 
                     {/* Some abaixo de sm: com largura fixa (shrink-0 + whitespace-nowrap)
                         este botão ocupa ~217px e empurrava o "Abrir menu" para fora da
