@@ -1,6 +1,6 @@
 // Monta a mensagem que vai junto com o link ao compartilhar.
-// O WhatsApp entrega só a URL quando `navigator.share` recebe apenas `url`,
-// então o texto completo vai em `text` — e é ele que cai na área de
+// Ela é enviada inteira num campo só (ver ShareButton), com a URL na última
+// linha: é essa string que chega ao WhatsApp e também a que vai para a área de
 // transferência quando o navegador não tem menu de compartilhamento nativo.
 import { SITE_NAME, SITE_URL, businessSubtitle } from './siteMeta.js';
 
@@ -41,7 +41,7 @@ export function businessShare(business) {
 }
 
 export function beachShare(beach) {
-    const url = absoluteUrl(`/mapa#${beach.id}`);
+    const url = absoluteUrl(`/praia/${beach.id}`);
 
     return {
         title: `${beach.name} — ${SITE_NAME}`,

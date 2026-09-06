@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { professionals, professionalRoles } from '../data/professionals';
 import ProfessionalCard from '../components/ui/ProfessionalCard';
 import Reveal from '../components/ui/Reveal';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 function normalize(text) {
     return text
@@ -13,6 +15,8 @@ function normalize(text) {
 }
 
 function Profissionais() {
+    usePageMeta(staticPageMeta('/profissionais'));
+
     const [query, setQuery] = useState('');
     const [activeRole, setActiveRole] = useState('');
 

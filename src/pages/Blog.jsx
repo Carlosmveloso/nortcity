@@ -4,9 +4,12 @@ import { Link } from 'react-router-dom';
 import { blogPosts, blogCategories } from '../data/blogPosts';
 import BlogCard from '../components/ui/BlogCard';
 import Reveal from '../components/ui/Reveal';
-import SEO from '../components/SEO';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 function Blog() {
+    usePageMeta(staticPageMeta('/blog'));
+
     const [activeCategory, setActiveCategory] = useState('');
 
     const results = useMemo(() => {
@@ -16,10 +19,6 @@ function Blog() {
 
     return (
         <>
-            <SEO
-                title="Blog"
-                description="Histórias e guias de Pitimbu: leia, planeje e descubra a região com quem conhece de perto."
-            />
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
                 <div className="container mx-auto max-w-5xl">
                     <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-sm text-card/70">

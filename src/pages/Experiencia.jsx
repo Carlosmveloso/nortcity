@@ -7,13 +7,13 @@ import ComingSoon from '../components/ui/ComingSoon';
 import ShareButton from '../components/ui/ShareButton';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { experienceShare } from '../lib/share';
-import { experiencePageMeta } from '../lib/siteMeta';
+import { experiencePageMeta, notFoundMeta } from '../lib/siteMeta';
 
 function Experiencia() {
     const { slug } = useParams();
     const experience = experiencePages[slug];
 
-    usePageMeta(experiencePageMeta(slug));
+    usePageMeta(experiencePageMeta(slug) ?? notFoundMeta());
 
     if (!experience) {
         return (

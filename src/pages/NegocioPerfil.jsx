@@ -20,7 +20,7 @@ import { useBusiness } from '../hooks/useBusiness';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { categoryLabel, toWhatsappLink } from '../lib/business';
 import { businessShare } from '../lib/share';
-import { businessPageMeta } from '../lib/siteMeta';
+import { businessPageMeta, notFoundMeta } from '../lib/siteMeta';
 import NotFound from './NotFound';
 
 // Recursos que dependem de dados que ainda não temos (galeria, horários, coordenadas,
@@ -36,7 +36,7 @@ function NegocioPerfil() {
     const { slug } = useParams();
     const { business, related, loading, notFound } = useBusiness(slug);
 
-    usePageMeta(business && businessPageMeta(business));
+    usePageMeta(business ? businessPageMeta(business) : notFoundMeta());
 
     if (notFound) {
         return <NotFound />;

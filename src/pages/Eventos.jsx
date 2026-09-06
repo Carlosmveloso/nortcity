@@ -4,8 +4,12 @@ import { Link } from 'react-router-dom';
 import { events, eventCategories } from '../data/events';
 import EventItem from '../components/ui/EventItem';
 import Reveal from '../components/ui/Reveal';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 function Eventos() {
+    usePageMeta(staticPageMeta('/eventos'));
+
     const [activeCategory, setActiveCategory] = useState('');
 
     const results = useMemo(() => {

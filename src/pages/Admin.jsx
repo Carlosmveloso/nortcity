@@ -2,7 +2,8 @@ import { AlertTriangle, ChevronRight, Copy, ImagePlus, Link2, Loader2, Plus, Sea
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import SEO from '../components/SEO';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 import CategoryPicker from '../components/business/CategoryPicker';
 import { businessErrorMessage } from '../lib/businessErrors';
 import { buildBusinessPayload, businessFormFromRow, emptyBusinessForm, validateBusinessForm } from '../lib/businessForm';
@@ -957,11 +958,12 @@ const TABS = [
 ];
 
 function Admin() {
+    usePageMeta(staticPageMeta('/admin'));
+
     const [tab, setTab] = useState('businesses');
 
     return (
         <>
-            <SEO title="Painel Admin" />
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
                 <div className="container mx-auto max-w-5xl">
                     <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-sm text-card/70">

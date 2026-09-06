@@ -3,6 +3,8 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { popularCategories, otherCategories } from '../data/categories';
 import Reveal from '../components/ui/Reveal';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 function normalize(text) {
     return text
@@ -67,6 +69,8 @@ function CategoryTile({ category, size = 'default' }) {
 }
 
 function Categorias() {
+    usePageMeta(staticPageMeta('/categorias'));
+
     const [query, setQuery] = useState('');
 
     const filteredPopular = useMemo(() => {

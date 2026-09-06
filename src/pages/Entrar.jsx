@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import HoneypotField from '../components/HoneypotField';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 const inputClasses =
     'w-full rounded-2xl border border-sand-dark bg-white py-3 pr-4 pl-11 text-dark-ocean focus:border-turquoise focus:outline-none';
@@ -17,6 +19,8 @@ function translateAuthError(message) {
 }
 
 function Entrar() {
+    usePageMeta(staticPageMeta('/entrar'));
+
     const navigate = useNavigate();
     const location = useLocation();
     const redirectTo = location.state?.from ?? '/';

@@ -1,6 +1,10 @@
 import ComingSoon from '../components/ui/ComingSoon';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { notFoundMeta } from '../lib/siteMeta';
 
 function NotFound() {
+    usePageMeta(notFoundMeta());
+
     return (
         <ComingSoon
             title="Página não encontrada"

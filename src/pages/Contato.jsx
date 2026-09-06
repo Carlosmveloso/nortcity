@@ -3,12 +3,15 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
 import HoneypotField from '../components/HoneypotField';
-import SEO from '../components/SEO';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 const inputClasses =
     'w-full rounded-2xl border border-sand-dark bg-white px-4 py-3 text-dark-ocean focus:border-turquoise focus:outline-none';
 
 function Contato() {
+    usePageMeta(staticPageMeta('/contato'));
+
     const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
     const [honeypot, setHoneypot] = useState('');
     const [errors, setErrors] = useState({});
@@ -64,10 +67,6 @@ function Contato() {
 
     return (
         <>
-            <SEO
-                title="Contato"
-                description="Dúvidas, sugestões ou parcerias — fale com o time do Farol Pitimbu."
-            />
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
                 <div className="container mx-auto max-w-5xl">
                     <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-sm text-card/70">

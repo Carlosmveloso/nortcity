@@ -5,7 +5,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useCategories } from '@/hooks/useCategories';
 import { useMyBusiness } from '@/hooks/useMyBusiness';
-import SEO from '../components/SEO';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 import CategoryPicker from '../components/business/CategoryPicker';
 import { businessErrorMessage } from '../lib/businessErrors';
 import {
@@ -472,6 +473,8 @@ function ActiveEditor({ business, categories, changeRequest, onSaved }) {
 }
 
 function MeuNegocio() {
+    usePageMeta(staticPageMeta('/meu-negocio'));
+
     const { user } = useAuth();
     const { business, changeRequest, loading, error, refetch } = useMyBusiness();
     const { categories } = useCategories();
@@ -492,7 +495,6 @@ function MeuNegocio() {
 
     return (
         <>
-            <SEO title="Meu Negócio" />
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
                 <div className="container mx-auto max-w-3xl">
                     <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-sm text-card/70">

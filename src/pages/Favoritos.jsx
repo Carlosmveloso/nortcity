@@ -1,7 +1,11 @@
 import { ChevronRight, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 function Favoritos() {
+    usePageMeta(staticPageMeta('/favoritos'));
+
     return (
         <section className="min-h-screen bg-background px-4 pt-28 pb-20 sm:px-6 lg:px-8 lg:pt-32">
             <div className="container mx-auto max-w-3xl">

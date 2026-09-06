@@ -5,8 +5,12 @@ import { beaches } from '../data/beaches';
 import MapView from '../components/ui/MapView';
 import BeachCard from '../components/ui/BeachCard';
 import Reveal from '../components/ui/Reveal';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 function Mapa() {
+    usePageMeta(staticPageMeta('/mapa'));
+
     return (
         <>
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">

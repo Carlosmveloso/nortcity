@@ -4,8 +4,12 @@ import { Link } from 'react-router-dom';
 import { attractions, attractionTypes } from '../data/attractions';
 import AttractionCard from '../components/ui/AttractionCard';
 import Reveal from '../components/ui/Reveal';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 function Atracoes() {
+    usePageMeta(staticPageMeta('/atracoes'));
+
     const [activeType, setActiveType] = useState('');
 
     const results = useMemo(

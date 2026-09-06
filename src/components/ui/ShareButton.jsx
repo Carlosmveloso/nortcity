@@ -5,26 +5,38 @@ const PILL_CLASS = 'gap-2 rounded-full px-5 py-2.5 text-sm font-semibold';
 const ICON_CLASS =
     'absolute top-4 right-4 z-10 h-10 w-10 rounded-full bg-white/90 text-dark-ocean shadow-md backdrop-blur-sm transition-colors hover:bg-white';
 
-function ShareButton({ title, message, url, label, variant = 'pill', className = '' }) {
+function ShareButton({ message, label, variant = 'pill', className = '' }) {
     const [copied, setCopied] = useState(false);
     const isIcon = variant === 'icon';
+
+    async function copiarMensagem() {
+        await navigator.clipboard.writeText(message);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }
 
     async function handleShare(event) {
         // Os cards têm um link "esticado" por cima do artigo inteiro.
         event.preventDefault();
 
+        // Só `text`: quando `text` e `url` vão juntos, é o app de destino que
+        // escolhe qual usar — o WhatsApp descarta a descrição em parte dos
+        // aparelhos. A mensagem já termina com o link, então vai tudo num campo
+        // só e o preview continua sendo gerado a partir dele.
         if (navigator.share) {
             try {
-                await navigator.share({ title, text: message, url });
-            } catch {
-                // usuário fechou o menu de compartilhamento sem escolher nada
+                await navigator.share({ text: message });
+                return;
+            } catch (error) {
+                // Cancelou o menu: não há nada a fazer. Qualquer outra falha cai
+                // para a cópia, senão o clique não faria nada.
+                if (error?.name === 'AbortError') {
+                    return;
+                }
             }
-            return;
         }
 
-        await navigator.clipboard.writeText(message);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        await copiarMensagem();
     }
 
     const baseClass = isIcon ? ICON_CLASS : PILL_CLASS;

@@ -6,8 +6,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCategories } from '@/hooks/useCategories';
 import { useMyBusiness } from '@/hooks/useMyBusiness';
 import HoneypotField from '../components/HoneypotField';
-import SEO from '../components/SEO';
 import CategoryPicker from '../components/business/CategoryPicker';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 import { businessErrorMessage } from '../lib/businessErrors';
 import {
     DESCRIPTION_MAX,
@@ -71,6 +72,8 @@ const STEP_FIELDS = {
 };
 
 function CadastrarNegocio() {
+    usePageMeta(staticPageMeta('/cadastrar-negocio'));
+
     const { user } = useAuth();
     const { categories, loading: categoriesLoading } = useCategories();
     const { business: existingBusiness, loading: myBusinessLoading } = useMyBusiness();
@@ -185,7 +188,6 @@ function CadastrarNegocio() {
     if (submitted) {
         return (
             <section className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4 py-32 text-center">
-                <SEO title="Cadastro recebido" />
                 <span className="flex h-16 w-16 items-center justify-center rounded-full bg-turquoise/10 text-turquoise">
                     <Check size={32} aria-hidden="true" />
                 </span>
@@ -208,10 +210,6 @@ function CadastrarNegocio() {
 
     return (
         <>
-            <SEO
-                title="Cadastrar meu negócio"
-                description="Cadastre seu negócio no Farol Pitimbu e alcance turistas e moradores do litoral sul da Paraíba."
-            />
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
                 <div className="container mx-auto max-w-3xl">
                     <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-sm text-card/70">

@@ -4,12 +4,15 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useCategories } from '../hooks/useCategories';
 import { SEARCH_PAGE_SIZE, useBusinessSearch, useNeighborhoods } from '../hooks/useBusinessSearch';
 import BusinessCard from '../components/ui/BusinessCard';
-import SEO from '../components/SEO';
+import { usePageMeta } from '../hooks/usePageMeta';
+import { staticPageMeta } from '../lib/siteMeta';
 
 // Ordenação, relevância e paginação são resolvidas pela RPC search_businesses:
 // a lista de categorias vem do banco (não mais de uma constante no arquivo) e
 // a ordem vale sobre o conjunto inteiro, não sobre a página já baixada.
 function Explorar() {
+    usePageMeta(staticPageMeta('/explorar'));
+
     const [searchParams, setSearchParams] = useSearchParams();
     const initialQuery = searchParams.get('q') ?? '';
     const initialCategory = searchParams.get('categoria') ?? '';
@@ -74,10 +77,6 @@ function Explorar() {
 
     return (
         <>
-            <SEO
-                title="Explorar"
-                description="Explore negócios, passeios, gastronomia e serviços de Pitimbu no Farol Pitimbu."
-            />
             <section className="bg-gradient-ocean px-4 pt-28 pb-14 sm:px-6 lg:px-8 lg:pt-32">
                 <div className="container mx-auto max-w-5xl">
                     <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-sm text-card/70">
