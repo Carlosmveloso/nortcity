@@ -279,10 +279,47 @@ describe('dados mínimos e aprovação', () => {
         expect(await expectError(submitAs(owner, { payload: { phone: 'liga lá' } }))).toBe('contact_required');
     });
 
-    it('descrição precisa ter entre 40 e 1500 caracteres', async () => {
+    // Descrição voltou a ser opcional em 07/09/2026: quem tem o que dizer
+    // escreve, e o teto de 1500 é o único contrato que sobrou.
+    it('descrição é opcional, mas não passa de 1500 caracteres', async () => {
         const owner = await createUser(db);
-        expect(await expectError(submitAs(owner, { payload: { description: 'Bom demais' } }))).toBe('description_too_short');
-        expect(await expectError(submitAs(owner, { payload: { description: 'a'.repeat(1501) } }))).toBe('description_too_long');
+        await submitAs(owner, { payload: { description: null } });
+
+        const outro = await createUser(db);
+        await submitAs(outro, { payload: { description: 'Bom demais' } });
+
+        const terceiro = await createUser(db);
+        expect(await expectError(submitAs(terceiro, { payload: { description: 'a'.repeat(1501) } }))).toBe('description_too_long');
+    });
+    // Cadastro novo é o caminho que mais esconde bug: dado que já existe não
+    // exercita coluna obrigatória nem RPC de criação (lição do slug, 03/09).
+    it('cadastro novo sem descrição entra, é aprovado e fica público', async () => {
+        const owner = await createUser(db);
+        const id = await submitAs(owner, { payload: { description: null } });
+
+        await approve(id);
+
+        await asAnon(db);
+        const { rows } = await db.query(
+            'select status, description, slug from public.businesses where id = $1',
+            [id]
+        );
+        expect(rows[0].status).toBe('active');
+        expect(rows[0].description).toBeNull();
+        expect(rows[0].slug).toBeTruthy();
+    });
+
+    it('admin publica direto um cadastro sem descrição', async () => {
+        await asUser(db, admin);
+        const { rows } = await db.query(
+            `select public.admin_create_business($1::jsonb, $2::uuid[], null, 'active') as id`,
+            [JSON.stringify(businessPayload({ description: null })), [cats.gastronomia]]
+        );
+
+        await asAnon(db);
+        const publicado = await db.query('select status, description from public.businesses where id = $1', [rows[0].id]);
+        expect(publicado.rows[0].status).toBe('active');
+        expect(publicado.rows[0].description).toBeNull();
     });
 });
 
@@ -490,12 +527,30 @@ describe('compatibilidade com cadastros legados', () => {
             .toBe('(83) 3041-0000');
     });
 
-    it('mas uma descrição nova continua tendo de atender ao contrato', async () => {
+    it('e uma descrição nova curta também passa: o mínimo deixou de existir', async () => {
         const id = await legacyActiveBusiness('Resort à beira-mar na Reserva do Abiaí.');
 
         await asUser(db, admin);
-        expect(await expectError(db.query(`select public.admin_update_business($1, '{"description":"Curta"}'::jsonb)`, [id])))
-            .toBe('description_too_short');
+        await db.query(`select public.admin_update_business($1, '{"description":"Curta"}'::jsonb)`, [id]);
+
+        await asService(db);
+        expect((await db.query('select description from public.businesses where id = $1', [id])).rows[0].description)
+            .toBe('Curta');
+    });
+
+    it('mas o teto de 1500 caracteres continua valendo', async () => {
+        const id = await legacyActiveBusiness('Resort à beira-mar na Reserva do Abiaí.');
+
+        await asUser(db, admin);
+        expect(
+            await expectError(
+                db.query('select public.admin_update_business($1, jsonb_build_object($2::text, repeat($3::text, 1501)))', [
+                    id,
+                    'description',
+                    'a',
+                ])
+            )
+        ).toBe('description_too_long');
     });
 
     it('reativar cadastro antigo não reabre o contrato de descrição', async () => {

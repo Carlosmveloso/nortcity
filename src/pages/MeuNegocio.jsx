@@ -11,7 +11,6 @@ import CategoryPicker from '../components/business/CategoryPicker';
 import { businessErrorMessage } from '../lib/businessErrors';
 import {
     DESCRIPTION_MAX,
-    DESCRIPTION_MIN,
     buildBusinessPayload,
     businessFormFromRow,
     isValidContact,
@@ -125,10 +124,10 @@ function DraftEditor({ business, categories, onSaved }) {
             />
 
             <Field
-                label="Descrição"
+                label="Descrição (opcional)"
                 htmlFor="my-description"
                 error={errors.description}
-                hint={`${form.description.trim().length}/${DESCRIPTION_MAX} caracteres · mínimo de ${DESCRIPTION_MIN}`}
+                hint={`${form.description.trim().length}/${DESCRIPTION_MAX} caracteres`}
             >
                 <textarea
                     id="my-description"
@@ -413,9 +412,9 @@ function ActiveEditor({ business, categories, changeRequest, onSaved }) {
                     />
 
                     <Field
-                        label="Descrição"
+                        label="Descrição (opcional)"
                         htmlFor="active-description"
-                        hint={`${form.description.trim().length}/${DESCRIPTION_MAX} caracteres · mínimo de ${DESCRIPTION_MIN}`}
+                        hint={`${form.description.trim().length}/${DESCRIPTION_MAX} caracteres`}
                     >
                         <textarea
                             id="active-description"

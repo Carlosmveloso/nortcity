@@ -13,8 +13,6 @@ const MESSAGES = {
 
     name_required: 'Informe o nome do negócio.',
     name_too_long: 'O nome pode ter no máximo 120 caracteres.',
-    description_required: 'Escreva uma descrição do negócio.',
-    description_too_short: 'A descrição precisa ter pelo menos 40 caracteres.',
     description_too_long: 'A descrição pode ter no máximo 1500 caracteres.',
     location_required: 'Informe o endereço, o bairro ou a área de atendimento.',
     contact_required:
@@ -51,5 +49,15 @@ const MESSAGES = {
 
 export function businessErrorMessage(error, fallback = 'Não foi possível concluir. Tente novamente em instantes.') {
     if (!error) return fallback;
-    return MESSAGES[error.message] ?? error.details ?? fallback;
+
+    const known = MESSAGES[error.message];
+    if (known) return known;
+    if (error.details) return error.details;
+
+    // Erro que não é do nosso contrato (permissão, cast, rede). Antes virava uma
+    // frase vaga e o problema real ficava invisível — agora o código bruto vem
+    // junto e aparece inteiro no console.
+    console.error('[farol] erro não mapeado:', error);
+    const code = error.message || error.code;
+    return code ? `${fallback} (código: ${code})` : fallback;
 }

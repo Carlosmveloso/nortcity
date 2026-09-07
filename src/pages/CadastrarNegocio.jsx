@@ -12,7 +12,6 @@ import { staticPageMeta } from '../lib/siteMeta';
 import { businessErrorMessage } from '../lib/businessErrors';
 import {
     DESCRIPTION_MAX,
-    DESCRIPTION_MIN,
     buildBusinessPayload,
     emptyBusinessForm,
     validateBusinessForm,
@@ -270,7 +269,7 @@ function CadastrarNegocio() {
                                 )}
 
                                 <div>
-                                    <FieldLabel htmlFor="description">Descrição</FieldLabel>
+                                    <FieldLabel htmlFor="description">Descrição (opcional)</FieldLabel>
                                     <textarea
                                         id="description"
                                         rows={4}
@@ -280,8 +279,7 @@ function CadastrarNegocio() {
                                         placeholder="Conte o que você oferece, para quem, e o que diferencia o seu negócio."
                                     />
                                     <p className="mt-1 text-xs text-dark-ocean/60">
-                                        {formData.description.trim().length}/{DESCRIPTION_MAX} caracteres · mínimo de{' '}
-                                        {DESCRIPTION_MIN}
+                                        {formData.description.trim().length}/{DESCRIPTION_MAX} caracteres
                                     </p>
                                     {errors.description && (
                                         <p className="mt-1 text-sm text-red-600">{errors.description}</p>

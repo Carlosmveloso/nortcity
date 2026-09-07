@@ -3,7 +3,6 @@
 // a autoridade — isto existe para o usuário ver o erro no campo certo antes de
 // enviar, não para substituir a checagem do servidor.
 
-export const DESCRIPTION_MIN = 40;
 export const DESCRIPTION_MAX = 1500;
 export const MAX_CATEGORIES = 3;
 
@@ -72,8 +71,15 @@ export function buildBusinessPayload(form) {
     };
 }
 
-/** Erros por campo. Objeto vazio = pronto para enviar. */
-export function validateBusinessForm(form) {
+/**
+ * Erros por campo. Objeto vazio = pronto para enviar.
+ *
+ * `checkLocation` espelha o parâmetro homônimo de assert_business_minimums: o
+ * banco só cobra localização de quem está criando ou alterando esses campos, e
+ * a tela precisa cobrar o mesmo — senão corrigir um telefone de cadastro antigo
+ * vira retrofit obrigatório de endereço.
+ */
+export function validateBusinessForm(form, { checkLocation = true } = {}) {
     const errors = {};
 
     if (!form.name.trim()) errors.name = 'Informe o nome do negócio.';
@@ -85,18 +91,17 @@ export function validateBusinessForm(form) {
     else if (form.categories.length > 1 && !form.categories.includes(form.primaryCategoryId))
         errors.primaryCategoryId = 'Escolha qual categoria é a principal.';
 
-    const description = form.description.trim();
-    if (!description) errors.description = 'Escreva uma descrição do negócio.';
-    else if (description.length < DESCRIPTION_MIN)
-        errors.description = `A descrição precisa ter pelo menos ${DESCRIPTION_MIN} caracteres.`;
-    else if (description.length > DESCRIPTION_MAX)
+    // Descrição é opcional (07/09/2026): vazia é um estado válido, só o teto vale.
+    if (form.description.trim().length > DESCRIPTION_MAX)
         errors.description = `A descrição pode ter no máximo ${DESCRIPTION_MAX} caracteres.`;
 
-    if (form.hasPublicAddress) {
-        if (!buildAddress(form) && !form.neighborhood.trim())
-            errors.street = 'Informe a rua ou pelo menos o bairro.';
-    } else if (!form.serviceArea.trim()) {
-        errors.serviceArea = 'Informe a região que você atende.';
+    if (checkLocation) {
+        if (form.hasPublicAddress) {
+            if (!buildAddress(form) && !form.neighborhood.trim())
+                errors.street = 'Informe a rua ou pelo menos o bairro.';
+        } else if (!form.serviceArea.trim()) {
+            errors.serviceArea = 'Informe a região que você atende.';
+        }
     }
 
     if (!hasPublicContact(form))

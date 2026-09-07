@@ -229,7 +229,18 @@ function BusinessEditor({ business, categories, onSave, onCancel }) {
     };
 
     const handleSave = async () => {
-        const validation = validateBusinessForm(form);
+        const payload = buildBusinessPayload(form);
+        // Espelha admin_update_business: num negócio publicado a localização só
+        // é cobrada de quem a está alterando. Sem isso, os cadastros antigos que
+        // nasceram sem endereço ficam impossíveis de editar — nem para corrigir
+        // um telefone.
+        const locationChanged =
+            payload.address !== (business.address ?? null) ||
+            payload.neighborhood !== (business.neighborhood ?? null) ||
+            payload.service_area !== (business.service_area ?? null);
+        const validation = validateBusinessForm(form, {
+            checkLocation: business.status !== 'active' || locationChanged,
+        });
         // Cadastro ainda em análise pode ficar incompleto; publicado, não.
         if (business.status === 'active' && Object.keys(validation).length > 0) {
             setErrors(validation);
@@ -240,7 +251,7 @@ function BusinessEditor({ business, categories, onSave, onCancel }) {
 
         setSaving(true);
         const result = await onSave({
-            payload: buildBusinessPayload(form),
+            payload,
             categoryIds: form.categories.length > 0 ? form.categories : null,
             primaryCategoryId: form.primaryCategoryId,
         });
@@ -284,7 +295,7 @@ function BusinessEditor({ business, categories, onSave, onCancel }) {
                 rows={3}
                 value={form.description}
                 onChange={(e) => update('description', e.target.value)}
-                placeholder="Descrição"
+                placeholder="Descrição (opcional)"
             />
             {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
 
@@ -389,7 +400,7 @@ function BusinessCreateForm({ categories, onCreate, onCancel }) {
                     rows={3}
                     value={form.description}
                     onChange={(e) => update('description', e.target.value)}
-                    placeholder="Descrição"
+                    placeholder="Descrição (opcional)"
                 />
                 <div className="grid gap-3 sm:grid-cols-2">
                     <input className={inputClasses} value={form.street} onChange={(e) => update('street', e.target.value)} placeholder="Endereço" />

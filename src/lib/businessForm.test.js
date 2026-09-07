@@ -44,9 +44,16 @@ describe('validateBusinessForm', () => {
         expect(validateBusinessForm(form())).toEqual({});
     });
 
-    it('exige descrição informativa', () => {
-        expect(validateBusinessForm(form({ description: 'Muito bom' })).description).toMatch(/40 caracteres/);
+    it('aceita descrição vazia ou curta, mas limita o tamanho', () => {
+        expect(validateBusinessForm(form({ description: '' })).description).toBeUndefined();
+        expect(validateBusinessForm(form({ description: 'Muito bom' })).description).toBeUndefined();
         expect(validateBusinessForm(form({ description: 'a'.repeat(1501) })).description).toMatch(/1500/);
+    });
+
+    it('checkLocation: false não cobra endereço de quem não o está alterando', () => {
+        const semEndereco = form({ street: '', number: '', neighborhood: '', serviceArea: '' });
+        expect(validateBusinessForm(semEndereco).street).toBeTruthy();
+        expect(validateBusinessForm(semEndereco, { checkLocation: false }).street).toBeUndefined();
     });
 
     it('exige categoria principal explícita quando há mais de uma', () => {
