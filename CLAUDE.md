@@ -344,6 +344,36 @@ Lições que valem para o próximo trabalho no banco:
   criada ou alterada, nunca como pedágio para mexer em outro campo. Antes de ativar restrição, rode o
   diagnóstico e decida o que fazer com o que não se encaixa — sem escolher em silêncio pelo usuário.
 
+### Descrição opcional e a trava que ficou só no cliente (07/09/2026)
+
+O mínimo de 40 caracteres foi revertido: descrição agora é opcional, com teto de 1500
+(`supabase/migrations/20260907000001_description_optional.sql`). Duas lições:
+
+- **A tolerância implementada no SQL precisa ser copiada na tela.** `admin_update_business` só cobra
+  descrição e localização quando esses campos mudam, mas `BusinessEditor` no `/admin` rodava
+  `validateBusinessForm` inteiro e bloqueava o salvamento de qualquer negócio publicado com um campo
+  fora do contrato. Resultado medido em produção: **59 dos 78 negócios publicados eram impossíveis de
+  salvar** (53 por descrição curta, 30 por falta de endereço) — e o banco teria aceitado todos. Quando
+  o servidor tem uma regra condicional, o cliente precisa da mesma condição, não da versão rígida.
+- **Fallback de erro sem código é um bug invisível.** `businessErrorMessage` devolvia "Não foi possível
+  concluir" para qualquer erro fora do mapa, sem `console.error` e sem o código bruto. Foi só anexar o
+  código à mensagem para o erro real aparecer na primeira tentativa seguinte:
+  `permission denied for function assert_business_categories`.
+- **GRANT esquecido, terceira vez — agora numa trigger DEFERRED.**
+  `business_categories_check()` nasceu sem `security definer` (migration 0003) e depois
+  `assert_business_categories()` teve `execute` revogado de PUBLIC (migration 0010). Cada decisão está
+  certa sozinha; juntas quebraram **toda** escrita de categoria vinda do app. O detalhe que fecha a
+  armadilha é o `deferrable initially deferred`: a trigger não roda dentro da RPC `SECURITY DEFINER`,
+  roda no COMMIT, quando o papel corrente já voltou a ser `authenticated`. Atingia
+  `submit_business` (/cadastrar-negocio), `admin_create_business` e `admin_update_business` com
+  categorias; moderação não toca a tabela, e por isso o painel parecia funcionar pela metade.
+  Corrigido em `20260907000002_categories_trigger_security_definer.sql`.
+- **Este bug o PGlite não pega — e mesmo assim dá para testá-lo.** O harness em WASM não recusa a
+  chamada que o Postgres do servidor recusa, então nenhum teste de execução acusaria. A guarda que
+  funciona é de catálogo: `src/test/db/function-privileges.test.js` lê `pg_trigger`/`pg_proc` e falha
+  se alguma trigger sem `SECURITY DEFINER` chamar função cujo `execute` foi revogado. Quando o
+  ambiente de teste não reproduz a falha, teste o invariante em vez de desistir.
+
 ### Home Page Refinements
 
 **6 problemas identificados e em processo de resolução:**
@@ -468,5 +498,5 @@ app inteiro — mas nenhuma chamada ao Supabase funciona.
 
 ---
 
-**Última atualização:** 2026-09-06
-**Versão:** 1.2 (regras de negócio do diretório: propriedade, moderação, Meu Negócio, busca e propostas)
+**Última atualização:** 2026-09-07
+**Versão:** 1.3 (descrição opcional e edição de negócio publicado destravada no painel admin)
