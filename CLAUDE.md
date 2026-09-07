@@ -374,6 +374,40 @@ O mínimo de 40 caracteres foi revertido: descrição agora é opcional, com tet
   se alguma trigger sem `SECURITY DEFINER` chamar função cujo `execute` foi revogado. Quando o
   ambiente de teste não reproduz a falha, teste o invariante em vez de desistir.
 
+### A capa do admin e o bug que já estava corrigido (07/09/2026)
+
+Relato: "troco a imagem no /admin, ela sobe, mas o formulário continua mostrando a antiga; ao salvar
+aparecem duas mensagens de erro; e mesmo com os erros a imagem muda". Três sintomas, três causas
+distintas — nenhuma delas onde o relato apontava.
+
+- **Antes de caçar a causa, confira qual build está no ar.** As duas mensagens de erro
+  (40 caracteres + "o negócio está publicado: corrija os campos") vinham da `main`, que ainda tinha
+  `DESCRIPTION_MIN = 40`. O código já corrigido estava numa branch local que nunca havia sido enviada ao
+  remoto — a produção rodava outra coisa. Um `git show main:src/lib/businessForm.js` resolveu em
+  segundos o que uma leitura do working tree jamais explicaria: no código atual aquela combinação de
+  mensagens é impossível. Bug relatado em produção começa por identificar o commit que está servindo.
+- **Escrita disparada fora do botão Salvar quebra tudo que o Salvar promete.** A capa era gravada no
+  instante do `change` do input de arquivo, por um RPC próprio: escapava da validação, ia ao ar mesmo
+  com o formulário bloqueado, e Cancelar não desfazia. Seleção de arquivo deve virar **estado
+  pendente** (arquivo + prévia por `URL.createObjectURL`), e a gravação acontece no mesmo payload do
+  resto — `admin_update_business` já aceitava `cover_image`. O padrão certo já existia em
+  `MeuNegocio.jsx`; o `/admin` é que tinha o seu próprio.
+- **Sentinela combinada de um lado só vira no-op silencioso.** `handleImageChange` chamava
+  `onSave(null)` querendo dizer "recarrega a lista"; o pai respondia `if (!patch) return { error: null }`
+  e não chamava `refetch()`. Ninguém errou em voz alta: o upload deu certo, o banco atualizou, e a tela
+  ficou mostrando a imagem velha. Quando o filho precisa de uma ação do pai, peça por prop com nome
+  (`onCoverChanged`), não por parâmetro nulo com significado implícito.
+- **`upsert` em caminho fixo destrói o dado atual antes de a gravação confirmar.** Se o upload sobrescreve
+  `{id}/cover.<ext>` e a escrita seguinte falha, a capa que está no ar já foi perdida — e a URL antiga
+  passa a servir a imagem nova. Nome único por envio (`cover-<ts>.<ext>`, como `publishReviewImage` já
+  fazia) troca esse risco por, no pior caso, um arquivo órfão.
+- **Para testar escrita em produção, crie o que der para apagar.** O fluxo "imagem + Salvar" só se prova
+  gravando de verdade, e fazer isso num dos 78 cadastros reais trocaria a capa de um negócio por uma
+  imagem de teste sem volta fácil. Um cadastro descartável (criado como pendente, apagado no fim)
+  prova o caminho inteiro sem tocar em dado de ninguém. Nota de automação: o botão de excluir usa
+  `window.confirm`, que congela o controle do navegador — sobrescrever `window.confirm` antes do clique
+  evita o diálogo em vez de ficar preso nele.
+
 ### Home Page Refinements
 
 **6 problemas identificados e em processo de resolução:**
@@ -499,4 +533,4 @@ app inteiro — mas nenhuma chamada ao Supabase funciona.
 ---
 
 **Última atualização:** 2026-09-07
-**Versão:** 1.3 (descrição opcional e edição de negócio publicado destravada no painel admin)
+**Versão:** 1.4 (capa do editor do admin: prévia imediata e gravação só no Salvar)
