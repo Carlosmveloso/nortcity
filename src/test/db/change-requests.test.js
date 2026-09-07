@@ -99,8 +99,12 @@ describe('proposta de alteração sensível', () => {
     });
 
     it('proposta que quebraria o cadastro é recusada na origem', async () => {
-        expect(await expectError(request({ changes: { description: 'curta' } }))).toBe('description_too_short');
+        expect(await expectError(request({ changes: { description: 'a'.repeat(1501) } }))).toBe('description_too_long');
         expect(await expectError(request({ changes: { name: '' } }))).toBe('name_required');
+    });
+
+    it('descrição curta é proposta válida: o mínimo deixou de existir', async () => {
+        await request({ changes: { description: 'curta' } });
     });
 
     it('campo fora da matriz não vira proposta', async () => {

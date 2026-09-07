@@ -27,6 +27,28 @@ export async function uploadBusinessCoverImage(businessId, file) {
 }
 
 /**
+ * Capa trocada pelo admin no painel: caminho único {business_id}/cover-<ts>.<ext>.
+ *
+ * Nome novo a cada envio de propósito. O caminho fixo com `upsert` sobrescreve
+ * a capa que está no ar antes de o `admin_update_business` confirmar — se a
+ * gravação falhar depois do upload, a imagem antiga já teria sido destruída.
+ * Com nome único, a falha deixa no máximo um arquivo sem referência, e o
+ * cache-bust por querystring deixa de ser necessário.
+ */
+export async function uploadAdminCoverImage(businessId, file) {
+    const path = `${businessId}/cover-${Date.now()}.${extensionOf(file)}`;
+
+    const { error } = await supabase.storage.from(BUCKET).upload(path, file, { cacheControl: '3600' });
+    if (error) return { error };
+
+    const {
+        data: { publicUrl },
+    } = supabase.storage.from(BUCKET).getPublicUrl(path);
+
+    return { url: publicUrl };
+}
+
+/**
  * Capa proposta para um negócio já publicado. Vai para {business_id}/review/,
  * que a policy de leitura pública exclui: a capa aprovada continua no ar e a
  * imagem em análise não fica acessível por URL até a decisão.

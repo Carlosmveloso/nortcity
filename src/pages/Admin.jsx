@@ -1,5 +1,5 @@
 import { AlertTriangle, ChevronRight, Copy, ImagePlus, Link2, Loader2, Plus, Search, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -9,7 +9,7 @@ import { businessErrorMessage } from '../lib/businessErrors';
 import { buildBusinessPayload, businessFormFromRow, emptyBusinessForm, validateBusinessForm } from '../lib/businessForm';
 import { BUSINESS_STATUS_LABELS, MODERATION_REASONS, moderationReasonLabel } from '../lib/moderation';
 import { normalize } from '../lib/text';
-import { reviewImageSignedUrl, uploadBusinessCoverImage } from '../lib/uploadBusinessCoverImage';
+import { reviewImageSignedUrl, uploadAdminCoverImage } from '../lib/uploadBusinessCoverImage';
 import { useAdminBusinesses } from '../hooks/useAdminBusinesses';
 import { useAdminCategories } from '../hooks/useAdminCategories';
 import { useAdminChangeRequests } from '../hooks/useAdminChangeRequests';
@@ -210,26 +210,46 @@ function BusinessEditor({ business, categories, onSave, onCancel }) {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [uploading, setUploading] = useState(false);
+    // A capa escolhida fica pendente até o Salvar: antes ela era gravada no
+    // instante do clique, então uma imagem trocada junto com um campo inválido
+    // ia para o ar mesmo com o salvamento bloqueado — e Cancelar não desfazia.
+    const [coverFile, setCoverFile] = useState(null);
+    const [coverPreview, setCoverPreview] = useState(null);
+
+    useEffect(() => {
+        if (!coverPreview) return undefined;
+        return () => URL.revokeObjectURL(coverPreview);
+    }, [coverPreview]);
 
     const update = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
-    const handleImageChange = async (event) => {
+    const handleImageChange = (event) => {
         const file = event.target.files?.[0];
         event.target.value = '';
         if (!file) return;
-        setUploading(true);
-        const { url, error: uploadError } = await uploadBusinessCoverImage(business.id, file);
-        setUploading(false);
-        if (uploadError) {
-            setError('Não foi possível enviar a imagem.');
-            return;
-        }
-        await supabase.rpc('set_business_cover_image', { p_business_id: business.id, p_url: url });
-        await onSave(null);
+        setCoverFile(file);
+        setCoverPreview(URL.createObjectURL(file));
+        setError('');
+    };
+
+    const discardImage = () => {
+        setCoverFile(null);
+        setCoverPreview(null);
     };
 
     const handleSave = async () => {
-        const validation = validateBusinessForm(form);
+        const payload = buildBusinessPayload(form);
+        // Espelha admin_update_business: num negócio publicado a localização só
+        // é cobrada de quem a está alterando. Sem isso, os cadastros antigos que
+        // nasceram sem endereço ficam impossíveis de editar — nem para corrigir
+        // um telefone.
+        const locationChanged =
+            payload.address !== (business.address ?? null) ||
+            payload.neighborhood !== (business.neighborhood ?? null) ||
+            payload.service_area !== (business.service_area ?? null);
+        const validation = validateBusinessForm(form, {
+            checkLocation: business.status !== 'active' || locationChanged,
+        });
         // Cadastro ainda em análise pode ficar incompleto; publicado, não.
         if (business.status === 'active' && Object.keys(validation).length > 0) {
             setErrors(validation);
@@ -239,8 +259,23 @@ function BusinessEditor({ business, categories, onSave, onCancel }) {
         setErrors(validation);
 
         setSaving(true);
+        // A imagem só sobe depois da validação passar, e entra no mesmo payload:
+        // admin_update_business aceita cover_image, então texto e capa mudam na
+        // mesma transação.
+        if (coverFile) {
+            setUploading(true);
+            const { url, error: uploadError } = await uploadAdminCoverImage(business.id, coverFile);
+            setUploading(false);
+            if (uploadError) {
+                setSaving(false);
+                setError('Não foi possível enviar a imagem. O negócio não foi salvo.');
+                return;
+            }
+            payload.cover_image = url;
+        }
+
         const result = await onSave({
-            payload: buildBusinessPayload(form),
+            payload,
             categoryIds: form.categories.length > 0 ? form.categories : null,
             primaryCategoryId: form.primaryCategoryId,
         });
@@ -252,17 +287,35 @@ function BusinessEditor({ business, categories, onSave, onCancel }) {
         <div className="mt-4 grid gap-3 border-t border-sand-dark pt-4">
             <div className="flex items-center gap-4">
                 <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-sand-dark">
-                    {business.cover_image && <img src={business.cover_image} alt="" className="h-full w-full object-cover" />}
-                </div>
-                <label className="flex w-fit cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-dark-ocean shadow-sm">
-                    {uploading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                    ) : (
-                        <ImagePlus className="h-4 w-4" aria-hidden="true" />
+                    {(coverPreview || business.cover_image) && (
+                        <img src={coverPreview ?? business.cover_image} alt="" className="h-full w-full object-cover" />
                     )}
-                    {uploading ? 'Enviando...' : 'Trocar imagem'}
-                    <input type="file" accept="image/*" onChange={handleImageChange} disabled={uploading} className="sr-only" />
-                </label>
+                </div>
+                <div className="flex flex-col items-start gap-1">
+                    <label className="flex w-fit cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-dark-ocean shadow-sm">
+                        {uploading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                        ) : (
+                            <ImagePlus className="h-4 w-4" aria-hidden="true" />
+                        )}
+                        {uploading ? 'Enviando...' : coverFile ? 'Escolher outra imagem' : 'Trocar imagem'}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            disabled={uploading || saving}
+                            className="sr-only"
+                        />
+                    </label>
+                    {coverFile && (
+                        <p className="text-xs text-dark-ocean/70">
+                            Nova imagem: será salva ao clicar em Salvar.{' '}
+                            <button type="button" onClick={discardImage} className="font-semibold underline">
+                                Desfazer
+                            </button>
+                        </p>
+                    )}
+                </div>
             </div>
 
             <input className={inputClasses} value={form.name} onChange={(e) => update('name', e.target.value)} placeholder="Nome" />
@@ -284,7 +337,7 @@ function BusinessEditor({ business, categories, onSave, onCancel }) {
                 rows={3}
                 value={form.description}
                 onChange={(e) => update('description', e.target.value)}
-                placeholder="Descrição"
+                placeholder="Descrição (opcional)"
             />
             {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
 
@@ -389,7 +442,7 @@ function BusinessCreateForm({ categories, onCreate, onCancel }) {
                     rows={3}
                     value={form.description}
                     onChange={(e) => update('description', e.target.value)}
-                    placeholder="Descrição"
+                    placeholder="Descrição (opcional)"
                 />
                 <div className="grid gap-3 sm:grid-cols-2">
                     <input className={inputClasses} value={form.street} onChange={(e) => update('street', e.target.value)} placeholder="Endereço" />
@@ -636,7 +689,6 @@ function BusinessesTab() {
                                 categories={categories}
                                 onCancel={() => setEditingId(null)}
                                 onSave={async (patch) => {
-                                    if (!patch) return { error: null };
                                     const result = await updateBusiness(
                                         business.id,
                                         patch.payload,
