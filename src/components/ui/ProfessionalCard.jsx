@@ -1,9 +1,5 @@
 import { MapPin, MessageCircle } from 'lucide-react';
-
-function toWhatsappLink(phone) {
-    const digits = phone.replace(/\D/g, '');
-    return `https://wa.me/55${digits}`;
-}
+import { toWhatsappLink } from '../../lib/business';
 
 function initials(name) {
     return name
@@ -15,6 +11,8 @@ function initials(name) {
 }
 
 function ProfessionalCard({ professional }) {
+    const whatsappLink = toWhatsappLink(professional.whatsapp ?? professional.phone);
+
     return (
         <article className="group flex h-full flex-col overflow-hidden rounded-3xl bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
             <div className="flex h-full flex-col gap-3 p-5">
@@ -44,16 +42,18 @@ function ProfessionalCard({ professional }) {
                 </div>
 
                 <div className="mt-auto flex items-center justify-end pt-1">
-                    <a
-                        href={toWhatsappLink(professional.phone)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 rounded-full bg-whatsapp-green px-4 py-2 text-sm font-semibold text-white"
-                        aria-label={`Contatar ${professional.name} pelo WhatsApp`}
-                    >
-                        <MessageCircle size={16} aria-hidden="true" />
-                        Contatar
-                    </a>
+                    {whatsappLink && (
+                        <a
+                            href={whatsappLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 rounded-full bg-whatsapp-green px-4 py-2 text-sm font-semibold text-white"
+                            aria-label={`Contatar ${professional.name} pelo WhatsApp`}
+                        >
+                            <MessageCircle size={16} aria-hidden="true" />
+                            Contatar
+                        </a>
+                    )}
                 </div>
             </div>
         </article>

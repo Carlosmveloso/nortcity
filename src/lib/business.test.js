@@ -9,6 +9,13 @@ describe('toWhatsappLink', () => {
     it('remove qualquer caractere não numérico', () => {
         expect(toWhatsappLink('83 9 9113.4990')).toBe('https://wa.me/5583991134990');
     });
+
+    // Telefone é opcional: basta um contato público qualquer para publicar. Um
+    // negócio cadastrado só com WhatsApp chegava aqui como null e derrubava a
+    // listagem inteira (segunda página de /explorar?categoria=servicos).
+    it.each([null, undefined, '', '   ', '---'])('devolve null quando não há número (%p)', (phone) => {
+        expect(toWhatsappLink(phone)).toBeNull();
+    });
 });
 
 describe('categoryLabel', () => {
