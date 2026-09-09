@@ -433,8 +433,10 @@ vezes, por duas causas diferentes — nenhuma delas um bug do site.
 - **`grep --include` com glob sem aspas no zsh falha em silêncio.** `grep -rn x src --include=*.js`
   aborta com "no matches found" e devolve nada — que parece "nenhum consumidor". Confiei nisso,
   apaguei `businesses.data.js`, e o build quebrou apontando três importadores reais
-  (`categories.js`, `statsSection.js`, `experiencePages.js`). Sempre cite o glob
-  (`--include='*.js'`), e desconfie de busca que devolve zero em arquivo que você sabe que existe.
+  (`categories.js`, `statsSection.js`, `experiencePages.js`) — que mostravam ao visitante a contagem
+  errada na home, a contagem errada em `/categorias` e listas com link para ficha que dava 404. Sempre
+  cite o glob (`--include='*.js'`), e desconfie de busca que devolve zero em arquivo que você sabe que
+  existe. Os quatro consumidores foram convertidos no mesmo dia e o arquivo foi apagado.
 
 ### Home Page Refinements
 
@@ -519,11 +521,18 @@ e migração de imagens estáticas pro Storage (`scripts/migrate-business-images
 scripts únicos, não fazem parte do build normal. `[db.seed]` está desligado no `config.toml`: aplicar
 seed é decisão explícita, nunca efeito de um `db push --include-seed`.
 
-**O build lê o catálogo do banco.** `scripts/publishedBusinesses.mjs` busca os negócios publicados e
-alimenta o sitemap, o HTML pré-renderizado (`prerender-meta.mjs`) e os cards de compartilhamento
-(`generate-og-images.mjs`). Nenhum dos três lê `src/data/businesses.data.js` — esse arquivo ainda
-serve a `categories.js`, `statsSection.js` e `experiencePages.js`, que **continuam mostrando dado
-estático desatualizado** (ver seção 9).
+**O catálogo de negócios só existe no banco.** `src/data/businesses.data.js` foi apagado em
+09/09/2026; não há mais lista estática de negócios no repositório. Quem precisa dela:
+
+- **No build:** `scripts/publishedBusinesses.mjs` alimenta o sitemap, o HTML pré-renderizado
+  (`prerender-meta.mjs`) e os cards de compartilhamento (`generate-og-images.mjs`).
+- **No app:** `src/lib/businessCatalog.js` (+ `src/hooks/useBusinessCatalog.js`) serve a home e
+  `/sobre` (contagem, consulta `head`), `/categorias` (contagem por categoria) e as páginas de
+  experiência. As promessas ficam em cache no módulo, então navegar não refaz a consulta.
+
+O que continua em arquivo é curadoria e apresentação, que não existem no banco: quais fichas aparecem
+em cada experiência (`restaurantIds`, `extraArtesanatoIds` em `experiencePages.js`) e o ícone, a
+imagem e a descrição de cada categoria (`categories.js`).
 
 ### Auth e Admin
 
@@ -568,4 +577,4 @@ app inteiro — mas nenhuma chamada ao Supabase funciona.
 ---
 
 **Última atualização:** 2026-09-09
-**Versão:** 1.5 (sitemap, prerender e cards de compartilhamento lendo o catálogo do banco)
+**Versão:** 1.6 (catálogo de negócios só no banco: build e app leem de lá, arquivo estático apagado)
