@@ -226,7 +226,10 @@ Documento base para gerar a documentação oficial do projeto (visão geral, req
   com galeria, reviews, planos pagos e analytics forem implementados (fases v1.1/v1.2 do roadmap).
 - Trigger `businesses_guard_status()`: força `status='pending'` em insert/update feito por usuário
   autenticado não-admin (RN05); não se aplica a escrita direta (seed, SQL Editor, admin).
-- Os 78 negócios do catálogo original foram migrados para esta tabela via seed (`scripts/generate-supabase-seed.mjs`), todos com `status='active'`.
+- Os 78 negócios do catálogo original foram migrados para esta tabela via seed em 06/09/2026, todos
+  com `status='active'`. O seed daquele dia saiu de um snapshot desatualizado do arquivo estático e
+  republicou negócios já removidos — desde 09/09/2026 o gerador lê do banco e `[db.seed]` está
+  desligado. A tabela é a fonte da verdade do catálogo; o arquivo estático não é.
 
 **business_categories** — ✅ implementada (não estava no desenho original)
 - business_id (FK businesses), category_id (FK categories), is_primary (bool)

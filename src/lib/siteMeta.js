@@ -1,7 +1,6 @@
 // Fonte única das meta tags de SEO/compartilhamento.
 // Sem imports de imagem nem de React: também é lido por Node nos scripts de build.
 import { rawBeaches } from '../data/beaches.data.js';
-import { rawBusinesses } from '../data/businesses.data.js';
 import { experienceMeta } from '../data/experienceMeta.js';
 import { categoryLabels } from '../data/categoryLabels.js';
 
@@ -144,16 +143,21 @@ export function staticPageMeta(path) {
 }
 
 export function businessSubtitle(business) {
-    return business.subcategory ?? categoryLabels[business.categories[0]] ?? null;
+    return business.subcategory ?? categoryLabels[business.categories?.[0]] ?? null;
 }
 
 function sentence(text) {
-    const trimmed = text.trim();
+    const trimmed = (text ?? '').trim();
+
+    if (!trimmed) return null;
+
     return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
 }
 
 export function businessPageMeta(business) {
     const subtitle = businessSubtitle(business);
+    // A descrição é opcional desde 07/09/2026, então pode chegar vazia daqui:
+    // um `sentence(null)` estourava o build inteiro por causa de um cadastro.
     const parts = [sentence(business.description)];
 
     if (subtitle) {
@@ -164,7 +168,7 @@ export function businessPageMeta(business) {
     return {
         path: `/negocio/${business.id}`,
         title: `${business.name} — ${SITE_NAME}`,
-        description: parts.join(' '),
+        description: parts.filter(Boolean).join(' '),
         image: `/og/${business.id}.jpg`,
         imageAlt: `${business.name} — ${SITE_NAME}`,
     };
@@ -197,16 +201,20 @@ export function experiencePageMeta(slug) {
 }
 
 // Todas as rotas que ganham HTML pré-renderizado com meta tags próprias.
-export function prerenderedRoutes() {
+//
+// A lista de negócios entra por parâmetro, vinda do banco (ver
+// scripts/publishedBusinesses.mjs). Praias e experiências continuam em
+// arquivo porque é lá que elas moram de verdade — negócio não mora mais.
+export function prerenderedRoutes(businesses = []) {
     return [
         ...staticPages.map((page) => withDefaults(page)),
-        ...rawBusinesses.map((business) => businessPageMeta(business)),
+        ...businesses.map((business) => businessPageMeta(business)),
         ...rawBeaches.map((beach) => beachPageMeta(beach)),
         ...Object.keys(experienceMeta).map((slug) => experiencePageMeta(slug)),
     ];
 }
 
 // Só o que deve aparecer no sitemap.xml.
-export function indexableRoutes() {
-    return prerenderedRoutes().filter((route) => !route.noindex);
+export function indexableRoutes(businesses = []) {
+    return prerenderedRoutes(businesses).filter((route) => !route.noindex);
 }

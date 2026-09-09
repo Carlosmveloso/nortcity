@@ -2,9 +2,12 @@ import { Link } from "react-router-dom";
 import Logo from "./Logo";
 import { InstagramIcon, TiktokIcon } from "../ui/BrandIcons";
 import { Mail, MapPin, Phone, Heart } from "lucide-react";
-import { businesses } from "../../data/businesses";
+import asenzaImage from "../../assets/businesses/asenza-beach-resort.webp";
 
-const asenza = businesses.find((business) => business.id === "asenza-beach-resort");
+// Patrocinador fixo do rodapé. A imagem é importada direto do assets: buscar
+// no catálogo obrigava o rodapé a conhecer a lista inteira de negócios, e essa
+// lista mudou de lugar para o banco.
+const asenza = { name: "Asenza Beach Resort", image: asenzaImage };
 
 function Footer() {
   return (
@@ -109,7 +112,7 @@ function Footer() {
           </div>
           <div>
             <p>Patrocinadores</p>
-            {asenza?.image && (
+            {asenza.image && (
               <Link
                 to={`/explorar?q=${encodeURIComponent(asenza.name)}`}
                 aria-label={`Ver ${asenza.name} no Explorar`}

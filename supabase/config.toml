@@ -63,8 +63,16 @@ enabled = true
 schema_paths = []
 
 [db.seed]
-# If enabled, seeds the database after migrations during a db reset.
-enabled = true
+# Desligado de propósito. O seed é um instantâneo do catálogo, e um instantâneo
+# envelhece: o seed de 06/09/2026 foi gerado antes de uma correção e, ao ser
+# aplicado, republicou negócios que já tinham sido removidos. Com `enabled`
+# ligado, um `supabase db push --include-seed` distraído repete isso — os
+# inserts usam `on conflict do nothing`, o que não impede ressuscitar o que
+# hoje não existe mais.
+#
+# Para montar um ambiente novo: rode `npm run generate-supabase-seed` (que lê
+# do banco), confira o arquivo e aplique de propósito.
+enabled = false
 # Specifies an ordered list of seed files to load during db reset.
 # Supports glob patterns relative to supabase directory: "./seeds/*.sql"
 sql_paths = ["./seed.sql"]
