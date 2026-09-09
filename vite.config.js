@@ -1,30 +1,49 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { generateOgImages } from './scripts/generate-og-images.mjs'
 import { prerenderMeta } from './scripts/prerender-meta.mjs'
+import { fetchPublishedBusinesses } from './scripts/publishedBusinesses.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // Gera as imagens e o HTML de preview de cada negócio/experiência depois do
 // build. Sem isso o WhatsApp mostra o favicon ao compartilhar um link.
-function sharePreviews() {
+//
+// A lista de negócios vem do banco, buscada uma vez e passada aos dois
+// geradores: preview e sitemap saindo da mesma consulta não têm como
+// discordar entre si nem do que /explorar mostra.
+function sharePreviews(env) {
   return {
     name: 'farol-share-previews',
     apply: 'build',
     async closeBundle() {
-      const images = await generateOgImages('dist/og')
-      const routes = await prerenderMeta('dist')
-      this.info(`preview: ${images} imagens em dist/og, ${routes} rotas pré-renderizadas`)
+      const businesses = await fetchPublishedBusinesses(env)
+
+      if (!businesses) {
+        // Build local sem .env: o site funciona, só sai sem preview de
+        // negócio. Em produção as variáveis existem — o app não sobe sem elas.
+        this.warn(
+          'sem credencial do Supabase: pulando previews e sitemap dos negócios. ' +
+            'Configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY para gerar o build completo.'
+        )
+      }
+
+      const publicados = businesses ?? []
+      const images = await generateOgImages('dist/og', publicados)
+      const routes = await prerenderMeta('dist', publicados)
+      this.info(
+        `preview: ${publicados.length} negócios do banco, ${images} imagens em dist/og, ${routes} rotas pré-renderizadas`
+      )
     },
   }
 }
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [react(), tailwindcss(), sharePreviews()],
+export default defineConfig(({ mode }) => ({
+  plugins: [react(), tailwindcss(), sharePreviews(loadEnv(mode, __dirname, ''))],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -53,4 +72,4 @@ export default defineConfig({
     globals: true,
     setupFiles: './src/test/setup.js',
   },
-})
+}))

@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { popularCategories, otherCategories } from '../data/categories';
 import Reveal from '../components/ui/Reveal';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { useBusinessCatalog } from '../hooks/useBusinessCatalog';
+import { countByCategory } from '../lib/businessCatalog';
 import { staticPageMeta } from '../lib/siteMeta';
 
 function normalize(text) {
@@ -72,22 +74,36 @@ function Categorias() {
     usePageMeta(staticPageMeta('/categorias'));
 
     const [query, setQuery] = useState('');
+    // Contagem vinda do banco: enquanto não chega, os cartões saem sem número
+    // em vez de anunciarem "+0 opções".
+    const { data: businesses } = useBusinessCatalog();
+
+    const withCount = useMemo(() => {
+        const contagem = countByCategory(businesses);
+
+        return (categories) =>
+            categories.map((category) => ({ ...category, count: contagem.get(category.slug) ?? 0 }));
+    }, [businesses]);
 
     const filteredPopular = useMemo(() => {
         const normalizedQuery = normalize(query.trim());
-        if (!normalizedQuery) return popularCategories;
-        return popularCategories.filter((category) =>
-            normalize(`${category.label} ${category.description}`).includes(normalizedQuery)
+        if (!normalizedQuery) return withCount(popularCategories);
+        return withCount(
+            popularCategories.filter((category) =>
+                normalize(`${category.label} ${category.description}`).includes(normalizedQuery)
+            )
         );
-    }, [query]);
+    }, [query, withCount]);
 
     const filteredOther = useMemo(() => {
         const normalizedQuery = normalize(query.trim());
-        if (!normalizedQuery) return otherCategories;
-        return otherCategories.filter((category) =>
-            normalize(`${category.label} ${category.description}`).includes(normalizedQuery)
+        if (!normalizedQuery) return withCount(otherCategories);
+        return withCount(
+            otherCategories.filter((category) =>
+                normalize(`${category.label} ${category.description}`).includes(normalizedQuery)
+            )
         );
-    }, [query]);
+    }, [query, withCount]);
 
     return (
         <>

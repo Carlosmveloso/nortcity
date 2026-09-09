@@ -1,6 +1,7 @@
 import { ChevronRight, Compass, HeartHandshake, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { statsSection } from '../data/statsSection';
+import { buildStatsSection } from '../data/statsSection';
+import { useBusinessCount } from '../hooks/useBusinessCatalog';
 import StatsCard from '../components/ui/StatsCard';
 import Reveal from '../components/ui/Reveal';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -25,6 +26,9 @@ const pillars = [
 ];
 
 function Sobre() {
+    const { data: businessCount } = useBusinessCount();
+    const statsSection = buildStatsSection(businessCount);
+
     usePageMeta(staticPageMeta('/sobre'));
 
     return (

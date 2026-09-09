@@ -7,6 +7,10 @@ import ShareButton from './ShareButton';
 
 function BusinessCard({ business }) {
     const share = businessShare(business);
+    // O botão é de WhatsApp, então o número de WhatsApp vem primeiro; o
+    // telefone é o reserva. Antes o card lia só `phone`, e o cadastro feito
+    // pelo /admin que preenche apenas o WhatsApp travava a listagem inteira.
+    const whatsappLink = toWhatsappLink(business.whatsapp ?? business.phone);
 
     return (
         <article
@@ -75,15 +79,17 @@ function BusinessCard({ business }) {
                         Ver mais
                     </Link>
                     <div className="flex items-center gap-2">
-                        <a
-                            href={toWhatsappLink(business.phone)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex flex-1 items-center justify-center rounded-full bg-whatsapp-green p-2.5 text-white"
-                            aria-label={`Contatar ${business.name} pelo WhatsApp`}
-                        >
-                            <MessageCircle size={18} aria-hidden="true" />
-                        </a>
+                        {whatsappLink && (
+                            <a
+                                href={whatsappLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex flex-1 items-center justify-center rounded-full bg-whatsapp-green p-2.5 text-white"
+                                aria-label={`Contatar ${business.name} pelo WhatsApp`}
+                            >
+                                <MessageCircle size={18} aria-hidden="true" />
+                            </a>
+                        )}
                         {business.instagram && (
                             <a
                                 href={`https://instagram.com/${business.instagram}`}

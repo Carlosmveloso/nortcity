@@ -1,17 +1,22 @@
 import { ChevronRight } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-import { experiencePages } from '../data/experiencePages';
+import { buildExperiencePages } from '../data/experiencePages';
 import ExperienceListItem from '../components/ui/ExperienceListItem';
 import Reveal from '../components/ui/Reveal';
 import ComingSoon from '../components/ui/ComingSoon';
 import ShareButton from '../components/ui/ShareButton';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { useBusinessCatalog } from '../hooks/useBusinessCatalog';
 import { experienceShare } from '../lib/share';
 import { experiencePageMeta, notFoundMeta } from '../lib/siteMeta';
 
 function Experiencia() {
     const { slug } = useParams();
-    const experience = experiencePages[slug];
+    // "Onde comer" e "Artesanato local" montam a lista com os negócios
+    // publicados; as outras duas experiências não dependem do banco e aparecem
+    // na hora.
+    const { data: businesses, loading } = useBusinessCatalog();
+    const experience = buildExperiencePages(businesses)[slug];
 
     usePageMeta(experiencePageMeta(slug) ?? notFoundMeta());
 
@@ -25,6 +30,7 @@ function Experiencia() {
     }
 
     const { eyebrow, title, description, heroImg, items, mapLink } = experience;
+    const carregandoLista = loading && items.length === 0;
 
     return (
         <>
@@ -59,9 +65,13 @@ function Experiencia() {
                     </div>
                     <Reveal>
                         <ul className="mt-4 flex flex-col rounded-3xl bg-card p-4 shadow-sm sm:p-6 md:p-8">
-                            {items.map((item, index) => (
-                                <ExperienceListItem key={item.id} item={item} index={index + 1} />
-                            ))}
+                            {carregandoLista ? (
+                                <li className="py-8 text-center text-muted-foreground">Carregando…</li>
+                            ) : (
+                                items.map((item, index) => (
+                                    <ExperienceListItem key={item.id} item={item} index={index + 1} />
+                                ))
+                            )}
                         </ul>
                     </Reveal>
 

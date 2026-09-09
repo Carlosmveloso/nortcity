@@ -15,6 +15,7 @@ import {
     indexableRoutes,
     prerenderedRoutes,
 } from '../src/lib/siteMeta.js';
+import { fetchPublishedBusinesses } from './publishedBusinesses.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -66,10 +67,10 @@ function stripDefaultMeta(html) {
         .replace(/\s*<meta\s+name="robots"[^>]*>/g, '');
 }
 
-export async function prerenderMeta(distDir) {
+export async function prerenderMeta(distDir, businesses = []) {
     const template = await readFile(join(distDir, 'index.html'), 'utf8');
     const base = stripDefaultMeta(template);
-    const routes = prerenderedRoutes();
+    const routes = prerenderedRoutes(businesses);
 
     for (const route of routes) {
         const html = base.replace(/\s*<\/head>/, `\n${buildHead(route)}\n  </head>`);
@@ -84,7 +85,7 @@ export async function prerenderMeta(distDir) {
     }
 
     await write404(distDir, base);
-    await writeSitemap(distDir);
+    await writeSitemap(distDir, businesses);
     await writeRobots(distDir);
 
     return routes.length;
@@ -113,8 +114,8 @@ async function write404(distDir, base) {
 
 // Sitemap e robots apontando para o domínio de produção. Só entram as rotas
 // que devem ser indexadas (fora: /favoritos e /entrar).
-async function writeSitemap(distDir) {
-    const urls = indexableRoutes()
+async function writeSitemap(distDir, businesses) {
+    const urls = indexableRoutes(businesses)
         .map((route) => `    <url><loc>${escapeHtml(`${SITE_URL}${route.path}`)}</loc></url>`)
         .join('\n');
 
@@ -132,6 +133,14 @@ async function writeRobots(distDir) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-    const count = await prerenderMeta(join(root, 'dist'));
+    const businesses = await fetchPublishedBusinesses();
+
+    if (!businesses) {
+        throw new Error(
+            'Sem VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY no ambiente: não dá para saber quais negócios estão publicados.'
+        );
+    }
+
+    const count = await prerenderMeta(join(root, 'dist'), businesses);
     console.log(`Pré-renderizadas ${count} rotas com meta tags próprias.`);
 }
