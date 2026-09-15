@@ -11,7 +11,7 @@ import sharp from 'sharp';
 
 import { rawBeaches } from '../src/data/beaches.data.js';
 import { experienceMeta } from '../src/data/experienceMeta.js';
-import { OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH } from '../src/lib/siteMeta.js';
+import { HERO_IMAGE, OG_IMAGE_HEIGHT, OG_IMAGE_WIDTH } from '../src/lib/siteMeta.js';
 import { fetchPublishedBusinesses } from './publishedBusinesses.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -116,8 +116,10 @@ export async function generateOgImages(outDir, businesses = []) {
         throw new Error(`id repetido entre negócio e praia: ${colisoes.join(', ')}`);
     }
 
+    // O card padrão é a própria imagem do hero da home (HERO_IMAGE), para quem
+    // recebe o link ver a mesma foto que vai encontrar ao abrir o site.
     const defaultCard = join(outDir, 'default.jpg');
-    await buildCard(join(root, 'public/hero-beach.jpg'), defaultCard);
+    await buildCard(join(root, 'public', HERO_IMAGE), defaultCard);
 
     for (const business of businesses) {
         await businessCard(business, defaultCard, join(outDir, `${business.id}.jpg`));

@@ -7,5 +7,6 @@ export const usefulPhones = [
     { label: 'Secretaria Munincipal de Infraestrutura e Serviços Urbanos', number: '83 98157-0346' },
     { label: 'Secretaria Munincipal de Turismo, Cultura e Desenvolvimento', number: '83 93299-1016' },
     { label: 'Secretaria Munincipal da Saúde', number: '83 98206-2624' },
-    { label: 'Guarda Munincipal', number: '83 98103-0922' }
+    { label: 'Guarda Munincipal', number: '83 98103-0922' },
+    { label: 'Semam', number: '83 99891-9494'},
 ];

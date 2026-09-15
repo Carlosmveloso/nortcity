@@ -1,6 +1,9 @@
+import { existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-import { businessPageMeta, prerenderedRoutes } from './siteMeta';
+import { HERO_IMAGE, businessPageMeta, prerenderedRoutes } from './siteMeta';
 
 // A lista de negócios não vem mais de arquivo: o build a lê do banco
 // (scripts/publishedBusinesses.mjs) e passa por parâmetro. O que chega aqui,
@@ -39,6 +42,21 @@ describe('businessPageMeta', () => {
     it('aponta a rota e o card de preview pelo slug', () => {
         expect(businessPageMeta(base).path).toBe('/negocio/restaurante-da-lia');
         expect(businessPageMeta(base).image).toBe('/og/restaurante-da-lia.jpg');
+    });
+});
+
+// A home e o card de compartilhamento leem a mesma constante. O que ainda pode
+// dar errado é ela apontar para um arquivo que não existe: o hero cairia num
+// fundo vazio e o `sharp` derrubaria o build ao gerar og/default.jpg — nos dois
+// casos só na hora de rodar, não aqui.
+describe('HERO_IMAGE', () => {
+    it('aponta para um arquivo que existe em public/', () => {
+        // `join` em vez de `new URL(..., import.meta.url)`: o Vite reescreve esse
+        // padrão como referência de asset e, com caminho montado em runtime,
+        // devolve `undefined` em vez do arquivo.
+        const publicDir = join(dirname(fileURLToPath(import.meta.url)), '../../public');
+
+        expect(existsSync(join(publicDir, HERO_IMAGE))).toBe(true);
     });
 });
 
