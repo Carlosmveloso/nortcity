@@ -2,6 +2,7 @@ import { Search, ChevronDown, Mouse } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GlassButton from '../ui/GlassButton';
+import { HERO_IMAGE } from '../../lib/siteMeta';
 
 const quickFilters = [
     { label: 'Gastronomia', emoji: '🍤', value: 'gastronomia' },
@@ -17,11 +18,17 @@ function HeroSection() {
     const [category, setCategory] = useState('');
 
     const heroImg = `
-    bg-[linear-gradient(rgba(0,0,0,0.30),rgba(0,0,0,0.10)),url('/hero-beach1.jpeg')]
     bg-cover bg-center bg-no-repeat
     h-screen overflow-hidden
     flex flex-col items-center justify-center
     shadow-xl`;
+    // A imagem vem de HERO_IMAGE (src/lib/siteMeta.js), que também gera o card
+    // de compartilhamento: trocar o hero aqui troca o preview do link junto.
+    // Vai em `style` porque o Tailwind só resolve `bg-[url('...')]` com o
+    // caminho escrito literalmente no arquivo — uma constante não funcionaria.
+    const heroBackground = {
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.30),rgba(0,0,0,0.10)), url('${HERO_IMAGE}')`,
+    };
     const heroCta = `
     w-9/10 h-full max-h-full overflow-y-auto
     py-4
@@ -40,7 +47,7 @@ function HeroSection() {
     };
 
     return (
-        <section className={heroImg}>
+        <section className={heroImg} style={heroBackground}>
             <div className={heroCta}>
                 <GlassButton>Tudo de Pitimbu em um só lugar!</GlassButton>
                 <h1 className="text-4xl font-head text-white text-center font-semibold text-shadow-lg">

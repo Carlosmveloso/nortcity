@@ -11,6 +11,15 @@ export const DEFAULT_DESCRIPTION =
     'Descubra praias, pousadas, restaurantes, passeios e negócios locais de Pitimbu e do litoral sul da Paraíba.';
 export const DEFAULT_OG_IMAGE = '/og/default.jpg';
 
+// Imagem de fundo do hero da home (arquivo em public/). É também a base do card
+// de compartilhamento padrão, gerado em og/default.jpg por
+// scripts/generate-og-images.mjs. As duas saem daqui de propósito: quando o
+// hero era `/hero-beach1.jpeg` e o card era gerado de `hero-beach.jpg`, quem
+// compartilhava o link do site via uma foto que não estava em lugar nenhum da
+// home. Trocar o hero agora troca o card junto.
+export const HERO_IMAGE = '/hero-beach1.jpeg';
+export const HERO_IMAGE_ALT = 'Vista aérea de Pitimbu, litoral sul da Paraíba';
+
 export const OG_IMAGE_WIDTH = 1200;
 export const OG_IMAGE_HEIGHT = 630;
 
@@ -121,7 +130,7 @@ function withDefaults(page) {
         ...page,
         title: page.path === '/' ? page.title : `${page.title} — ${SITE_NAME}`,
         image: DEFAULT_OG_IMAGE,
-        imageAlt: 'Praia de Pitimbu, litoral sul da Paraíba',
+        imageAlt: HERO_IMAGE_ALT,
     };
 }
 
@@ -132,6 +141,7 @@ export function notFoundMeta() {
         title: `Página não encontrada — ${SITE_NAME}`,
         description: DEFAULT_DESCRIPTION,
         image: DEFAULT_OG_IMAGE,
+        imageAlt: HERO_IMAGE_ALT,
         noindex: true,
     };
 }
