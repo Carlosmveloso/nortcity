@@ -123,6 +123,12 @@ export const staticPages = [
         description: 'Área administrativa do Farol Pitimbu.',
         noindex: true,
     },
+    {
+        path: '/admin/analytics',
+        title: 'Analytics',
+        description: 'Comportamento dos visitantes do Farol Pitimbu.',
+        noindex: true,
+    },
 ];
 
 function withDefaults(page) {

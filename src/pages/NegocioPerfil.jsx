@@ -11,6 +11,7 @@ import {
     Star,
     Store,
 } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { InstagramIcon } from '../components/ui/BrandIcons';
 import BusinessCard from '../components/ui/BusinessCard';
@@ -18,6 +19,8 @@ import Reveal from '../components/ui/Reveal';
 import ShareButton from '../components/ui/ShareButton';
 import { useBusiness } from '../hooks/useBusiness';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { track } from '../lib/analytics/analytics';
+import { AnalyticsEvents } from '../lib/analytics/events';
 import { categoryLabel, toWhatsappLink } from '../lib/business';
 import { businessShare } from '../lib/share';
 import { businessPageMeta, notFoundMeta } from '../lib/siteMeta';
@@ -38,6 +41,18 @@ function NegocioPerfil() {
 
     usePageMeta(business ? businessPageMeta(business) : notFoundMeta());
 
+    // O uuid só existe depois que a consulta volta — `business.id` aqui é o
+    // slug. O ref evita repetir a visualização a cada re-render e no efeito
+    // duplo do modo estrito do React.
+    const viewedBusinessId = useRef(null);
+    useEffect(() => {
+        const businessId = business?.businessId;
+        if (!businessId || viewedBusinessId.current === businessId) return;
+
+        viewedBusinessId.current = businessId;
+        track(AnalyticsEvents.BUSINESS_VIEW, { entityType: 'business', entityId: businessId });
+    }, [business?.businessId]);
+
     if (notFound) {
         return <NotFound />;
     }
@@ -53,6 +68,15 @@ function NegocioPerfil() {
     const whatsappNumber = business.whatsapp ?? business.phone;
 
     const share = businessShare(business);
+
+    // Sem `await` e sem `preventDefault`: o link abre em outra aba do jeito que
+    // sempre abriu, e uma falha de analytics não tem como impedir isso.
+    const handleWhatsappClick = () => {
+        track(AnalyticsEvents.BUSINESS_WHATSAPP_CLICK, {
+            entityType: 'business',
+            entityId: business.businessId,
+        });
+    };
 
     return (
         <>
@@ -167,6 +191,7 @@ function NegocioPerfil() {
                         {business.phone && (
                             <a
                                 href={`tel:${business.phone.replace(/\D/g, '')}`}
+                                data-analytics="business-phone"
                                 className="flex w-full items-center justify-center gap-2 rounded-full bg-blue-primary py-3 text-sm text-muted"
                             >
                                 <Phone size={16} aria-hidden="true" />
@@ -179,6 +204,8 @@ function NegocioPerfil() {
                                 href={toWhatsappLink(whatsappNumber)}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                onClick={handleWhatsappClick}
+                                data-analytics="business-whatsapp"
                                 className="flex w-full items-center justify-center gap-2 rounded-full bg-whatsapp-green py-3 text-sm font-semibold text-white"
                             >
                                 <MessageCircle size={18} aria-hidden="true" />
@@ -189,6 +216,7 @@ function NegocioPerfil() {
                         {business.email && (
                             <a
                                 href={`mailto:${business.email}`}
+                                data-analytics="business-email"
                                 className="flex w-full items-center justify-center gap-2 rounded-full bg-sand-dark py-3 text-sm font-semibold text-dark-ocean"
                             >
                                 <Mail size={18} aria-hidden="true" />
@@ -199,6 +227,7 @@ function NegocioPerfil() {
                         {business.instagram && (
                             <a
                                 href={`https://instagram.com/${business.instagram}`}
+                                data-analytics="business-instagram"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex w-full items-center justify-center gap-2 rounded-full bg-sand-dark py-3 text-sm font-semibold text-dark-ocean"
@@ -210,6 +239,7 @@ function NegocioPerfil() {
                         {business.website && (
                             <a
                                 href={`https://${business.website}`}
+                                data-analytics="business-website"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex w-full items-center justify-center gap-2 rounded-full bg-sand-dark py-3 text-sm font-semibold text-dark-ocean"
@@ -221,6 +251,7 @@ function NegocioPerfil() {
 
                         <ShareButton
                             {...share}
+                            analytics="business-share"
                             className="w-full border border-dark-ocean/15 py-3 text-dark-ocean"
                         />
                     </aside>

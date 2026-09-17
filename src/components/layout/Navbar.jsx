@@ -22,13 +22,17 @@ function Navbar() {
         <header className="fixed inset-x-0 top-0 z-50 w-full bg-sand/95 shadow-md backdrop-blur-md">
             <div className="mx-auto flex w-full max-w-400 items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8 xl:grid xl:grid-cols-[1fr_auto_1fr]">
                 <div className="flex items-center">
-                    <Logo showText={true} />
+                    <Logo showText={true} analytics="navbar-logo" />
                 </div>
 
                 <nav className="hidden xl:flex xl:items-center xl:justify-center" aria-label="Menu principal">
                     <ul className="flex items-center gap-8">
                         {navLinks.map((link) => (
-                            <li key={link.to} className={link.hidden ? 'hidden' : undefined}><Link to={link.to}>{link.label}</Link></li>
+                            <li key={link.to} className={link.hidden ? 'hidden' : undefined}>
+                                <Link to={link.to} data-analytics={`navbar-${link.to.slice(1)}`}>
+                                    {link.label}
+                                </Link>
+                            </li>
                         ))}
                     </ul>
                 </nav>
@@ -41,6 +45,7 @@ function Navbar() {
                     <Link
                         to="/favoritos"
                         aria-label="Favoritos"
+                        data-analytics="navbar-favoritos"
                         className="inline-flex h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
                     >
                         <Heart className="h-5 w-5" aria-hidden="true" />
@@ -79,6 +84,7 @@ function Navbar() {
                         <Link
                             to="/entrar"
                             aria-label="Entrar na conta"
+                            data-analytics="navbar-entrar"
                             className="inline-flex h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
                         >
                             <User className="h-5 w-5" aria-hidden="true" />
@@ -92,6 +98,7 @@ function Navbar() {
                         inalcançável. O mesmo CTA já existe dentro do menu mobile. */}
                     <Link
                         to="/cadastrar-negocio"
+                        data-analytics="navbar-cadastrar-negocio"
                         className="hidden shrink-0 rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap sm:inline-block"
                     >
                         Cadastrar meu negócio
@@ -100,6 +107,7 @@ function Navbar() {
                     <button
                         type="button"
                         onClick={() => setMenuOpen(!menuOpen)}
+                        data-analytics="navbar-menu-toggle"
                         className="inline-flex h-10 w-10 items-center justify-center rounded-full xl:hidden"
                         aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
                         aria-expanded={menuOpen}
@@ -127,7 +135,13 @@ function Navbar() {
                                 }`}
                                 style={{ transitionDelay: menuOpen ? `${index * 40}ms` : '0ms' }}
                             >
-                                <Link to={link.to} onClick={() => setMenuOpen(false)}>{link.label}</Link>
+                                <Link
+                                    to={link.to}
+                                    onClick={() => setMenuOpen(false)}
+                                    data-analytics={`navbar-${link.to.slice(1)}`}
+                                >
+                                    {link.label}
+                                </Link>
                             </li>
                         ))}
                     </ul>
@@ -142,6 +156,7 @@ function Navbar() {
                             <Link
                                 to="/favoritos"
                                 onClick={() => setMenuOpen(false)}
+                                data-analytics="navbar-favoritos"
                                 className="flex items-center gap-2 text-dark-ocean/70"
                             >
                                 <Heart className="h-4 w-4" aria-hidden="true" />
@@ -204,6 +219,7 @@ function Navbar() {
                                 <Link
                                     to="/entrar"
                                     onClick={() => setMenuOpen(false)}
+                                    data-analytics="navbar-entrar"
                                     className="flex items-center gap-2 text-dark-ocean/70"
                                 >
                                     <User className="h-4 w-4" aria-hidden="true" />
@@ -215,6 +231,7 @@ function Navbar() {
                     <Link
                         to="/cadastrar-negocio"
                         onClick={() => setMenuOpen(false)}
+                        data-analytics="navbar-cadastrar-negocio"
                         className={`mx-3 mt-2 flex justify-center rounded-full bg-turquoise px-5 py-3 text-center whitespace-nowrap transition-all duration-300 ${
                             menuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
                         }`}

@@ -109,6 +109,7 @@ function Explorar() {
                         </label>
                         <input
                             id="explorar-search"
+                            data-analytics="explore-search-field"
                             className="w-full min-w-0 bg-transparent focus:outline-none"
                             type="search"
                             name="query"
@@ -146,7 +147,11 @@ function Explorar() {
                                 aria-hidden="true"
                             />
                         </div>
-                        <button type="submit" className="shrink-0 rounded-full bg-turquoise px-6 py-3">
+                        <button
+                            type="submit"
+                            data-analytics="explore-search-submit"
+                            className="shrink-0 rounded-full bg-turquoise px-6 py-3"
+                        >
                             <span className="font-bold text-sand notranslate" translate="no">
                                 Buscar
                             </span>
@@ -161,6 +166,7 @@ function Explorar() {
                             type="button"
                             onClick={() => handleQuickFilter(filter.slug)}
                             aria-pressed={initialCategory === filter.slug}
+                            data-analytics={`explore-filter-${filter.slug}`}
                             className={`rounded-full px-4 py-2 text-sm font-semibold ${
                                 initialCategory === filter.slug
                                     ? 'bg-turquoise text-sand'
@@ -215,6 +221,7 @@ function Explorar() {
                                 <button
                                     type="button"
                                     onClick={() => setPage((current) => Math.max(0, current - 1))}
+                                    data-analytics="explore-page-prev"
                                     disabled={page === 0}
                                     className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-dark-ocean shadow-sm disabled:opacity-40"
                                 >
@@ -226,6 +233,7 @@ function Explorar() {
                                 <button
                                     type="button"
                                     onClick={() => setPage((current) => Math.min(totalPages - 1, current + 1))}
+                                    data-analytics="explore-page-next"
                                     disabled={page >= totalPages - 1}
                                     className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-dark-ocean shadow-sm disabled:opacity-40"
                                 >

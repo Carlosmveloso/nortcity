@@ -1,4 +1,4 @@
-import { AlertTriangle, ChevronRight, Copy, ImagePlus, Link2, Loader2, Plus, Search, Trash2 } from 'lucide-react';
+import { AlertTriangle, BarChart3, ChevronRight, Copy, ImagePlus, Link2, Loader2, Plus, Search, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -1029,6 +1029,13 @@ function Admin() {
                     <p className="mt-2 max-w-2xl text-card/80">
                         Aprove cadastros, revise alterações de negócios publicados e gerencie categorias.
                     </p>
+                    <Link
+                        to="/admin/analytics"
+                        className="mt-6 inline-flex items-center gap-2 rounded-full bg-card px-5 py-2.5 text-sm font-bold text-dark-ocean"
+                    >
+                        <BarChart3 size={16} aria-hidden="true" />
+                        Analytics
+                    </Link>
                 </div>
             </section>
 

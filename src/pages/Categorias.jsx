@@ -23,6 +23,7 @@ function CategoryTile({ category, size = 'default' }) {
         return (
             <Link
                 to={`/explorar?categoria=${category.slug}`}
+                data-analytics="category-card"
                 style={{ backgroundImage: `url(${category.img})` }}
                 className="group relative block aspect-[4/5] overflow-hidden rounded-2xl bg-cover bg-center text-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
             >
@@ -51,6 +52,7 @@ function CategoryTile({ category, size = 'default' }) {
     return (
         <Link
             to={`/explorar?categoria=${category.slug}`}
+            data-analytics="category-card"
             className="group block rounded-2xl bg-card p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
         >
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-turquoise/10 transition-colors group-hover:bg-turquoise/20">
