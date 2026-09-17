@@ -6,12 +6,15 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import Footer from "./components/layout/Footer";
 import Navbar from "./components/layout/Navbar";
 import ScrollToTop from "./components/layout/ScrollToTop";
+import AnalyticsPageTracker from "./components/AnalyticsPageTracker";
+import AnalyticsBehaviorTracker from "./components/AnalyticsBehaviorTracker";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import Home from "./pages/Home";
 
 const Admin = lazy(() => import("./pages/Admin"));
+const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics"));
 
 const Explorar = lazy(() => import("./pages/Explorar"));
 const Experiencia = lazy(() => import("./pages/Experiencia"));
@@ -43,6 +46,8 @@ function App() {
         Pular para o conteúdo
       </a>
       <ScrollToTop />
+      <AnalyticsPageTracker />
+      <AnalyticsBehaviorTracker />
       <Navbar />
       <ErrorBoundary>
         <main id="main-content">
@@ -86,6 +91,14 @@ function App() {
                 element={
                   <AdminRoute>
                     <Admin />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/analytics"
+                element={
+                  <AdminRoute>
+                    <AdminAnalytics />
                   </AdminRoute>
                 }
               />

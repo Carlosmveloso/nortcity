@@ -18,6 +18,7 @@ function CategoriesSection() {
                                 as={Link}
                                 to={`/explorar?categoria=${category.value}`}
                                 key={`${category.title}-${index}`}
+                                data-analytics={`home-category-${category.value}`}
                                 delay={index * 80}
                                 style={{ backgroundImage: `url(${category.img})` }}
                                 className="h-46 md:h-75 relative block rounded-3xl bg-cover bg-center overflow-hidden text-sand hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl"

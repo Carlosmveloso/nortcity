@@ -5,7 +5,7 @@ const PILL_CLASS = 'gap-2 rounded-full px-5 py-2.5 text-sm font-semibold';
 const ICON_CLASS =
     'absolute top-4 right-4 z-10 h-10 w-10 rounded-full bg-white/90 text-dark-ocean shadow-md backdrop-blur-sm transition-colors hover:bg-white';
 
-function ShareButton({ message, label, variant = 'pill', className = '' }) {
+function ShareButton({ message, label, variant = 'pill', className = '', analytics }) {
     const [copied, setCopied] = useState(false);
     const isIcon = variant === 'icon';
 
@@ -48,6 +48,7 @@ function ShareButton({ message, label, variant = 'pill', className = '' }) {
                 type="button"
                 onClick={handleShare}
                 aria-label={label}
+                data-analytics={analytics}
                 className={`flex items-center justify-center ${baseClass} ${className || fallbackClass}`}
             >
                 {copied ? <Check size={18} aria-hidden="true" /> : <Send size={18} aria-hidden="true" />}

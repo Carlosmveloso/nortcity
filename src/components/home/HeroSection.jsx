@@ -71,6 +71,7 @@ function HeroSection() {
                         </label>
                         <input
                             id="hero-search"
+                            data-analytics="hero-search-field"
                             className="w-full min-w-0 bg-transparent focus:outline-none"
                             type="search"
                             name="query"
@@ -108,7 +109,11 @@ function HeroSection() {
                                 aria-hidden="true"
                             />
                         </div>
-                        <button type="submit" className="shrink-0 bg-turquoise px-6 py-3 rounded-full">
+                        <button
+                            type="submit"
+                            data-analytics="hero-search-submit"
+                            className="shrink-0 bg-turquoise px-6 py-3 rounded-full"
+                        >
                             <span className="text-sand font-bold notranslate" translate="no">
                                 Buscar
                             </span>
@@ -123,6 +128,7 @@ function HeroSection() {
                             type="button"
                             onClick={() => handleQuickFilter(filter.value)}
                             aria-pressed={category === filter.value}
+                            data-analytics={`hero-filter-${filter.value}`}
                             className={category === filter.value ? 'justify-center bg-white/40' : 'justify-center'}
                         >
                             <span aria-hidden="true">{filter.emoji}</span>

@@ -12,7 +12,13 @@ function FeaturedSection() {
                         <h2 className='mb-4 text-3xl font-head font-bold'>Destaques da semana</h2>
                         <p className='text-balance text-muted-foreground'>Os passeios e experiências mais procuradas pelos visitantes</p>
                     </div>
-                    <Link className='flex justify-center mt-4 py-2 px-5 border-2 border-dark-ocean rounded-full' to="/explorar">Ver todos</Link>
+                    <Link
+                        className='flex justify-center mt-4 py-2 px-5 border-2 border-dark-ocean rounded-full'
+                        to="/explorar"
+                        data-analytics="home-featured-all"
+                    >
+                        Ver todos
+                    </Link>
                 </div>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 justify-items-center w-full">
                     {featureSection.map((featured, index) => (

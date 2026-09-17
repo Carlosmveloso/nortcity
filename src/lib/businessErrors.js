@@ -6,6 +6,10 @@ const MESSAGES = {
     forbidden: 'Você não tem permissão para esta ação.',
     not_found: 'Registro não encontrado.',
 
+    invalid_period: 'Informe um período válido.',
+    invalid_device_type: 'Dispositivo inválido.',
+    pathname_required: 'Selecione uma página para ver o mapa.',
+
     business_limit_reached: 'Sua conta já possui um negócio cadastrado. Acesse Meu Negócio para editá-lo.',
     owner_has_business: 'Esta conta já é proprietária de outro negócio.',
     already_owned: 'Este negócio já tem proprietário vinculado.',

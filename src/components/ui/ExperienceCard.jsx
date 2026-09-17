@@ -5,6 +5,7 @@ function ExperienceCard({ experience }) {
     return (
         <Link
             to={experience.link}
+            data-analytics="home-experience-card"
             className="group relative block aspect-video overflow-hidden rounded-2xl shadow-lg"
         >
             <img

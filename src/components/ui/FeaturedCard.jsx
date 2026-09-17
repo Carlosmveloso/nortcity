@@ -34,12 +34,14 @@ function FeaturedCard({ featured }) {
                     <Link
                         className="w-full flex justify-center items-center text-muted text-center py-2 rounded-full bg-blue-primary"
                         to={`/negocio/${featured.id}`}
+                        data-analytics="home-featured-card"
                     >
                         Ver mais
                     </Link>
                     <Link
                         className="w-1/4 py-3 flex justify-center bg-whatsapp-green text-white rounded-4xl"
                         to={`/negocio/${featured.id}`}
+                        data-analytics="home-featured-contact"
                         aria-label={`Ver contato de ${featured.title}`}
                     >
                         <MessageCircle size={18} aria-hidden="true" />
