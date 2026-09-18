@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { track } from '@/lib/analytics/analytics';
+import { AnalyticsEvents } from '@/lib/analytics/events';
 
 export const SEARCH_PAGE_SIZE = 12;
 
@@ -30,6 +32,7 @@ function mapSearchRow(row) {
 // sem ORDER BY nenhum.
 export function useBusinessSearch({ query, category, neighborhood, priceRange, page = 0 }) {
     const [state, setState] = useState({ results: [], total: 0, loading: true, error: null });
+    const trackedSearch = useRef(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -51,12 +54,28 @@ export function useBusinessSearch({ query, category, neighborhood, priceRange, p
                 return;
             }
 
+            const total = data && data.length > 0 ? Number(data[0].total_count) : 0;
+
             setState({
                 results: (data ?? []).map(mapSearchRow),
-                total: data && data.length > 0 ? Number(data[0].total_count) : 0,
+                total,
                 loading: false,
                 error: null,
             });
+
+            // Uma busca executada, não uma tecla digitada: o formulário de
+            // /explorar (e o da home, que navega para cá) só chega até aqui
+            // depois do submit, e é aqui que `total` já existe. Ficam de fora
+            // a paginação, o termo de uma letra e a repetição do mesmo
+            // conjunto de filtros — esta última é o efeito duplo do modo
+            // estrito do React.
+            const term = (query ?? '').trim();
+            const searchKey = `${term}|${category ?? ''}|${neighborhood ?? ''}|${priceRange ?? ''}`;
+
+            if (page === 0 && term.length >= 2 && trackedSearch.current !== searchKey) {
+                trackedSearch.current = searchKey;
+                track(AnalyticsEvents.SEARCH, { metadata: { query: term, resultsCount: total } });
+            }
         }
 
         load();

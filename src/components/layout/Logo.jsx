@@ -1,11 +1,15 @@
 import { MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 
-function Logo({ variantText = "ocean", variantBg = "gradient-ocean", showText = true }) {
+function Logo({ variantText = "ocean", variantBg = "gradient-ocean", showText = true, analytics }) {
   const textColor = variantText === "sand" ? "text-sand" : "text-ocean";
   const bgColor = variantBg === "turquoise" ? "bg-turquoise" : "bg-gradient-ocean";
   return (
-    <Link to="/" className={`text-xl ${textColor} font-black font-head flex items-center gap-1.5`}>
+    <Link
+      to="/"
+      data-analytics={analytics}
+      className={`text-xl ${textColor} font-black font-head flex items-center gap-1.5`}
+    >
       <span className={`inline-flex items-center justify-center h-10 w-10 rounded-full ${bgColor}`}>
         <MapPin className="w-6 h-6 text-white" aria-hidden="true" />
       </span>

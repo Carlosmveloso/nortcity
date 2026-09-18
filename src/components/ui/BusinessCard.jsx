@@ -1,6 +1,8 @@
 import { MapPin, MessageCircle, Globe, Store } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { InstagramIcon } from './BrandIcons';
+import { track } from '../../lib/analytics/analytics';
+import { AnalyticsEvents } from '../../lib/analytics/events';
 import { categoryLabel, toWhatsappLink } from '../../lib/business';
 import { businessShare } from '../../lib/share';
 import ShareButton from './ShareButton';
@@ -11,6 +13,18 @@ function BusinessCard({ business }) {
     // telefone é o reserva. Antes o card lia só `phone`, e o cadastro feito
     // pelo /admin que preenche apenas o WhatsApp travava a listagem inteira.
     const whatsappLink = toWhatsappLink(business.whatsapp ?? business.phone);
+
+    // O card aparece em /explorar e nos relacionados da ficha, e os dois
+    // mapeadores trazem `businessId` (o uuid; `business.id` é o slug). Card
+    // sem uuid simplesmente não registra, em vez de gravar lixo.
+    const handleWhatsappClick = () => {
+        if (!business.businessId) return;
+
+        track(AnalyticsEvents.BUSINESS_WHATSAPP_CLICK, {
+            entityType: 'business',
+            entityId: business.businessId,
+        });
+    };
 
     return (
         <article
@@ -33,7 +47,12 @@ function BusinessCard({ business }) {
                 )}
             </div>
 
-            <ShareButton {...share} variant="icon" label={`Compartilhar ${business.name}`} />
+            <ShareButton
+                {...share}
+                variant="icon"
+                label={`Compartilhar ${business.name}`}
+                analytics="business-card-share"
+            />
 
             <div className="flex flex-1 flex-col gap-3 p-5">
                 <div className="flex flex-wrap items-start justify-between gap-2">
@@ -43,6 +62,7 @@ function BusinessCard({ business }) {
                                 mantendo os botões de contato clicáveis via z-10. */}
                             <Link
                                 to={`/negocio/${business.id}`}
+                                data-analytics="business-card"
                                 className="transition-colors after:absolute after:inset-0 group-hover:text-turquoise"
                             >
                                 {business.name}
@@ -74,6 +94,7 @@ function BusinessCard({ business }) {
                 <div className="relative z-10 mt-auto flex flex-col gap-2 pt-2">
                     <Link
                         to={`/negocio/${business.id}`}
+                        data-analytics="business-card-cta"
                         className="flex w-full items-center justify-center gap-2 rounded-full bg-blue-primary py-2.5 text-sm text-muted"
                     >
                         Ver mais
@@ -84,6 +105,8 @@ function BusinessCard({ business }) {
                                 href={whatsappLink}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                onClick={handleWhatsappClick}
+                                data-analytics="business-card-whatsapp"
                                 className="flex flex-1 items-center justify-center rounded-full bg-whatsapp-green p-2.5 text-white"
                                 aria-label={`Contatar ${business.name} pelo WhatsApp`}
                             >
@@ -96,6 +119,7 @@ function BusinessCard({ business }) {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex flex-1 items-center justify-center rounded-full bg-sand-dark p-2.5 text-dark-ocean"
+                                data-analytics="business-card-instagram"
                                 aria-label={`Instagram de ${business.name}`}
                             >
                                 <InstagramIcon size={18} aria-hidden="true" />
@@ -107,6 +131,7 @@ function BusinessCard({ business }) {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex flex-1 items-center justify-center rounded-full bg-sand-dark p-2.5 text-dark-ocean"
+                                data-analytics="business-card-website"
                                 aria-label={`Site de ${business.name}`}
                             >
                                 <Globe size={18} aria-hidden="true" />
