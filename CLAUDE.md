@@ -438,6 +438,55 @@ vezes, por duas causas diferentes — nenhuma delas um bug do site.
   cite o glob (`--include='*.js'`), e desconfie de busca que devolve zero em arquivo que você sabe que
   existe. Os quatro consumidores foram convertidos no mesmo dia e o arquivo foi apagado.
 
+### A prévia do WhatsApp que envelhecia sozinha (18/09/2026)
+
+Relato: "compartilho um negócio que cadastrei e não aparece a imagem dele". A prévia de
+compartilhamento é gerada no build — `sharePreviews` (`vite.config.js`) grava
+`dist/negocio/<slug>.html` com as meta tags e `dist/og/<slug>.jpg` com o card 1200x630 — e o
+crawler do WhatsApp não executa JavaScript, então `usePageMeta` não o alcança. Negócio que
+virou `active` depois do último deploy não tinha nenhum dos dois arquivos.
+
+- **Dado que continua chegando + publicação que só acontece no deploy = divergência garantida.**
+  No dia da correção eram 85 negócios ativos no banco e 83 publicados. A mesma fotografia
+  envelhecida que já tinha mordido o `seed.sql` em 09/09, agora no HTML. A correção não foi
+  lembrar de fazer deploy: foi o banco pedir o rebuild sozinho quando a vitrine muda
+  (`20260918000001_site_rebuild_hook.sql`).
+- **404 que não aparece para quem clica esconde o problema por meses.** A ficha abria normal
+  (o React Router resolve o slug no cliente), mas a URL respondia **HTTP 404** com a meta da
+  página "não encontrada" — porque sem arquivo pré-renderizado a Vercel serve `dist/404.html`.
+  Só o crawler e o Google viam. Ao investigar prévia, medir com `curl -A WhatsApp`, nunca no
+  navegador.
+- **Timestamp é chave errada para "já publiquei até aqui".** A primeira versão da migration
+  comparava `requested_at > fired_at`; marcação e disparo caíram no mesmo milissegundo e a
+  alteração sumiu em silêncio. Trocado por contador (`requested_seq`/`fired_seq`), em que o
+  disparo reconhece a versão exata que leu — empate deixa de existir. Quem pegou foi o teste
+  `site-rebuild.test.js`, no PGlite, antes de ir para produção.
+- **Marcar o que importa é o que decide o custo.** A trigger só marca quando muda o que
+  `businessPageMeta` consome (slug, nome, descrição, subcategoria, capa) ou o status entra/sai
+  de `active`. Telefone, endereço e horário ficam de fora de propósito, e há teste fixando isso:
+  sem essa condição, corrigir contato nos 85 cadastros custaria 85 builds.
+- **Slug de QA em cadastro que virou real.** `restaurante-teste-qa-axcsx` parecia sobra de
+  teste pelo slug, mas era o "Jardim Azul Praia" — negócio real, com site, Instagram, capa e
+  dono vinculado. Ia sendo apagado por causa do nome do endereço. Slug **não** é editável por
+  RPC (o write guard recusa com `slug_not_allowed`, para não quebrar link compartilhado); a
+  troca foi por SQL Editor, onde `auth.uid()` é nulo e o guard libera, mais um redirect
+  permanente em `vercel.json`, que JSON não comenta e por isso está anotado aqui. Antes de
+  apagar cadastro por parecer teste, olhe o conteúdo, não o slug.
+- **`vercel.json` tem `additionalProperties: false`.** Uma chave `comment` num redirect derruba
+  o deploy inteiro. O schema oficial fica em `https://openapi.vercel.sh/vercel.json` e vale
+  conferir antes: `redirects[]` aceita só source, destination, permanent, statusCode, has,
+  missing e env.
+- **Embed ambíguo no PostgREST quebra a tela toda, não o campo.** `businesses` tem duas FKs para
+  `profiles` (`owner_id` e `moderated_by`), então `profiles(...)` sem hint devolve `PGRST201` e
+  a listagem do `/admin` inteira falha — não só o proprietário. Use
+  `owner:profiles!businesses_owner_id_fkey(...)`. Para validar sem ser admin: se a chamada
+  responde `42501` (permissão) em vez de `PGRST201`, a relação resolveu.
+- **RPC pronta, hook pronto, botão nenhum.** `admin_unlink_business_owner` existia desde a
+  migration 0005, com GRANT, e `useAdminBusinesses` já a expunha como `unlinkOwner` — mas
+  nenhuma tela chamava, e `Admin.jsx` só renderizava o vinculador quando `!business.owner_id`.
+  Resultado: negócio com dono não tinha como trocar nem remover o dono pelo painel, em nenhum
+  dos 85. Quando escrever a RPC e o hook numa sessão e a tela em outra, é este o elo que cai.
+
 ### Home Page Refinements
 
 **6 problemas identificados e em processo de resolução:**
@@ -543,6 +592,32 @@ imagem e a descrição de cada categoria (`categories.js`).
 - Área do proprietário em `/meu-negocio` (`src/pages/MeuNegocio.jsx`), disponível no plano Gratuito:
   status, motivo da decisão, correção de pendente, reenvio de rejeitado e edição de ativo.
 
+### Republicação automática do site
+
+A prévia de compartilhamento e o sitemap só existem depois de um build. Para não dependerem de
+alguém lembrar, `20260918000001_site_rebuild_hook.sql` faz o banco pedir o rebuild: uma trigger
+em `businesses`/`business_categories` incrementa `site_rebuild.requested_seq` quando a vitrine
+muda, e `fire_site_rebuild()` — agendada no pg_cron a cada 3 minutos — chama o Deploy Hook da
+Vercel se houver algo por publicar. A latência é de até ~3 min mais o tempo do build.
+
+**Configuração manual, uma vez por projeto** (não está em migration de propósito: a URL do hook
+é segredo e não entra no repositório):
+
+1. Vercel: Settings > Git > Deploy Hooks, criar um hook na branch `main` e copiar a URL.
+2. Supabase: Database > Extensions, habilitar `pg_net` e `pg_cron`. Sem isso o `db push` da
+   migration falha — alto, de propósito.
+3. Supabase SQL Editor:
+   ```sql
+   select vault.create_secret('<url do deploy hook>', 'vercel_deploy_hook');
+   ```
+
+Sem o passo 3 a migration aplica normalmente e o disparo vira no-op: é o que permite rodar as
+migrations em dev e no harness de teste sem sair para a rede. Nada se perde nesse estado —
+`requested_seq` continua à frente e o primeiro disparo depois do segredo publica o acumulado.
+
+Para forçar uma republicação na mão: `select public.fire_site_rebuild();` (devolve `true` se
+disparou, `false` se não havia nada pendente).
+
 ### Environment Variables
 
 ```bash
@@ -576,5 +651,5 @@ app inteiro — mas nenhuma chamada ao Supabase funciona.
 
 ---
 
-**Última atualização:** 2026-09-09
-**Versão:** 1.6 (catálogo de negócios só no banco: build e app leem de lá, arquivo estático apagado)
+**Última atualização:** 2026-09-18
+**Versão:** 1.7 (banco pede o rebuild quando a vitrine muda: prévia de compartilhamento deixa de envelhecer entre deploys)

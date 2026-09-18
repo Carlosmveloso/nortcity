@@ -1,4 +1,4 @@
-import { AlertTriangle, BarChart3, ChevronRight, Copy, ImagePlus, Link2, Loader2, Plus, Search, Trash2 } from 'lucide-react';
+import { AlertTriangle, BarChart3, ChevronRight, Copy, ImagePlus, Link2, Link2Off, Loader2, Plus, Search, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -85,6 +85,46 @@ function ModerationDialog({ action, onConfirm, onCancel }) {
                     Cancelar
                 </button>
             </div>
+        </div>
+    );
+}
+
+/** Proprietário já vinculado: mostrar quem é e permitir desfazer (PRO-03).
+ *
+ * A RPC admin_unlink_business_owner e o unlinkOwner do hook existiam desde a
+ * migration 0005, mas nenhuma tela chamava: negócio com dono não tinha como
+ * trocá-lo nem removê-lo pelo painel. */
+function OwnerCard({ business, onUnlink }) {
+    const [error, setError] = useState('');
+    const owner = business.owner;
+
+    const unlink = async () => {
+        if (!window.confirm(`Desvincular ${owner?.email ?? 'a conta'} de "${business.name}"?`)) return;
+        const result = await onUnlink(business.id);
+        if (result?.error) setError(businessErrorMessage(result.error));
+    };
+
+    return (
+        <div className="mt-4 rounded-2xl bg-sand-dark/40 p-4">
+            <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <Link2 className="h-4 w-4" aria-hidden="true" /> Proprietário vinculado
+            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+                <span className="text-sm text-dark-ocean/80">
+                    {owner?.full_name ?? 'Sem nome'} · {owner?.email ?? business.owner_id}
+                </span>
+                <button
+                    type="button"
+                    onClick={unlink}
+                    className="flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-red-600 shadow-sm hover:bg-red-50"
+                >
+                    <Link2Off className="h-4 w-4" aria-hidden="true" /> Desvincular
+                </button>
+            </div>
+            <p className="mt-2 text-xs text-dark-ocean/60">
+                A conta perde o acesso em /meu-negocio e o cadastro fica livre para ser vinculado a outra pessoa.
+            </p>
+            {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
     );
 }
@@ -493,6 +533,7 @@ function BusinessesTab() {
         createBusiness,
         deleteBusiness,
         linkOwner,
+        unlinkOwner,
         resolveDuplicate,
         markDuplicateReviewed,
     } = useAdminBusinesses();
@@ -681,7 +722,11 @@ function BusinessesTab() {
                             />
                         )}
 
-                        {!business.owner_id && <OwnerLinker business={business} onLink={linkOwner} />}
+                        {business.owner_id ? (
+                            <OwnerCard business={business} onUnlink={unlinkOwner} />
+                        ) : (
+                            <OwnerLinker business={business} onLink={linkOwner} />
+                        )}
 
                         {editingId === business.id && (
                             <BusinessEditor
