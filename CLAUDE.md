@@ -486,6 +486,13 @@ virou `active` depois do último deploy não tinha nenhum dos dois arquivos.
   nenhuma tela chamava, e `Admin.jsx` só renderizava o vinculador quando `!business.owner_id`.
   Resultado: negócio com dono não tinha como trocar nem remover o dono pelo painel, em nenhum
   dos 85. Quando escrever a RPC e o hook numa sessão e a tela em outra, é este o elo que cai.
+- **Tabela de uma linha ainda precisa de `WHERE`.** O Supabase carrega a extensão pg-safeupdate
+  nas conexões do PostgREST, e ela recusa `UPDATE`/`DELETE` sem `WHERE` mesmo dentro de trigger
+  `SECURITY DEFINER`. As três funções de `site_rebuild` não tinham, e por cinco dias toda escrita
+  que mexia na vitrine (criar já publicado, aprovar, trocar nome/capa/categoria de ativo, excluir)
+  falhou com `UPDATE requires a WHERE clause`. O PGlite não carrega a extensão; a guarda é de
+  catálogo, em `src/test/db/safeupdate.test.js` (corrigido em
+  `20260923000001_site_rebuild_where_clause.sql`).
 
 ### Home Page Refinements
 
