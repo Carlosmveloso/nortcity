@@ -6,10 +6,14 @@
 // WASM — as policies, triggers, constraints e funções PL/pgSQL das migrations
 // rodam exatamente como no servidor.
 //
-// O que é stub aqui (e portanto NÃO é testado): o schema `auth` e o schema
-// `storage` do Supabase. São recriados com o mínimo que as migrations usam —
-// auth.users, auth.uid() lendo o mesmo GUC que o Supabase usa, storage.buckets,
-// storage.objects e storage.foldername().
+// O que é stub aqui (e portanto NÃO é testado): os schemas `auth`, `storage`,
+// `net`, `vault` e `cron` do Supabase. São recriados com o mínimo que as
+// migrations usam — auth.users, auth.uid() lendo o mesmo GUC que o Supabase
+// usa, storage.buckets, storage.objects e storage.foldername().
+//
+// `net.http_post` grava numa tabela em vez de sair para a rede. Isso não é só
+// para a migration do rebuild aplicar: é o que torna a trigger testável, porque
+// o teste consegue afirmar quantas chamadas saíram e para qual URL.
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -56,6 +60,58 @@ grant select on storage.buckets to anon, authenticated;
 create or replace function storage.foldername(p_name text) returns text[]
 language sql immutable as $fn$
     select (string_to_array(p_name, '/'))[1:array_length(string_to_array(p_name, '/'), 1) - 1];
+$fn$;
+
+-- pg_net: a chamada HTTP vira uma linha. O teste lê net._sent para saber o que
+-- teria saído para a rede.
+create schema net;
+create table net._sent (
+    id bigserial primary key,
+    url text not null,
+    body jsonb,
+    sent_at timestamptz not null default now()
+);
+create or replace function net.http_post(
+    url text,
+    body jsonb default '{}'::jsonb,
+    params jsonb default '{}'::jsonb,
+    headers jsonb default '{}'::jsonb,
+    timeout_milliseconds integer default 5000
+) returns bigint
+language plpgsql as $fn$
+declare
+    v_id bigint;
+begin
+    insert into net._sent (url, body) values (http_post.url, http_post.body)
+    returning net._sent.id into v_id;
+    return v_id;
+end;
+$fn$;
+
+-- Supabase Vault: no servidor é uma view sobre os segredos cifrados. Aqui é
+-- tabela, para o teste conseguir criar e remover o segredo do deploy hook.
+create schema vault;
+create table vault.decrypted_secrets (
+    id uuid primary key default gen_random_uuid(),
+    name text unique,
+    decrypted_secret text
+);
+
+-- pg_cron: registrar o agendamento basta. Quem executa a varredura no teste é o
+-- próprio teste, chamando fire_site_rebuild() direto.
+create schema cron;
+create table cron.job (
+    jobid bigserial primary key,
+    jobname text unique,
+    schedule text,
+    command text
+);
+create or replace function cron.schedule(p_job_name text, p_schedule text, p_command text)
+returns bigint
+language sql as $fn$
+    insert into cron.job (jobname, schedule, command) values (p_job_name, p_schedule, p_command)
+    on conflict (jobname) do update set schedule = excluded.schedule, command = excluded.command
+    returning jobid;
 $fn$;
 `;
 

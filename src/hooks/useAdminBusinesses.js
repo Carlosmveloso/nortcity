@@ -6,7 +6,8 @@ const ADMIN_BUSINESS_SELECT = `
     phone, whatsapp, email, website, instagram, facebook, status, cover_image,
     owner_id, created_at, submitted_at, moderation_reason, moderation_note,
     moderated_at, duplicate_candidates, duplicate_reviewed_at,
-    business_categories(is_primary, categories(id, slug, name))
+    business_categories(is_primary, categories(id, slug, name)),
+    owner:profiles!businesses_owner_id_fkey(id, full_name, email)
 `;
 
 function mapAdminRow(row) {
