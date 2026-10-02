@@ -1,6 +1,7 @@
 //* Monta a estrutura geral
 import { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { confirmationError } from "./lib/authFeedback";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import Footer from "./components/layout/Footer";
@@ -37,6 +38,12 @@ const Entrar = lazy(() => import("./pages/Entrar"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function App() {
+  const location = useLocation();
+  const callbackError = confirmationError(location.search, location.hash);
+  // Links antigos podem retornar à home: não esconda o erro de confirmação.
+  if (callbackError && location.pathname !== '/entrar') {
+    return <Navigate to="/entrar?confirmacao=1" replace state={{ confirmationError: callbackError }} />;
+  }
   return (
     <>
       <a
