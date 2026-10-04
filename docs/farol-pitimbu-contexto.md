@@ -1,6 +1,6 @@
 # Contexto do projeto — Farol Pitimbu
 
-Revisado em 01/10/2026 contra o código deste repositório. Estado implementado não é confirmação de deployment nem de configuração remota.
+Revisado em 04/10/2026 contra o código deste repositório. Estado implementado não é confirmação de deployment nem de configuração remota.
 
 ## Produto
 
