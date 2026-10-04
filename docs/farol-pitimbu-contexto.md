@@ -12,6 +12,7 @@ Guia de turismo e diretório de negócios de Pitimbu/PB. Visitantes descobrem ne
 - Tokens em `src/index.css`: Ocean `#094f66`, Turquesa `#04c6db`, Areia `#f4f1ea`, Sol `#ffad0a`; Inter e Poppins. Reutilize as classes existentes.
 - Catálogo real via Supabase; busca paginada pela RPC `search_businesses`. Conteúdo editorial e curadoria permanecem em `src/data/`.
 - Auth por e-mail/senha, roles `user`/`admin` efetivas, proteção de rotas e autorização no banco por RLS/RPCs.
+- Favoritos por conta: salvar/remover nos cards e na ficha, lista privada em `/favoritos`, apenas negócios ativos visíveis. Migration de 04/10/2026 homologada no desenvolvimento; publicação depende da aplicação no destino.
 - Cadastro e Meu Negócio: zero ou um negócio por proprietário; edição de pendente/rejeitado, reenvio, consulta de suspensão e edição moderada de publicado.
 - Admin: criação/edição, aprovação/rejeição/suspensão, categorias, duplicatas, vínculo/remoção de proprietário e revisão de propostas.
 - Upload de capa em Storage. Capas propostas ficam em caminho privado de revisão até aprovação.
@@ -27,7 +28,7 @@ Consulte [regras-de-negocio.md](regras-de-negocio.md) para propriedade, categori
 
 ## FUTURO — sem implementação completa
 
-- Favoritos persistentes, avaliações e Google OAuth.
+- Avaliações e Google OAuth.
 - Assinaturas, cobrança/Stripe, planos pagos, destaques patrocinados e ferramentas comerciais para proprietários.
 - Galeria comercial, selo de verificação e moderação de fotos por IA.
 - Permissões próprias de moderador, equipes e múltiplos negócios por conta.

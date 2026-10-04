@@ -36,6 +36,10 @@ Em 04/10/2026, `supabase/diagnostics/development_homologation_rollback.sql` vali
 
 Leituras pela API pública confirmaram respostas do PostgREST para categorias e negócios, recusa de endereço privado e a rota pública do Storage. O webhook de rebuild permanece ausente no desenvolvimento de propósito, portanto não há deploy disparado por essa homologação.
 
+Favoritos de 04/10/2026: `src/test/db/favorites.test.js` cobre grants, RLS entre usuário/admin/anon, inserção somente de ativos, duplicatas, suspensão e cascatas. Testes da integração cobrem paginação e filtro de status; testes do provider cobrem gravação, falha, cliques repetidos, logout e respostas atrasadas após troca de conta. `e2e/favorites.spec.js` cobre coração no card/ficha, persistência simulada após reload, teclado, carregamento/erro/vazio, lista apenas de ativos e retorno do login com filtros em desktop/mobile.
+
+`supabase/diagnostics/favorites_homologation_rollback.sql` passou no projeto hospedado `farol-pitimbu-dev` depois da migration incremental. Usa os papéis reais para testar isolamento, duplicatas, bloqueio de escrita alheia/UPDATE, suspensão, remoção e cascatas, encerrando com rollback. Não cria sessões nem substitui uma passagem manual pela interface com Auth/PostgREST reais. Os testes de navegador continuam usando a API simulada.
+
 Ainda falta uma passagem manual da interface completa contra os serviços reais para cadastro com arquivo de imagem e moderação pelo painel. Os testes Playwright cobrem essas telas com API simulada; a homologação transacional cobre as regras e policies no servidor, mas não substitui o upload binário pelo serviço Storage.
 
 Para interface alterada, conferir foco, teclado, contraste, textos longos e responsividade. Um teste com API simulada não substitui essa homologação.

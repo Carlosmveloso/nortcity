@@ -193,7 +193,7 @@ function Entrar() {
                     <p className="mt-1 text-sm text-muted-foreground">
                         {mode === 'signIn'
                             ? 'Acesse sua conta do Farol Pitimbu.'
-                            : 'Crie sua conta para cadastrar seu negócio.'}
+                            : 'Crie sua conta para salvar favoritos e cadastrar seu negócio.'}
                     </p>
 
                     {callbackError && (
