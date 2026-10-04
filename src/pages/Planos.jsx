@@ -8,16 +8,16 @@ import { staticPageMeta } from '../lib/siteMeta';
 
 const faq = [
     {
-        question: 'Posso trocar de plano depois?',
-        answer: 'Sim, você pode fazer upgrade ou downgrade do seu plano a qualquer momento pelo painel do negócio.',
+        question: 'Posso contratar um plano pago?',
+        answer: 'Ainda não. Os planos pagos estão em planejamento, com preços e benefícios a definir. O cadastro gratuito já está disponível.',
     },
     {
-        question: 'Existe fidelidade ou multa de cancelamento?',
-        answer: 'Não. Os planos pagos são mensais e você pode cancelar quando quiser, sem multa.',
+        question: 'Meu negócio aparece assim que eu cadastro?',
+        answer: 'O cadastro passa por análise da equipe antes de ser publicado. Você acompanha o status pela área Meu Negócio.',
     },
     {
-        question: 'O plano Básico é gratuito para sempre?',
-        answer: 'Sim, o plano Básico não tem custo e não expira — é o ponto de partida para qualquer negócio local.',
+        question: 'Preciso pagar para cadastrar meu negócio?',
+        answer: 'Não. Você pode criar sua conta e enviar o cadastro gratuitamente.',
     },
 ];
 
@@ -36,25 +36,31 @@ function Planos() {
                         <span className="text-card">Planos</span>
                     </nav>
                     <p className="text-sm font-bold tracking-wide text-turquoise-light uppercase">
-                        Planos para todos os tamanhos
+                        Cadastro gratuito disponível
                     </p>
                     <h1 className="mt-2 font-head text-3xl font-extrabold text-card md:text-4xl">
                         Divulgue seu negócio em Pitimbu
                     </h1>
                     <p className="mt-2 max-w-2xl text-card/80">
-                        Escolha o plano ideal e seja encontrado por milhares de visitantes e moradores locais.
+                        Cadastre seu negócio gratuitamente para que visitantes e moradores possam encontrá-lo no Farol Pitimbu.
                     </p>
                 </div>
             </section>
 
             <section className="bg-background px-4 py-14 sm:px-6 lg:px-8">
                 <div className="container mx-auto max-w-5xl">
-                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+                    <div className="mx-auto grid max-w-lg grid-cols-1 gap-8">
                         {plans.map((plan, index) => (
                             <Reveal key={plan.id} delay={index * 80}>
                                 <PricingCard plan={plan} />
                             </Reveal>
                         ))}
+                    </div>
+                    <div className="mx-auto mt-8 max-w-lg rounded-3xl border border-sand-dark bg-card p-6">
+                        <h2 className="font-head text-xl font-bold text-foreground">Planos pagos em planejamento</h2>
+                        <p className="mt-2 text-dark-ocean/70">
+                            Novos recursos de divulgação estão em estudo. Preços, benefícios e disponibilidade ainda serão definidos.
+                        </p>
                     </div>
                 </div>
             </section>
@@ -66,7 +72,7 @@ function Planos() {
                             Por que anunciar no Farol Pitimbu?
                         </h2>
                         <p className="mx-auto mt-2 max-w-xl text-center text-muted-foreground">
-                            Benefícios exclusivos para impulsionar seu negócio local
+                            O que você já pode fazer com seu cadastro gratuito
                         </p>
                     </Reveal>
                     <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -102,7 +108,7 @@ function Planos() {
                 <div className="container mx-auto flex max-w-3xl flex-col items-center gap-4 text-center">
                     <h2 className="font-head text-2xl font-bold text-card">Ainda tem dúvidas?</h2>
                     <p className="text-card/80">
-                        Nossa equipe está pronta para ajudar você a escolher o melhor plano para seu negócio.
+                        Fale com nossa equipe para saber como cadastrar e divulgar seu negócio.
                     </p>
                     <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
                         <a

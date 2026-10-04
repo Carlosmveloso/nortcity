@@ -11,7 +11,10 @@
     "optimize-images": "node scripts/optimize-business-images.mjs",
     "generate-supabase-seed": "node scripts/generate-supabase-seed.mjs",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:check": "vite build --mode ci",
+    "dev:e2e": "vite --mode e2e --host 127.0.0.1 --port 4173 --strictPort",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -30,6 +33,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@types/react": "^19.2.14",
@@ -44,5 +48,8 @@
     "sharp": "^0.35.3",
     "vite": "^8.0.12",
     "vitest": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=24 <27"
   }
 }

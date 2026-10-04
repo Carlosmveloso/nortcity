@@ -74,7 +74,7 @@ export const staticPages = [
         path: '/planos',
         title: 'Divulgue seu negócio em Pitimbu',
         description:
-            'Escolha o plano ideal e seja encontrado por milhares de visitantes e moradores do litoral sul da Paraíba.',
+            'Cadastre seu negócio gratuitamente no Farol Pitimbu. Planos pagos estão em planejamento.',
     },
     {
         path: '/guia-local',
@@ -102,7 +102,7 @@ export const staticPages = [
     {
         path: '/favoritos',
         title: 'Favoritos',
-        description: 'Tudo o que você marcou para não esquecer no Farol Pitimbu.',
+        description: 'Favoritos estão em planejamento. Explore e compartilhe os lugares de Pitimbu.',
         noindex: true,
     },
     {

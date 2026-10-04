@@ -25,7 +25,10 @@ dist-ssr
 *.sw?
 
 
-#DocumentationJ
-docs/
 .vercel
 .env*
+
+!.env.example
+dist-check/
+playwright-report/
+test-results/
