@@ -1,109 +1,73 @@
 # Farol Pitimbu
 
-> O guia digital do litoral sul da Paraíba — Portal de turismo + diretório de negócios locais.
+Portal de turismo e diretório de negócios de Pitimbu, litoral sul da Paraíba. O nome do repositório é `nortcity`.
 
-## 🚀 Quick Start
+## Desenvolvimento
 
-### Setup
+Use Node 24 (referência em `.nvmrc`) e npm.
+
 ```bash
-git clone https://github.com/Carlosmveloso/nortcity.git
-cd nortcity
-npm install
-cp .env.example .env   # preencha VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY
+nvm install
+nvm use
+npm ci
+```
+
+Em um clone novo, copie `.env.example` para `.env.development.local` e configure um **projeto Supabase de desenvolvimento** antes de testar escritas. Preserve os `.env` existentes e confira o destino: esta cópia já foi usada com produção. Veja [ambientes](docs/ambientes.md).
+
+```bash
 npm run dev
 ```
 
-Acessa em `http://localhost:5173/`.
+Abra `http://localhost:5173`. Sem Supabase configurado, páginas estáticas carregam, mas autenticação e catálogo não funcionam. EmailJS é opcional para desenvolvimento e necessário para envio real de contato.
 
-> Sem as variáveis do Supabase preenchidas, o app carrega mas `/explorar`, `/negocio/:slug` e login/cadastro não funcionam (ver `.env.example`).
+## Verificações
 
-### Build e testes
+```bash
+npm run lint
+npm test
+npm run build:check
+npx playwright install chromium
+npm run test:e2e
+```
+
+`npm test` inclui utilitários, componentes e migrations/RLS em PGlite descartável. Os testes de navegador usam Chromium em desktop e mobile, com API simulada e sem acesso ao Supabase real. Detalhes e limites em [docs/testes.md](docs/testes.md).
+
+`build:check` ignora arquivos de ambiente e gera uma compilação isolada em `dist-check/`, sem catálogo de negócios. **Não use esse resultado para publicação.**
+
+Para o build completo, configure as variáveis do destino e execute:
+
 ```bash
 npm run build
 npm run preview
-npm run lint
-npm run test        # Vitest (unitários)
 ```
 
-## 📚 Documentação
+Esse build consulta negócios públicos e baixa capas do Supabase para gerar sitemap, imagens Open Graph e HTML de compartilhamento em `dist/`. Precisa de rede; não altera dados nem faz deploy. Ao navegar no preview, a aplicação usa as credenciais incorporadas ao build.
 
-- **[CLAUDE.md](./CLAUDE.md)** — Guia de desenvolvimento, convenções, fluxo de Git e boas práticas.
-- **[docs/farol-pitimbu-contexto.md](./docs/farol-pitimbu-contexto.md)** — Especificação completa do projeto (requisitos, fluxos, modelagem, roadmap, stack).
+## Stack e estrutura
 
-## 🛠 Tech Stack
+- React 19, Vite 8, JavaScript/JSX com JSDoc e React Router 7.
+- Tailwind CSS 4; tokens de cor e tipografia em `src/index.css`.
+- Supabase: PostgreSQL, RLS, RPCs, autenticação por e-mail/senha e Storage.
+- Leaflet/react-leaflet, Lucide, EmailJS e integrações de métricas Vercel.
+- Vitest, Testing Library, PGlite e Playwright.
 
-- **Frontend:** React 19 + Vite 8 + JavaScript (sem TypeScript — tipagem leve via JSDoc)
-- **Styling:** Tailwind CSS v4
-- **Backend:** Supabase — PostgreSQL + RLS, Auth (e-mail/senha) e Storage já conectados; Edge Functions e Realtime ainda não
-- **Routing:** react-router-dom v7
-- **Mapa:** react-leaflet
-- **Icons:** lucide-react
-- **Testes:** Vitest + Testing Library
+`src/pages/` contém rotas; `components/`, interface reutilizável; `hooks/` e `lib/`, acesso a dados e lógica compartilhada. `supabase/migrations/` contém o histórico SQL. `scripts/` contém geradores de previews e ferramentas operacionais. O catálogo vem do banco; `src/data/` contém curadoria e apresentação.
 
-> Stack alvo descrito em `docs/farol-pitimbu-contexto.md` (TypeScript, shadcn/ui, framer-motion, react-query, react-hook-form+zod) ainda não foi adotado — ver a "Nota de stack" nesse documento.
+## Estado da implementação
 
-## 🎨 Design System
+O código inclui catálogo e busca, perfil público, cadastro, autenticação, Meu Negócio, edição com moderação, gestão administrativa, upload de capa, analytics administrativo e republicação solicitada pelo banco. A presença no código não comprova configuração ou aplicação em produção.
 
-**"Litoral Premium"** — Cores oceânicas, tipografia modern, border radius 20px.
+Favoritos, assinaturas/cobrança, galeria comercial, avaliações e Google OAuth ainda não estão implementados. A interface identifica recursos futuros sem oferecer contratação de planos inexistentes.
 
-| Cor | Hex | Uso |
-|-----|-----|-----|
-| Ocean | #0A4D68 | Primária |
-| Turquesa | #05BFDB | Acentos |
-| Areia | #F6F3EA | Backgrounds |
-| Sol | #FFB703 | CTAs |
+## Documentação e colaboração
 
-Ver [CLAUDE.md](./CLAUDE.md#5-design-system-litoral-premium) para detalhes.
+- [AGENTS.md](AGENTS.md): instruções compartilhadas para agentes.
+- [Contexto](docs/farol-pitimbu-contexto.md): arquitetura, estado atual e futuro.
+- [Regras de negócio](docs/regras-de-negocio.md): autorização, propriedade, moderação e edição.
+- [Ambientes](docs/ambientes.md): configuração e publicação.
+- [Testes](docs/testes.md): execução, cobertura e limites.
+- [Histórico](docs/historico/README.md): decisões e incidentes preservados.
 
-## 📁 Estrutura
+O fluxo usa branches de trabalho a partir de `develop`, Conventional Commits e PRs para `develop`; `main` é a branch de publicação. O workflow de CI roda lint, testes, build isolado e navegador sem segredos de produção. Tornar os checks obrigatórios depende das regras de proteção configuradas no GitHub.
 
-```
-src/
-├── components/       # Componentes React reutilizáveis (inclui AdminRoute, ProtectedRoute)
-├── contexts/         # AuthContext (sessão, roles, isAdmin)
-├── pages/           # Páginas/rotas (inclui Admin.jsx)
-├── hooks/           # React hooks customizados (useAuth, useBusiness(es), useAdmin*)
-├── integrations/    # Cliente Supabase (client.js) + tipos JSDoc (types.js)
-├── lib/             # Utilitários
-└── assets/          # Imagens estáticas — só compartilhamento (OG) e 2 páginas de experiência;
-                     # negócios já usam Supabase Storage
-```
-
-## 🔄 Fluxo de Desenvolvimento
-
-1. Crie branch a partir de `develop`: `git checkout -b feat/sua-feature`
-2. Desenvolva e teste localmente (mobile + desktop).
-3. Commit atomicamente: `git commit -m "feat: descrição"`
-4. Abra PR em GitHub (base: `develop`).
-5. Code review + merge.
-
-Ver [CLAUDE.md — Fluxo de Git e PRs](./CLAUDE.md#6-fluxo-de-git-e-prs).
-
-## 📊 Status (MVP - v1.0)
-
-- [x] Home + páginas institucionais (Explorar, Categorias, Profissionais, Sobre, Contato, Planos)
-- [x] Design system completo
-- [x] Animações, hover effects, header
-- [x] Backend Supabase (Postgres + RLS) — negócios e categorias reais, não mais mockados
-- [x] Auth (e-mail/senha) — Google ainda pendente
-- [x] CRUD de negócios (parcial) — criação e leitura reais; edição de negócio já cadastrado só pelo admin por enquanto
-- [x] Painel admin — aprovar/rejeitar negócios, editar negócios e imagem, CRUD de categorias
-- [x] Upload de imagens (Supabase Storage) — os 78 negócios já migrados; dono também pode subir a própria foto no cadastro
-- [x] Honeypot anti-spam nos formulários públicos
-- [x] Testes automatizados (Vitest) e bundle otimizado (~136kB no chunk principal)
-- [ ] Dashboard do dono do negócio
-- [ ] Sistema de pagamentos (Stripe)
-
-Ver roadmap completo em [contexto do projeto](./docs/farol-pitimbu-contexto.md#10-roadmap).
-
-## 🤝 Contribuição
-
-1. Leia [CLAUDE.md](./CLAUDE.md) antes de começar.
-2. Siga as convenções (Tailwind mobile-first, componentes React, semantic HTML).
-3. Teste em múltiplos breakpoints e navegadores.
-4. Verifique acessibilidade (WCAG AA).
-
-## 📧 Contato
-
-**Responsável:** Carlos Eduardo Mveloso  
-**Email:** carloseduardomveloso@gmail.com
+Responsável: Carlos Eduardo Mveloso — carloseduardomveloso@gmail.com.
