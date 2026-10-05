@@ -1,13 +1,20 @@
 import { categoryLabels } from '../data/categoryLabels';
+import { SITE_NAME } from './siteMeta';
+
+export function businessWhatsappMessage(business) {
+    return `Olá! Encontrei ${business.name} no ${SITE_NAME} e gostaria de mais informações.`;
+}
 
 // Devolve `null` quando não há número: telefone é opcional no cadastro (basta
 // um contato público qualquer — e-mail, Instagram, site), então esta função
 // recebe `null` no uso normal. Enquanto ela assumia string, um único negócio
 // sem telefone derrubava a tela inteira que o listasse.
-export function toWhatsappLink(phone) {
+export function toWhatsappLink(phone, message = '') {
     const digits = (phone ?? '').replace(/\D/g, '');
 
-    return digits ? `https://wa.me/55${digits}` : null;
+    if (!digits) return null;
+    const link = `https://wa.me/55${digits}`;
+    return message ? `${link}?text=${encodeURIComponent(message)}` : link;
 }
 
 export function categoryLabel(slug) {

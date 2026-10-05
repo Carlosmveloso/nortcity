@@ -22,7 +22,7 @@ import { useBusiness } from '../hooks/useBusiness';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { track } from '../lib/analytics/analytics';
 import { AnalyticsEvents } from '../lib/analytics/events';
-import { categoryLabel, toWhatsappLink } from '../lib/business';
+import { businessWhatsappMessage, categoryLabel, toWhatsappLink } from '../lib/business';
 import { businessShare } from '../lib/share';
 import { businessPageMeta, notFoundMeta } from '../lib/siteMeta';
 import NotFound from './NotFound';
@@ -202,7 +202,7 @@ function NegocioPerfil() {
 
                         {whatsappNumber && (
                             <a
-                                href={toWhatsappLink(whatsappNumber)}
+                                href={toWhatsappLink(whatsappNumber, businessWhatsappMessage(business))}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={handleWhatsappClick}
