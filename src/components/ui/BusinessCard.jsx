@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { InstagramIcon } from './BrandIcons';
 import { track } from '../../lib/analytics/analytics';
 import { AnalyticsEvents } from '../../lib/analytics/events';
-import { categoryLabel, toWhatsappLink } from '../../lib/business';
+import { businessWhatsappMessage, categoryLabel, toWhatsappLink } from '../../lib/business';
 import { businessShare } from '../../lib/share';
 import ShareButton from './ShareButton';
 import FavoriteButton from './FavoriteButton';
@@ -13,7 +13,10 @@ function BusinessCard({ business }) {
     // O botão é de WhatsApp, então o número de WhatsApp vem primeiro; o
     // telefone é o reserva. Antes o card lia só `phone`, e o cadastro feito
     // pelo /admin que preenche apenas o WhatsApp travava a listagem inteira.
-    const whatsappLink = toWhatsappLink(business.whatsapp ?? business.phone);
+    const whatsappLink = toWhatsappLink(
+        business.whatsapp ?? business.phone,
+        businessWhatsappMessage(business)
+    );
 
     // O card aparece em /explorar e nos relacionados da ficha, e os dois
     // mapeadores trazem `businessId` (o uuid; `business.id` é o slug). Card

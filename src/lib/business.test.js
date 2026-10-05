@@ -10,6 +10,14 @@ describe('toWhatsappLink', () => {
         expect(toWhatsappLink('83 9 9113.4990')).toBe('https://wa.me/5583991134990');
     });
 
+    it('preenche a mensagem sem perder acentos, espaços ou caracteres especiais', () => {
+        const message = 'Olá! Vi Café & Mar no Farol Pitimbu. Gostaria de informações?';
+        const url = new URL(toWhatsappLink('(83) 99113-4990', message));
+        expect(url.pathname).toBe('/5583991134990');
+        expect(url.searchParams.get('text')).toBe(message);
+        expect([...url.searchParams.keys()]).toEqual(['text']);
+    });
+
     // Telefone é opcional: basta um contato público qualquer para publicar. Um
     // negócio cadastrado só com WhatsApp chegava aqui como null e derrubava a
     // listagem inteira (segunda página de /explorar?categoria=servicos).
