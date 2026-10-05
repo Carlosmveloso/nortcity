@@ -268,7 +268,8 @@ isso a capa seria o único campo sensível alterável sem moderação.
 | Suspensão | Se o dono poderá editar o cadastro enquanto suspenso. |
 | Busca | Se a relevância deve casar palavra a palavra (hoje é a expressão inteira como substring). |
 | Propriedade | Transferência entre dois proprietários já vinculados. |
-| Planos | Periodicidade, limites, recursos e retenção. |
+| Planos | Periodicidade, preços, recursos além de ofertas e retenção. Limites de ofertas ativas decididos em 05/10/2026 (seção 14). |
+| Ofertas | Expiração automática por job, revisão de ofertas aprovadas/agendadas/suspensas, retenção ao excluir conta e bloqueio financeiro na reativação. |
 | Financeiro | Tolerância, retries e efeito temporal do downgrade. |
 | Verificação | Critérios e processo do selo Verificado. |
 
@@ -276,8 +277,9 @@ isso a capa seria o único campo sensível alterável sem moderação.
 
 ## 12. Invariantes comerciais a preservar (FUTURO)
 
-Documentados para o desenho futuro não nascer incompatível. **Nada disto está implementado** e nenhuma
-tabela comercial foi criada.
+Documentados para o desenho futuro não nascer incompatível. Assinatura, cobrança e downgrade **não
+estão implementados**. Desde 05/10/2026 existem apenas os planos mínimos do módulo de ofertas, com
+atribuição manual pelo admin (seção 14).
 
 - Planos pretendidos: Gratuito, Básico R$39, Profissional R$89, Premium R$179. Periodicidade e limites
   não fechados.
@@ -292,7 +294,7 @@ tabela comercial foi criada.
 
 Analytics administrativo está implementado; métricas comerciais para proprietários continuam futuras.
 
-Também continuam fora do escopo: cobrança/Stripe, galeria comercial, ofertas, patrocinados, selo
+Também continuam fora do escopo: cobrança/Stripe, cupons, galeria comercial, patrocinados, selo
 Verificado, avaliações, roteiros, alertas, moderação de fotos por IA, Google OAuth,
 moderador com permissões próprias, equipes, múltiplos negócios por conta, status `closed` e
 reivindicação pública.
@@ -310,3 +312,70 @@ Cards e ficha compartilham o estado na sessão. A lista é consultada ao abrir/r
 Visitante que tenta salvar é encaminhado ao login e retorna à página com seus filtros. Depois de entrar, confirma o salvamento pelo coração. A página `/favoritos` oferece acesso à conta para visitantes.
 
 **FUTURO.** Favoritos anônimos, sincronização offline/em tempo real entre abas, pastas, compartilhamento de listas, métricas e recomendações. A aplicação em produção deve anteceder a publicação do front-end desta versão.
+
+## 14. Ofertas e planos mínimos
+
+**IMPLEMENTADO NO BANCO — Sprint 1, 05/10/2026, branch `feat/offers-sprint-01`.** Migrations `20261005000001` a `20261005000003`, cobertas por `src/test/db/offers.test.js`. Ainda sem interface, não aplicadas em nenhum ambiente hospedado e sem homologação.
+
+### Planos
+
+- `plans`: Gratuito (0 ofertas ativas), Básico (1), Profissional (3), Premium (5).
+- Todo negócio começa no Gratuito: sem linha em `business_plan_assignments`, o plano é `gratuito`. Enquanto não houver assinatura, só o admin atribui outro plano, por `admin_set_business_plan`. Cada troca vira uma linha nova; nada é sobrescrito.
+- A troca de plano não altera o status do negócio. O rebaixamento para um limite menor que o número de ofertas ativas é recusado (`plan_offer_limit_exceeded`): o admin suspende ou encerra antes.
+- `plan_coupon_fees` guarda a taxa por cupom utilizado, com vigência. Os valores iniciais, desde 01/10/2026, são: Básico R$1,50, Profissional R$1,00 e Premium R$0,50. O Gratuito não tem taxa. Regras do mesmo plano não se sobrepõem no tempo, e uma regra publicada só pode ganhar data de fim; um valor novo exige uma regra nova.
+
+### Oferta e versões
+
+- `offers` guarda o negócio, o status e a versão publicada. O conteúdo comercial fica em `offer_versions`, e as decisões em `offer_reviews`, que só aceita inclusões.
+- Só o proprietário do negócio cria ofertas (`create_offer`). Toda oferta começa em `draft`, com a versão 1.
+- Só a versão em `draft` é editável. Ao ser enviada, ela fica imutável para qualquer papel. Quando a análise pede ajustes, a próxima edição cria a versão seguinte e a versão analisada fica como estava.
+- Uma oferta ativa recebe revisão (`create_offer_revision`). A versão publicada continua no ar até a revisão ser aprovada e publicada. Ofertas aprovadas, agendadas ou suspensas ainda não recebem revisão.
+- Os tipos de benefício são enum. O percentual deve ficar entre 0 e 100, e o desconto em valor deve ser positivo. Brinde, produto ou serviço adicional, condição especial e outros não exigem valor.
+- O banco garante: `starts_at < ends_at`, `per_user_limit >= 1`, `total_limit > 0` quando informado, `per_user_limit <= total_limit` e `coupon_validity_minutes > 0`.
+- Dias ISO (1 = segunda … 7 = domingo); os sete dias significam todos os dias. Faixas em `time_windows` no formato `[{day, start, end}]`, em horário local de Pitimbu. Cada faixa precisa estar em um dos dias escolhidos, não atravessa a meia-noite e não se sobrepõe a outra do mesmo dia. Lista vazia significa o dia inteiro.
+- Negócio e conta com ofertas não são apagados em cascata: o histórico financeiro permanece. Um negócio com ofertas é suspenso, não excluído.
+
+### Aceite financeiro e envio
+
+- `accept_offer_financial_terms(oferta, taxa_exibida)` copia para a versão a regra vigente do plano: `fee_amount`, `fee_rule_id`, quem aceitou e quando. Se a taxa exibida não for a vigente, o aceite é recusado (`fee_changed`). No Gratuito o aceite é recusado (`plan_fee_unavailable`), então a oferta não passa de rascunho.
+- Cada versão enviada carrega o próprio aceite. Depois de um pedido de ajustes, o reenvio exige novo aceite.
+- `submit_offer_for_review` exige o negócio publicado, título, descrição e tipo de benefício, o valor nos descontos, o período ainda não encerrado, o prazo do cupom e o aceite da regra ainda vigente. Se o plano ou a taxa mudaram depois do aceite, o envio é recusado (`fee_changed`).
+- O histórico registra `submitted` no primeiro envio e `resubmitted` depois de um pedido de ajustes.
+
+### Transições
+
+| De → para | Quem / operação | Observação |
+|---|---|---|
+| `draft`/`changes_requested` → `pending_review` | proprietário, `submit_offer_for_review` | aceite obrigatório |
+| `pending_review` → `changes_requested` | admin, `request_offer_changes` | motivo obrigatório |
+| `pending_review` → `rejected` | admin, `reject_offer` | motivo obrigatório; a oferta não é apagada |
+| `pending_review` → `approved` | admin, `approve_offer` | aprovar não publica |
+| `approved` → `active` | admin, `publish_offer` | início já passou; exige vaga no plano |
+| `approved` → `scheduled` | admin, `publish_offer` | início futuro |
+| `scheduled` → `active` | sistema, `activate_due_offers` | exige vaga no plano; ainda sem agendamento no cron |
+| `active` → `suspended` | admin, `suspend_offer` | motivo obrigatório |
+| `suspended` → `active` | admin, `reactivate_offer` | período válido, negócio ativo, vaga no plano |
+| `approved`/`scheduled`/`active`/`suspended` → `ended` | admin, `end_offer` | definitivo |
+
+A trigger `offers_guard` aplica essa máquina de estados a qualquer papel, inclusive `service_role`, e só aceita mudanças vindas das operações da tabela acima. `authenticated` não tem grant de escrita nas tabelas de ofertas.
+
+Antes de ativar, `publish_offer` e `reactivate_offer` travam o negócio e contam as ofertas `active`. Sem vaga, recusam com `plan_offer_limit_reached` e a oferta continua `approved` (ou `suspended`). Se a vaga não existir na hora de ativar uma oferta agendada, ela continua `scheduled`.
+
+As decisões sobre uma revisão de oferta ativa valem só para a versão: a oferta continua `active`. Publicar a revisão aprovada troca `published_version_id`, desde que o novo período já tenha começado.
+
+### Visibilidade
+
+- Visitante e outras contas veem só a versão publicada de uma oferta `active`, de um negócio `active` e dentro do período. Uma oferta vencida sai da vitrine mesmo antes de ser encerrada.
+- O visitante (`anon`) recebe apenas as colunas de vitrine: sem autoria, sem andamento da análise e sem taxa. Consultas pela API precisam listar as colunas; `select=*` é recusado para `anon`.
+- O proprietário vê as ofertas, versões e o histórico do próprio negócio. O admin vê tudo.
+- `get_business_offer_terms` informa ao proprietário ou ao admin o plano, o limite, as ofertas ativas e a taxa vigente.
+
+As sete decisões de implementação foram aprovadas na revisão de 05/10/2026: versão congelada a cada envio com novo aceite, rascunho no Gratuito, revisão só de oferta ativa, rebaixamento bloqueado, encerramento a partir de `approved`/`scheduled`, preservação do histórico e vitrine filtrada pelo período.
+
+**Invariante de auditoria (ajuste da revisão de 05/10/2026).** Toda gravação em `offers`, `offer_versions` e `offer_reviews` passa pelas operações oficiais, inclusive quando o chamador é `service_role` ou `postgres`. As RPCs ligam o sinal interno `farol.offer_write` ao começar e o desligam antes de retornar. As triggers primeiro validam a transição (`invalid_transition`, `version_immutable`) e, se ela for válida mas vier de fora das RPCs, recusam com `direct_write_not_allowed`. O sinal vale só para a transação; como é desligado no fim de cada operação, um `UPDATE` direto feito depois de uma RPC, na mesma transação, também é recusado. Isso protege contra erro de Edge Function, script ou manutenção, não contra quem liga o sinal manualmente. Correções excepcionais exigem desligar a trigger como dono da tabela, de forma explícita.
+
+**DÍVIDA TÉCNICA.**
+- **Exclusão de negócio com histórico.** Hoje `admin_delete_business` falha por FK quando há ofertas. Isso preserva o histórico, mas não é a solução definitiva: o admin precisará retirar um negócio da operação sem destruir os registros. O modelo futuro é arquivamento (soft delete, por exemplo `archived`) em vez de exclusão física.
+- **Jobs.** A vitrine já esconde ofertas vencidas, mas o status persistido precisa refletir a realidade. Quando os jobs forem configurados: agendar `activate_due_offers` (`scheduled` → `active`) e criar o encerramento automático `active` → `ended` ao fim de `ends_at`, para não acumular ofertas `active` encerradas há meses.
+
+**PENDENTE/FUTURO.** Interface do proprietário e do admin, com mensagens de produto para códigos como `plan_fee_unavailable` ("Seu plano atual não inclui publicação de ofertas."); cupons e cobrança; bloqueio financeiro na reativação; revisão de oferta aprovada, agendada ou suspensa; retenção ao excluir conta com ofertas. Uma revisão em análise quando a oferta é encerrada continua no histórico e não pode mais ser publicada.

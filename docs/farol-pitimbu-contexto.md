@@ -30,7 +30,8 @@ Consulte [regras-de-negocio.md](regras-de-negocio.md) para propriedade, categori
 ## FUTURO — sem implementação completa
 
 - Avaliações e Google OAuth.
-- Assinaturas, cobrança/Stripe, planos pagos, destaques patrocinados e ferramentas comerciais para proprietários.
+- Assinaturas, cobrança/Stripe, destaques patrocinados e ferramentas comerciais para proprietários.
+- Interface de ofertas. O banco das ofertas e os planos mínimos atribuídos pelo admin estão na branch `feat/offers-sprint-01`; ver a seção 14 das [regras](regras-de-negocio.md).
 - Galeria comercial, selo de verificação e moderação de fotos por IA.
 - Permissões próprias de moderador, equipes e múltiplos negócios por conta.
 
