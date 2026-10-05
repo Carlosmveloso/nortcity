@@ -33,7 +33,8 @@ export const test = base.extend({
     role: ['owner', { option: true }],
     initialStatus: ['pending', { option: true }],
     api: [async ({ context, role, initialStatus }, use) => {
-        const state = { business: initialStatus ? business(initialStatus) : null, proposal: null, calls: [], failRpc: null, authError: null, resendError: null };
+        const state = { business: initialStatus ? business(initialStatus) : null, proposal: null, calls: [], failRpc: null, authError: null, resendError: null,
+            favorites: [], favoritesError: null, favoritesGate: null };
         const unexpected = [];
         const pageErrors = [];
         context.on('page', (page) => page.on('pageerror', (error) => pageErrors.push(error.message)));
@@ -72,6 +73,24 @@ export const test = base.extend({
             if (path === '/auth/v1/logout') return route.fulfill({ status: 204 });
             if (path === '/rest/v1/user_roles') return json([{ role: role === 'admin' ? 'admin' : 'user' }]);
             if (path === '/rest/v1/categories') return json([category]);
+            if (path === '/rest/v1/business_categories') return json([]);
+            if (path === '/rest/v1/business_favorites') {
+                if (state.favoritesGate) await state.favoritesGate;
+                if (state.favoritesError) return json({ message: 'Falha simulada de favoritos', code: '42501' }, 403);
+                if (request.method() === 'POST') {
+                    state.favorites.push(body);
+                    return route.fulfill({ status: 201 });
+                }
+                if (request.method() === 'DELETE') {
+                    state.favorites = state.favorites.filter((row) => !(url.searchParams.get('user_id') === `eq.${row.user_id}` && url.searchParams.get('business_id') === `eq.${row.business_id}`));
+                    return route.fulfill({ status: 204 });
+                }
+                const start = Number(url.searchParams.get('offset') ?? 0);
+                const limit = Number(url.searchParams.get('limit') ?? 500);
+                return json(state.favorites.filter((row) => url.searchParams.get('user_id') === `eq.${row.user_id}`).slice(start, start + limit).map((row) => ({
+                    ...row, businesses: state.business?.status === 'active' && state.business.id === row.business_id ? state.business : null,
+                })));
+            }
             if (path === '/rest/v1/business_change_requests') return json(state.proposal ? [state.proposal] : []);
             if (path === '/rest/v1/businesses') {
                 let rows = state.business ? [state.business] : [];
@@ -81,6 +100,10 @@ export const test = base.extend({
                 return json(rows);
             }
             const rpc = path.split('/rpc/')[1];
+            if (rpc === 'business_neighborhoods') return json([{ neighborhood: 'Centro' }]);
+            if (rpc === 'search_businesses') return json(state.business?.status === 'active' ? [{
+                ...state.business, categories: ['gastronomia'], category_names: ['Gastronomia'], total_count: 1,
+            }] : []);
             if (rpc && state.failRpc === rpc) return json({ message: 'validation_failed', details: 'Falha simulada para teste.' }, 400);
             if (rpc === 'submit_business') {
                 state.business = { ...business(), ...body.p_payload };

@@ -60,3 +60,10 @@
  */
 
 export {};
+
+/**
+ * @typedef {Object} BusinessFavorite
+ * @property {string} user_id
+ * @property {string} business_id
+ * @property {string} created_at
+ */
