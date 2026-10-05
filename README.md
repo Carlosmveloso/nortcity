@@ -57,7 +57,7 @@ Esse build consulta negócios públicos e baixa capas do Supabase para gerar sit
 
 O código inclui catálogo e busca, perfil público, cadastro, autenticação, Meu Negócio, edição com moderação, gestão administrativa, upload de capa, analytics administrativo e republicação solicitada pelo banco. A presença no código não comprova configuração ou aplicação em produção.
 
-Favoritos por conta estão implementados e homologados no desenvolvimento, com migration incremental pendente no destino de publicação. Assinaturas/cobrança, galeria comercial, avaliações e Google OAuth ainda não estão implementados. A interface identifica recursos futuros sem oferecer contratação de planos inexistentes.
+Favoritos por conta estão implementados e homologados no desenvolvimento, com migration incremental aplicada em desenvolvimento e produção. Assinaturas/cobrança, galeria comercial, avaliações e Google OAuth ainda não estão implementados. A interface identifica recursos futuros sem oferecer contratação de planos inexistentes.
 
 ## Documentação e colaboração
 

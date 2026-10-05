@@ -40,6 +40,8 @@ Favoritos de 04/10/2026: `src/test/db/favorites.test.js` cobre grants, RLS entre
 
 `supabase/diagnostics/favorites_homologation_rollback.sql` passou no projeto hospedado `farol-pitimbu-dev` depois da migration incremental. Usa os papéis reais para testar isolamento, duplicatas, bloqueio de escrita alheia/UPDATE, suspensão, remoção e cascatas, encerrando com rollback. Não cria sessões nem substitui uma passagem manual pela interface com Auth/PostgREST reais. Os testes de navegador continuam usando a API simulada.
 
+Em 05/10/2026, a publicação dos favoritos foi validada pelo check `quality` no GitHub: lint, 331 testes Vitest/PGlite, build isolado e 44 E2E desktop/mobile. A migration foi aplicada em produção após dry-run e conferência do destino, com verificação de catálogo (RLS, policies, grants, cascatas e histórico) e bloqueio de leitura anônima pelo PostgREST real. O roteiro de homologação com usuários fictícios foi executado somente no desenvolvimento.
+
 Ainda falta uma passagem manual da interface completa contra os serviços reais para cadastro com arquivo de imagem e moderação pelo painel. Os testes Playwright cobrem essas telas com API simulada; a homologação transacional cobre as regras e policies no servidor, mas não substitui o upload binário pelo serviço Storage.
 
 Para interface alterada, conferir foco, teclado, contraste, textos longos e responsividade. Um teste com API simulada não substitui essa homologação.

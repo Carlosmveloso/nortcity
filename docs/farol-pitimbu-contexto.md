@@ -1,6 +1,6 @@
 # Contexto do projeto — Farol Pitimbu
 
-Revisado em 04/10/2026 contra o código deste repositório. Estado implementado não é confirmação de deployment nem de configuração remota.
+Revisado em 05/10/2026 contra o código deste repositório. Estado implementado não é confirmação de deployment nem de configuração remota.
 
 ## Produto
 
@@ -12,7 +12,7 @@ Guia de turismo e diretório de negócios de Pitimbu/PB. Visitantes descobrem ne
 - Tokens em `src/index.css`: Ocean `#094f66`, Turquesa `#04c6db`, Areia `#f4f1ea`, Sol `#ffad0a`; Inter e Poppins. Reutilize as classes existentes.
 - Catálogo real via Supabase; busca paginada pela RPC `search_businesses`. Conteúdo editorial e curadoria permanecem em `src/data/`.
 - Auth por e-mail/senha, roles `user`/`admin` efetivas, proteção de rotas e autorização no banco por RLS/RPCs.
-- Favoritos por conta: salvar/remover nos cards e na ficha, lista privada em `/favoritos`, apenas negócios ativos visíveis. Migration de 04/10/2026 homologada no desenvolvimento; publicação depende da aplicação no destino.
+- Favoritos por conta: salvar/remover nos cards e na ficha, lista privada em `/favoritos`, apenas negócios ativos visíveis. Migration de 04/10/2026 homologada no desenvolvimento e aplicada em produção em 05/10/2026.
 - Cadastro e Meu Negócio: zero ou um negócio por proprietário; edição de pendente/rejeitado, reenvio, consulta de suspensão e edição moderada de publicado.
 - Admin: criação/edição, aprovação/rejeição/suspensão, categorias, duplicatas, vínculo/remoção de proprietário e revisão de propostas.
 - Upload de capa em Storage. Capas propostas ficam em caminho privado de revisão até aprovação.

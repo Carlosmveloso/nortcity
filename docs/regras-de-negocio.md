@@ -299,7 +299,7 @@ reivindicação pública.
 
 ## 13. Favoritos por conta
 
-**ATUAL — implementação de 04/10/2026, homologada no desenvolvimento.** Uma conta autenticada salva negócios publicados em `business_favorites`. A chave primária `(user_id, business_id)` impede duplicatas, inclusive sob pedidos simultâneos. Favoritos são gratuitos e independentes da propriedade de um negócio.
+**ATUAL — implementação de 04/10/2026, homologada no desenvolvimento; migration aplicada em produção em 05/10/2026.** Uma conta autenticada salva negócios publicados em `business_favorites`. A chave primária `(user_id, business_id)` impede duplicatas, inclusive sob pedidos simultâneos. Favoritos são gratuitos e independentes da propriedade de um negócio.
 
 RLS permite ler, inserir e remover apenas os próprios vínculos, inclusive para contas administrativas. Visitantes não têm grants e não existem contagens públicas. A inserção exige negócio `active`; UPDATE não é permitido. Excluir conta ou negócio remove seus vínculos por cascata.
 
