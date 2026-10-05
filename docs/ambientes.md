@@ -26,6 +26,8 @@ Ainda em 04/10/2026, a migration `20261004000001_account_favorites.sql` foi apli
 
 Em 05/10/2026, após autorização de publicação, a mesma migration foi aplicada em produção. O destino foi confirmado contra o cliente do site público e o dry-run identificou apenas essa migration pendente. Foram conferidos o registro no histórico, RLS habilitado, três policies, duas referências com cascata e a ausência de SELECT para `anon` e UPDATE para `authenticated`. A API pública recusou a leitura anônima com HTTP 401/código 42501. O vínculo local da CLI e o ambiente de desenvolvimento permanecem no projeto separado. Essa verificação em produção foi de schema e leitura, sem usuários fictícios ou testes de escrita de favoritos.
 
+Em 05/10/2026, as migrations de ofertas e planos mínimos (`20261005000001` a `20261005000003`) foram aplicadas exclusivamente em `farol-pitimbu-dev` (35 migrations) e homologadas com os roteiros de ROLLBACK e de concorrência ([testes.md](testes.md)). Produção não recebeu essas migrations, e a interface de ofertas ainda não existe.
+
 Para preparar outro ambiente:
 
 1. Selecionar/criar o projeto de desenvolvimento, sem reutilizar dados pessoais de produção.

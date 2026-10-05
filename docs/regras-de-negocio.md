@@ -315,7 +315,7 @@ Visitante que tenta salvar é encaminhado ao login e retorna à página com seus
 
 ## 14. Ofertas e planos mínimos
 
-**IMPLEMENTADO NO BANCO — Sprint 1, 05/10/2026, branch `feat/offers-sprint-01`.** Migrations `20261005000001` a `20261005000003`, cobertas por `src/test/db/offers.test.js`. Ainda sem interface, não aplicadas em nenhum ambiente hospedado e sem homologação.
+**IMPLEMENTADO NO BANCO — Sprint 1, 05/10/2026, branch `feat/offers-sprint-01`.** Migrations `20261005000001` a `20261005000003`, cobertas por `src/test/db/offers.test.js`. Ainda sem interface. Aplicadas e homologadas somente em `farol-pitimbu-dev` em 05/10/2026 ([testes.md](testes.md)); produção não recebeu estas migrations.
 
 ### Planos
 

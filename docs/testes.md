@@ -44,10 +44,20 @@ Em 05/10/2026, a publicação dos favoritos foi validada pelo check `quality` no
 
 Ofertas de 05/10/2026: `src/test/db/offers.test.js` cobre os 15 cenários obrigatórios da Sprint 1 (criação, autorização, aceite financeiro, constraints, transições protegidas, ajustes, reenvio, aprovação, publicação, agendamento, limite do plano, suspensão, encerramento e versionamento), além da troca de plano, do RLS de visitantes e colunas, do histórico só de inclusão e da recusa de gravações válidas feitas fora das RPCs (inclusive por `service_role` e depois de uma RPC na mesma transação). A concorrência na ativação é serializada pelo bloqueio do negócio, mas o PGlite tem uma conexão só e não exercita duas ativações simultâneas.
 
-Homologação de ofertas, apenas em `farol-pitimbu-dev` e ainda **não executada**:
+Homologação de ofertas em `farol-pitimbu-dev`:
 - `supabase/diagnostics/offers_homologation_rollback.sql` roda tudo em uma transação com ROLLBACK, sob `authenticated`, `anon` e `service_role`. Começa pelos grants efetivos, porque o Supabase concede privilégios padrão que o PGlite não reproduz. Depois cobre autorização, aceite, imutabilidade, RPC administrativa chamada pelo proprietário, transições inválidas por `service_role`/`postgres`, ajustes e reenvio, publicação, colunas de vitrine, revisão com a versão anterior no ar, agendamento e cancelamento, limite e troca de plano, suspensão e encerramento, Gratuito, rejeição, exclusão de negócio com histórico, negócio suspenso e oferta vencida com status `active`. Como `now()` é fixo na transação, o caso da oferta vencida recua o período com a trigger de imutabilidade desligada dentro da mesma transação, o que trava `offer_versions` até o ROLLBACK.
 - `offers_concurrency_setup.sql` grava uma massa marcada (`73000000-…`) e descreve dois cenários em duas sessões `psql`: duas ativações simultâneas no mesmo negócio e troca de plano concorrente com publicação. `offers_concurrency_cleanup.sql` remove a massa desligando as guards só dentro da própria transação.
 - Os três roteiros passaram em ensaio no PGlite (os cenários de concorrência foram executados em sequência). Isso confere sintaxe e lógica, não o comportamento do Supabase hospedado.
+
+Execução de 05/10/2026 no projeto hospedado `farol-pitimbu-dev`. Antes, conferimos que o vínculo da CLI e `.env.development.local` apontavam para esse projeto, e o dry-run listou somente as três migrations; produção não foi tocada.
+- **Migrations:** aplicadas com `supabase db push`.
+- **ROLLBACK:** `offers_homologation_rollback.sql`, executado com `supabase db query --linked`, terminou em `offers_qa_passed_with_rollback`. Depois, a contagem foi zero em ofertas, versões, histórico, planos atribuídos, usuários e categorias QA, com as três triggers de guarda habilitadas.
+- **Concorrência:** sem senha do banco para duas sessões `psql`, cada sessão foi uma chamada separada da Management API, em paralelo. A sessão A segurava a transação com `pg_sleep(25)`. A sessão B só chamava `publish_offer` depois de ver A dormindo em `pg_stat_activity` e mediu a própria espera dentro do banco.
+  - Cenário 1 (Básico, duas ativações): B esperou 22,8 s, retornou 3 ms depois do commit de A e recebeu `plan_offer_limit_reached`.
+  - Cenário 2 (troca para Profissional concorrente com publicação): B esperou 22,7 s, retornou 6 ms depois do commit de A e ativou a oferta, já enxergando o plano novo.
+  - Uma primeira tentativa do cenário 1 sem essa sincronização deu o resultado esperado, mas não provava sobreposição. Ela foi repetida com uma terceira oferta da mesma massa.
+  - Na sessão B, a RPC foi chamada a partir de `postgres` com o JWT simulado do admin; a função é `SECURITY DEFINER`, então o bloqueio é o mesmo.
+- **Limpeza:** `offers_concurrency_cleanup.sql` removeu toda a massa `73000000-…`, e a conferência posterior não encontrou resíduos.
 
 Ainda falta uma passagem manual da interface completa contra os serviços reais para cadastro com arquivo de imagem e moderação pelo painel. Os testes Playwright cobrem essas telas com API simulada; a homologação transacional cobre as regras e policies no servidor, mas não substitui o upload binário pelo serviço Storage.
 
