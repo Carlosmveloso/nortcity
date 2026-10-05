@@ -1,5 +1,5 @@
 import { MapPin, MessageCircle } from 'lucide-react';
-import { toWhatsappLink } from '../../lib/business';
+import { businessWhatsappMessage, toWhatsappLink } from '../../lib/business';
 
 function initials(name) {
     return name
@@ -11,7 +11,10 @@ function initials(name) {
 }
 
 function ProfessionalCard({ professional }) {
-    const whatsappLink = toWhatsappLink(professional.whatsapp ?? professional.phone);
+    const whatsappLink = toWhatsappLink(
+        professional.whatsapp ?? professional.phone,
+        businessWhatsappMessage(professional)
+    );
 
     return (
         <article className="group flex h-full flex-col overflow-hidden rounded-3xl bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">

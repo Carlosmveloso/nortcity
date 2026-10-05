@@ -21,10 +21,9 @@ describe('BusinessCard', () => {
         renderCard({ name: 'JN Gessos', phone: null, whatsapp: '(83) 99605-7329' });
 
         expect(screen.getByText('JN Gessos')).toBeInTheDocument();
-        expect(screen.getByLabelText('Contatar JN Gessos pelo WhatsApp')).toHaveAttribute(
-            'href',
-            'https://wa.me/5583996057329'
-        );
+        const url = new URL(screen.getByLabelText('Contatar JN Gessos pelo WhatsApp').href);
+        expect(url.pathname).toBe('/5583996057329');
+        expect(url.searchParams.get('text')).toBe('Olá! Encontrei JN Gessos no Farol Pitimbu e gostaria de mais informações.');
     });
 
     it('renderiza negócio sem telefone e sem WhatsApp, escondendo o botão', () => {
@@ -38,10 +37,9 @@ describe('BusinessCard', () => {
     it('usa o telefone como reserva quando não há WhatsApp', () => {
         renderCard({ name: 'Só Telefone', phone: '(83) 99804-9503', whatsapp: null });
 
-        expect(screen.getByLabelText('Contatar Só Telefone pelo WhatsApp')).toHaveAttribute(
-            'href',
-            'https://wa.me/5583998049503'
-        );
+        const url = new URL(screen.getByLabelText('Contatar Só Telefone pelo WhatsApp').href);
+        expect(url.pathname).toBe('/5583998049503');
+        expect(url.searchParams.get('text')).toBe('Olá! Encontrei Só Telefone no Farol Pitimbu e gostaria de mais informações.');
     });
 
     it('renderiza negócio sem subcategoria e sem descrição', () => {

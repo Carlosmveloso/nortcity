@@ -19,6 +19,7 @@ Guia de turismo e diretório de negócios de Pitimbu/PB. Visitantes descobrem ne
 - Analytics administrativo: sessões, eventos, comportamento e agregações diárias. Não equivale a métricas comerciais disponíveis ao proprietário.
 - Build consulta negócios publicados e gera sitemap, HTML de metadados e imagens de compartilhamento. Trigger registra mudanças relevantes e função SQL solicita rebuild por Deploy Hook; exige configuração remota de Vault, pg_net e pg_cron.
 - Contato via EmailJS. Mapas via Leaflet. Integrações Vercel de analytics/performance presentes.
+- Links de contato no WhatsApp dos cards e fichas preenchem uma mensagem com o nome do negócio e a origem Farol Pitimbu. O texto é montado pela interface para todos os cadastros; a pessoa confirma o envio no WhatsApp.
 
 Rotas e limites de acesso estão em `src/App.jsx`; tabelas, grants, policies e funções estão em `supabase/migrations/`. Tipos em `src/integrations/supabase/types.js` são JSDoc manual, não schema gerado.
 
