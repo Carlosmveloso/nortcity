@@ -40,7 +40,7 @@ test.describe('visitante', () => {
         }
         await page.locator('main > section').nth(1).screenshot({ path: testInfo.outputPath('planos.png'), scale: 'css' });
         await page.goto('/favoritos');
-        await expect(page.getByText('Recurso em planejamento')).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Entre para ver seus favoritos' })).toBeVisible();
         await expect(page.getByText(/Toque no coração/)).toHaveCount(0);
         await noOverflow(page);
         await page.locator('main').screenshot({ path: testInfo.outputPath('favoritos.png'), scale: 'css' });

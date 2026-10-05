@@ -102,7 +102,7 @@ export const staticPages = [
     {
         path: '/favoritos',
         title: 'Favoritos',
-        description: 'Favoritos estão em planejamento. Explore e compartilhe os lugares de Pitimbu.',
+        description: 'Salve e encontre seus negócios favoritos de Pitimbu na sua conta.',
         noindex: true,
     },
     {

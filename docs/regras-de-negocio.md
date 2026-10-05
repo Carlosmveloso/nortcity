@@ -293,6 +293,20 @@ tabela comercial foi criada.
 Analytics administrativo está implementado; métricas comerciais para proprietários continuam futuras.
 
 Também continuam fora do escopo: cobrança/Stripe, galeria comercial, ofertas, patrocinados, selo
-Verificado, avaliações, favoritos, roteiros, alertas, moderação de fotos por IA, Google OAuth,
+Verificado, avaliações, roteiros, alertas, moderação de fotos por IA, Google OAuth,
 moderador com permissões próprias, equipes, múltiplos negócios por conta, status `closed` e
 reivindicação pública.
+
+## 13. Favoritos por conta
+
+**ATUAL — implementação de 04/10/2026, homologada no desenvolvimento; migration aplicada em produção em 05/10/2026.** Uma conta autenticada salva negócios publicados em `business_favorites`. A chave primária `(user_id, business_id)` impede duplicatas, inclusive sob pedidos simultâneos. Favoritos são gratuitos e independentes da propriedade de um negócio.
+
+RLS permite ler, inserir e remover apenas os próprios vínculos, inclusive para contas administrativas. Visitantes não têm grants e não existem contagens públicas. A inserção exige negócio `active`; UPDATE não é permitido. Excluir conta ou negócio remove seus vínculos por cascata.
+
+A lista mostra somente negócios ativos, mesmo para proprietários e administradores que podem ler outros status no banco. Suspender não apaga o favorito: ele reaparece após republicação. A remoção do vínculo continua permitida mesmo com o negócio fora do ar.
+
+Cards e ficha compartilham o estado na sessão. A lista é consultada ao abrir/recarregar a aplicação, paginando sem truncar no limite da API. Troca de conta e logout descartam o estado anterior e suas respostas pendentes. Falha de gravação mantém o estado confirmado; falha de leitura permite tentar novamente.
+
+Visitante que tenta salvar é encaminhado ao login e retorna à página com seus filtros. Depois de entrar, confirma o salvamento pelo coração. A página `/favoritos` oferece acesso à conta para visitantes.
+
+**FUTURO.** Favoritos anônimos, sincronização offline/em tempo real entre abas, pastas, compartilhamento de listas, métricas e recomendações. A aplicação em produção deve anteceder a publicação do front-end desta versão.

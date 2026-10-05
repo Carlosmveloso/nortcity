@@ -22,6 +22,10 @@ Preparado e conferido em 02/10/2026: projeto `farol-pitimbu-dev`, configuração
 
 Em 04/10/2026, a homologação transacional hospedada cobriu cadastro, moderação, edição, propostas e policies de Storage com rollback. Consulte [testes.md](testes.md). O upload binário pela interface e a moderação manual pelo painel ainda são verificações humanas pendentes.
 
+Ainda em 04/10/2026, a migration `20261004000001_account_favorites.sql` foi aplicada exclusivamente em `farol-pitimbu-dev` (32 migrations). O roteiro `favorites_homologation_rollback.sql` passou no servidor hospedado, sem manter os dados fictícios. Para publicar esta funcionalidade, aplicar a migration incremental no destino confirmado antes de promover o front-end para `main`; a homologação em desenvolvimento não comprova aplicação em produção.
+
+Em 05/10/2026, após autorização de publicação, a mesma migration foi aplicada em produção. O destino foi confirmado contra o cliente do site público e o dry-run identificou apenas essa migration pendente. Foram conferidos o registro no histórico, RLS habilitado, três policies, duas referências com cascata e a ausência de SELECT para `anon` e UPDATE para `authenticated`. A API pública recusou a leitura anônima com HTTP 401/código 42501. O vínculo local da CLI e o ambiente de desenvolvimento permanecem no projeto separado. Essa verificação em produção foi de schema e leitura, sem usuários fictícios ou testes de escrita de favoritos.
+
 Para preparar outro ambiente:
 
 1. Selecionar/criar o projeto de desenvolvimento, sem reutilizar dados pessoais de produção.

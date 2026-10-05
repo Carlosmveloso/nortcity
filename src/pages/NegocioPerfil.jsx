@@ -17,6 +17,7 @@ import { InstagramIcon } from '../components/ui/BrandIcons';
 import BusinessCard from '../components/ui/BusinessCard';
 import Reveal from '../components/ui/Reveal';
 import ShareButton from '../components/ui/ShareButton';
+import FavoriteButton from '../components/ui/FavoriteButton';
 import { useBusiness } from '../hooks/useBusiness';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { track } from '../lib/analytics/analytics';
@@ -254,6 +255,7 @@ function NegocioPerfil() {
                             analytics="business-share"
                             className="w-full border border-dark-ocean/15 py-3 text-dark-ocean"
                         />
+                        <FavoriteButton business={business} variant="full" />
                     </aside>
                 </div>
 

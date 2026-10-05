@@ -6,6 +6,7 @@ import { AnalyticsEvents } from '../../lib/analytics/events';
 import { categoryLabel, toWhatsappLink } from '../../lib/business';
 import { businessShare } from '../../lib/share';
 import ShareButton from './ShareButton';
+import FavoriteButton from './FavoriteButton';
 
 function BusinessCard({ business }) {
     const share = businessShare(business);
@@ -53,6 +54,7 @@ function BusinessCard({ business }) {
                 label={`Compartilhar ${business.name}`}
                 analytics="business-card-share"
             />
+            {business.businessId && <FavoriteButton business={business} />}
 
             <div className="flex flex-1 flex-col gap-3 p-5">
                 <div className="flex flex-wrap items-start justify-between gap-2">
