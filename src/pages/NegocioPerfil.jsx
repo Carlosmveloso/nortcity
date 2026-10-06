@@ -18,6 +18,7 @@ import BusinessCard from '../components/ui/BusinessCard';
 import Reveal from '../components/ui/Reveal';
 import ShareButton from '../components/ui/ShareButton';
 import FavoriteButton from '../components/ui/FavoriteButton';
+import BusinessOffers from '../components/coupons/BusinessOffers';
 import { useBusiness } from '../hooks/useBusiness';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { track } from '../lib/analytics/analytics';
@@ -146,6 +147,8 @@ function NegocioPerfil() {
                                 ))}
                             </div>
                         </div>
+
+                        <BusinessOffers businessId={business.businessId} />
 
                         <div className="rounded-3xl border border-dashed border-dark-ocean/20 p-6">
                             <h2 className="font-head text-lg font-bold text-foreground">

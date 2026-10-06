@@ -39,6 +39,10 @@ const OfertaDetalhe = lazy(() => import("./pages/OfertaDetalhe"));
 const Sobre = lazy(() => import("./pages/Sobre"));
 const Contato = lazy(() => import("./pages/Contato"));
 const Favoritos = lazy(() => import("./pages/Favoritos"));
+const OfertaPublica = lazy(() => import("./pages/OfertaPublica"));
+const MeusCupons = lazy(() => import("./pages/MeusCupons"));
+const CupomDetalhe = lazy(() => import("./pages/CupomDetalhe"));
+const RegulamentoCupons = lazy(() => import("./pages/RegulamentoCupons"));
 const Entrar = lazy(() => import("./pages/Entrar"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -129,6 +133,24 @@ function App() {
               <Route path="/sobre" element={<Sobre />} />
               <Route path="/contato" element={<Contato />} />
               <Route path="/favoritos" element={<Favoritos />} />
+              <Route path="/ofertas/:offerId" element={<OfertaPublica />} />
+              <Route path="/regulamento-cupons" element={<RegulamentoCupons />} />
+              <Route
+                path="/meus-cupons"
+                element={
+                  <ProtectedRoute>
+                    <MeusCupons />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meus-cupons/:couponId"
+                element={
+                  <ProtectedRoute>
+                    <CupomDetalhe />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/entrar" element={<Entrar />} />
               <Route
                 path="/admin"
