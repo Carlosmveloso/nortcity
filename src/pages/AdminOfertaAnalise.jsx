@@ -281,7 +281,8 @@ function AdminOfertaAnalise() {
                         )}
                         {offer.status === 'scheduled' && (
                             <p className="mt-3 text-sm text-dark-ocean/70">
-                                Início previsto para {formatOfferDate(latest?.starts_at)}.
+                                Início previsto para {formatOfferDate(latest?.starts_at)}. A ativação na data depende do job
+                                de agendamento (activate_due_offers), que ainda não está programado no banco.
                             </p>
                         )}
                     </Card>

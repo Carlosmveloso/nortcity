@@ -94,3 +94,15 @@ describe('offerErrorMessage', () => {
         expect(text).not.toContain('something_new');
     });
 });
+
+describe('exclusão de negócio com ofertas', () => {
+    it('explica o bloqueio em vez de mostrar o código', async () => {
+        const { businessErrorMessage } = await import('./businessErrors');
+        const text = businessErrorMessage({
+            code: '23503',
+            message: 'update or delete on table "businesses" violates foreign key constraint "offers_business_id_fkey" on table "offers"',
+        });
+        expect(text).toMatch(/ofertas no histórico/);
+        expect(text).not.toContain('23503');
+    });
+});

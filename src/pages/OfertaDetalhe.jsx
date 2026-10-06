@@ -22,7 +22,7 @@ const EXPLANATION = {
     changes_requested:
         'A equipe pediu ajustes. A versão analisada fica preservada; suas correções viram uma nova versão, com novo aceite.',
     approved: 'Oferta aprovada. Ela entra no ar quando a equipe do Farol publicar.',
-    scheduled: 'Publicação agendada. A oferta entra no ar automaticamente na data de início.',
+    scheduled: 'Publicação agendada para a data de início. A equipe do Farol acompanha a entrada no ar.',
     active: 'Oferta no ar para quem usa o Farol Pitimbu.',
     suspended: 'Oferta suspensa pela equipe do Farol. Ela não aparece para o público enquanto estiver suspensa.',
     rejected: 'Esta oferta não foi aprovada. Para tentar de novo, crie uma nova oferta considerando o motivo informado.',
