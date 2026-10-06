@@ -74,7 +74,28 @@ Interface de ofertas, 06/10/2026:
   - Conferido no banco: oferta `active`, versão 1 `changes_requested` e versão 2 publicada, cada uma com a taxa de R$ 1,00 aceita, e histórico submitted → changes_requested → resubmitted → approved → published.
   - Pela API pública com a chave anônima: só a versão publicada aparece; `select=*` responde 401 e `fee_amount` responde 42501.
   - Uma primeira execução em desktop completou o fluxo, mas falhou numa asserção do próprio teste (texto do histórico), corrigida em seguida. A limpeza removeu as três ofertas e toda a massa, sem resíduos e com as triggers reabilitadas.
-- **Ainda não coberto:** ativação de oferta agendada na data (não há job), leitores de tela reais e Safari/iOS.
+- **Ainda não coberto:** leitores de tela reais e Safari/iOS.
+
+Job `offer-lifecycle`, 06/10/2026:
+- **Vitest/PGlite:** `src/test/db/offer-lifecycle.test.js` cobre:
+  - cron registrado (`*/5 * * * *`) e funções sem grant;
+  - limites de fuso: 23:59:59 da véspera em UTC−3 não ativa, 00:00 ativa, 23:59:58 do último dia segue ativa e 23:59:59 encerra;
+  - `active`, `suspended`, `scheduled` e `approved` vencidas encerradas, com os demais estados e históricos intactos;
+  - agendada vencida vai direto para `ended`, sem `published`;
+  - plano sem vaga mantém `scheduled` sem criar histórico e ativa quando a vaga abre;
+  - o sinal de escrita não sobra depois do job.
+- **Playwright:** "Sistema" no histórico e o aviso "Aguardando vaga no plano" para admin e proprietário. Suíte: 80 testes.
+- **ROLLBACK em `farol-pitimbu-dev`:** `supabase/diagnostics/offers_lifecycle_homologation_rollback.sql` terminou em `offers_lifecycle_qa_passed_with_rollback`.
+- **Cron real em `farol-pitimbu-dev`:** com a massa `74000000-…` de `offers_e2e_dev_setup.sql`, uma oferta foi publicada como `scheduled` às 14:12:06 UTC (11:12:06 em Pitimbu), com início às 14:14:06 UTC (11:14:06) e fim às 14:20:06 UTC (11:20:06). O monitoramento consultou o banco a cada minuto.
+
+  | Execução do cron | UTC | Pitimbu (UTC−3) | Resultado |
+  |---|---|---|---|
+  | 1ª | 14:15:00 | 11:15:00 | `scheduled → active`, histórico `published` sem autor (Sistema) |
+  | 2ª | 14:20:00 | 11:20:00 | continua `active` (fim às 14:20:06) |
+  | 3ª | 14:25:00 | 11:25:00 | `active → ended`, histórico `ended` sem autor, "Período da oferta encerrado" |
+  | 4ª | 14:30:00 | 11:30:00 | nada muda; histórico continua com 5 eventos, sem duplicação |
+
+  As quatro execuções aparecem como `succeeded` em `cron.job_run_details`. Depois, `offers_e2e_dev_cleanup.sql` removeu a massa sem resíduos, com as triggers de guarda reabilitadas e `offer-lifecycle` ainda ativo.
 
 Ainda falta uma passagem manual da interface completa contra os serviços reais para cadastro com arquivo de imagem e moderação pelo painel. Os testes Playwright cobrem essas telas com API simulada; a homologação transacional cobre as regras e policies no servidor, mas não substitui o upload binário pelo serviço Storage.
 

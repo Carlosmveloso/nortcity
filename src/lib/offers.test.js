@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
     benefitSummary,
+    isWaitingForPlanSlot,
     couponValidityLabel,
     describeOffer,
     formatMoney,
@@ -104,5 +105,15 @@ describe('exclusão de negócio com ofertas', () => {
         });
         expect(text).toMatch(/ofertas no histórico/);
         expect(text).not.toContain('23503');
+    });
+});
+
+describe('isWaitingForPlanSlot', () => {
+    it('agendada com início já passado aguarda vaga; antes do início, não', () => {
+        const now = new Date('2026-11-10T12:00:00Z');
+        const view = (starts) => ({ latest: { starts_at: starts } });
+        expect(isWaitingForPlanSlot({ status: 'scheduled' }, view('2026-11-10T03:00:00Z'), now)).toBe(true);
+        expect(isWaitingForPlanSlot({ status: 'scheduled' }, view('2026-11-11T03:00:00Z'), now)).toBe(false);
+        expect(isWaitingForPlanSlot({ status: 'active' }, view('2026-11-10T03:00:00Z'), now)).toBe(false);
     });
 });

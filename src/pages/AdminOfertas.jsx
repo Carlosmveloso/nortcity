@@ -10,6 +10,7 @@ import {
     benefitSummary,
     describeOffer,
     formatOfferDateTime,
+    isWaitingForPlanSlot,
     periodSummary,
 } from '@/lib/offers';
 import { staticPageMeta } from '@/lib/siteMeta';
@@ -108,6 +109,11 @@ function AdminOfertas() {
                                     </p>
                                     {view.revisionStatus && (
                                         <p className="mt-1 text-xs font-semibold text-ocean">{REVISION_STATUS_LABELS[view.revisionStatus]}</p>
+                                    )}
+                                    {isWaitingForPlanSlot(offer, view) && (
+                                        <p className="mt-2 inline-flex rounded-full bg-sun/15 px-3 py-1 text-xs font-semibold text-dark-ocean">
+                                            Aguardando vaga no plano
+                                        </p>
                                     )}
                                     <Link
                                         to={`/admin/ofertas/${offer.id}`}

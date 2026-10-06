@@ -276,3 +276,13 @@ export function adminQueuesFor(offer, view) {
     if (['scheduled', 'active', 'suspended', 'ended', 'rejected'].includes(offer.status)) queues.add(offer.status);
     return [...queues];
 }
+
+/**
+ * Agendada cujo início já chegou e continua `scheduled`: o job
+ * offer-lifecycle tenta a cada 5 minutos, e o que a segura é o limite de
+ * ofertas ativas do plano (ou o negócio fora do ar). Não é um status próprio.
+ */
+export function isWaitingForPlanSlot(offer, view, now = new Date()) {
+    const startsAt = view?.latest?.starts_at;
+    return offer?.status === 'scheduled' && Boolean(startsAt) && new Date(startsAt) <= now;
+}
