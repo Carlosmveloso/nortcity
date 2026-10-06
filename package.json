@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "build:check": "vite build --mode ci",
     "dev:e2e": "vite --mode e2e --host 127.0.0.1 --port 4173 --strictPort",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:dev": "playwright test -c playwright.dev.config.js"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
