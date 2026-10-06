@@ -68,7 +68,9 @@ begin
         'title', p_title, 'description', 'Oferta do teste de concorrência de cupons.', 'benefit_type', 'gift',
         'starts_at', now() - interval '1 hour', 'ends_at', now() + interval '2 days',
         'total_limit', p_limit, 'coupon_validity_minutes', 60));
-    perform public.accept_offer_financial_terms(v_id, 1.00);
+    -- Taxa vigente do plano atual do negócio, lida do backend.
+    perform public.accept_offer_financial_terms(v_id,
+        (public.get_business_offer_terms('74000000-0000-4000-8000-0000000000b1') ->> 'fee_amount')::numeric);
     perform public.submit_offer_for_review(v_id);
     perform set_config('request.jwt.claim.sub', '74000000-0000-4000-8000-000000000002', true);
     perform public.approve_offer(v_id);

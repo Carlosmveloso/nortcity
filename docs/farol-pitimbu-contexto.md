@@ -31,7 +31,7 @@ Consulte [regras-de-negocio.md](regras-de-negocio.md) para propriedade, categori
 
 - Avaliações e Google OAuth.
 - Assinaturas, cobrança/Stripe, destaques patrocinados e ferramentas comerciais para proprietários.
-- Cupons de ofertas (geração, QR Code, validação e cobrança). O módulo de ofertas (banco, planos mínimos atribuídos pelo admin e interface de proprietário e admin) está descrito na seção 14 das [regras](regras-de-negocio.md).
+- Validação e utilização de cupons, validadores e cobrança por utilização (Sprint 3). Ofertas (seção 14) e geração de cupons, com QR, Meus cupons e expiração (seção 15), estão descritos nas [regras](regras-de-negocio.md).
 - Galeria comercial, selo de verificação e moderação de fotos por IA.
 - Permissões próprias de moderador, equipes e múltiplos negócios por conta.
 
