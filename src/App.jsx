@@ -16,6 +16,8 @@ import Home from "./pages/Home";
 
 const Admin = lazy(() => import("./pages/Admin"));
 const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics"));
+const AdminOfertas = lazy(() => import("./pages/AdminOfertas"));
+const AdminOfertaAnalise = lazy(() => import("./pages/AdminOfertaAnalise"));
 
 const Explorar = lazy(() => import("./pages/Explorar"));
 const Experiencia = lazy(() => import("./pages/Experiencia"));
@@ -31,6 +33,9 @@ const Planos = lazy(() => import("./pages/Planos"));
 const GuiaLocal = lazy(() => import("./pages/GuiaLocal"));
 const CadastrarNegocio = lazy(() => import("./pages/CadastrarNegocio"));
 const MeuNegocio = lazy(() => import("./pages/MeuNegocio"));
+const MinhasOfertas = lazy(() => import("./pages/MinhasOfertas"));
+const OfertaEditor = lazy(() => import("./pages/OfertaEditor"));
+const OfertaDetalhe = lazy(() => import("./pages/OfertaDetalhe"));
 const Sobre = lazy(() => import("./pages/Sobre"));
 const Contato = lazy(() => import("./pages/Contato"));
 const Favoritos = lazy(() => import("./pages/Favoritos"));
@@ -89,6 +94,38 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/meu-negocio/ofertas"
+                element={
+                  <ProtectedRoute>
+                    <MinhasOfertas />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meu-negocio/ofertas/nova"
+                element={
+                  <ProtectedRoute>
+                    <OfertaEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meu-negocio/ofertas/:offerId/editar"
+                element={
+                  <ProtectedRoute>
+                    <OfertaEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meu-negocio/ofertas/:offerId"
+                element={
+                  <ProtectedRoute>
+                    <OfertaDetalhe />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/sobre" element={<Sobre />} />
               <Route path="/contato" element={<Contato />} />
               <Route path="/favoritos" element={<Favoritos />} />
@@ -106,6 +143,22 @@ function App() {
                 element={
                   <AdminRoute>
                     <AdminAnalytics />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/ofertas"
+                element={
+                  <AdminRoute>
+                    <AdminOfertas />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/ofertas/:offerId"
+                element={
+                  <AdminRoute>
+                    <AdminOfertaAnalise />
                   </AdminRoute>
                 }
               />

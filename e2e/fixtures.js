@@ -1,4 +1,5 @@
 import { test as base, expect } from '@playwright/test';
+import { createOffersState, handleOffers } from './offersMock';
 
 export const USER_ID = '11111111-1111-4111-8111-111111111111';
 export const BUSINESS_ID = '22222222-2222-4222-8222-222222222222';
@@ -34,7 +35,7 @@ export const test = base.extend({
     initialStatus: ['pending', { option: true }],
     api: [async ({ context, role, initialStatus }, use) => {
         const state = { business: initialStatus ? business(initialStatus) : null, proposal: null, calls: [], failRpc: null, authError: null, resendError: null,
-            favorites: [], favoritesError: null, favoritesGate: null };
+            favorites: [], favoritesError: null, favoritesGate: null, offers: createOffersState() };
         const unexpected = [];
         const pageErrors = [];
         context.on('page', (page) => page.on('pageerror', (error) => pageErrors.push(error.message)));
@@ -99,6 +100,11 @@ export const test = base.extend({
                 if (request.headers().accept?.includes('vnd.pgrst.object')) return json(rows[0] ?? null);
                 return json(rows);
             }
+            const offersResult = await handleOffers({
+                state, business: () => state.business, userId: USER_ID, path, url,
+                method: request.method(), body, accept: request.headers().accept,
+            });
+            if (offersResult) return json(offersResult.body, offersResult.status);
             const rpc = path.split('/rpc/')[1];
             if (rpc === 'business_neighborhoods') return json([{ neighborhood: 'Centro' }]);
             if (rpc === 'search_businesses') return json(state.business?.status === 'active' ? [{

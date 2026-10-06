@@ -28,6 +28,8 @@ Em 05/10/2026, após autorização de publicação, a mesma migration foi aplica
 
 Em 05/10/2026, as migrations de ofertas e planos mínimos (`20261005000001` a `20261005000003`) foram aplicadas exclusivamente em `farol-pitimbu-dev` (35 migrations) e homologadas com os roteiros de ROLLBACK e de concorrência ([testes.md](testes.md)). Produção não recebeu essas migrations, e a interface de ofertas ainda não existe.
 
+Em 06/10/2026, o E2E real da interface de ofertas rodou contra `farol-pitimbu-dev`, com duas contas fictícias e um negócio de ids reservados `74000000-…`, removidos em seguida por `offers_e2e_dev_cleanup.sql`. Nenhuma migration nova foi aplicada para o frontend.
+
 Para preparar outro ambiente:
 
 1. Selecionar/criar o projeto de desenvolvimento, sem reutilizar dados pessoais de produção.

@@ -1,10 +1,11 @@
-import { AlertTriangle, ChevronRight, Clock, ExternalLink, ImagePlus, Loader2, Store } from 'lucide-react';
+import { AlertTriangle, BadgePercent, ChevronRight, Clock, ExternalLink, ImagePlus, Loader2, Store } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useCategories } from '@/hooks/useCategories';
 import { useMyBusiness } from '@/hooks/useMyBusiness';
+import { useOfferTerms } from '@/hooks/useOffers';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { staticPageMeta } from '../lib/siteMeta';
 import CategoryPicker from '../components/business/CategoryPicker';
@@ -477,6 +478,7 @@ function MeuNegocio() {
     const { user } = useAuth();
     const { business, changeRequest, loading, error, refetch } = useMyBusiness();
     const { categories } = useCategories();
+    const { terms } = useOfferTerms(business?.id);
     const [resubmitting, setResubmitting] = useState(false);
     const [resubmitError, setResubmitError] = useState('');
 
@@ -515,10 +517,18 @@ function MeuNegocio() {
                     <div className="rounded-3xl bg-card p-6 shadow-sm">
                         <h2 className="font-head text-lg font-bold text-foreground">Sua conta</h2>
                         <p className="mt-1 text-sm text-dark-ocean/70">{user?.email}</p>
-                        <p className="mt-1 text-sm text-dark-ocean/70">
-                            Plano <strong className="font-semibold">Gratuito</strong> — cadastro, ficha pública e busca
-                            orgânica, sem custo.
-                        </p>
+                        {/* O plano pertence ao negócio; sem negócio ou sem atribuição, vale o Gratuito. */}
+                        {!terms || terms.plan_id === 'gratuito' ? (
+                            <p className="mt-1 text-sm text-dark-ocean/70">
+                                Plano <strong className="font-semibold">Gratuito</strong> — cadastro, ficha pública e busca
+                                orgânica, sem custo.
+                            </p>
+                        ) : (
+                            <p className="mt-1 text-sm text-dark-ocean/70">
+                                Plano <strong className="font-semibold">{terms.plan_name}</strong> — inclui ofertas para
+                                usuários do Farol, com taxa por cupom utilizado.
+                            </p>
+                        )}
                     </div>
 
                     {loading && <p className="text-sm text-dark-ocean/60">Carregando...</p>}
@@ -630,6 +640,28 @@ function MeuNegocio() {
                                     . Seus dados continuam guardados.
                                 </p>
                             )}
+                        </div>
+                    )}
+
+                    {!loading && business && (
+                        <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-card p-6 shadow-sm">
+                            <div className="flex items-start gap-3">
+                                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-turquoise/10 text-turquoise">
+                                    <BadgePercent size={22} aria-hidden="true" />
+                                </span>
+                                <div>
+                                    <h2 className="font-head text-lg font-bold text-foreground">Ofertas</h2>
+                                    <p className="mt-1 text-sm text-dark-ocean/70">
+                                        Crie promoções para usuários do Farol e acompanhe a análise de cada uma.
+                                    </p>
+                                </div>
+                            </div>
+                            <Link
+                                to="/meu-negocio/ofertas"
+                                className="rounded-full bg-turquoise px-5 py-2.5 text-sm font-bold text-sand"
+                            >
+                                Ver ofertas
+                            </Link>
                         </div>
                     )}
                 </div>

@@ -315,7 +315,7 @@ Visitante que tenta salvar é encaminhado ao login e retorna à página com seus
 
 ## 14. Ofertas e planos mínimos
 
-**IMPLEMENTADO NO BANCO — Sprint 1, 05/10/2026, branch `feat/offers-sprint-01`.** Migrations `20261005000001` a `20261005000003`, cobertas por `src/test/db/offers.test.js`. Ainda sem interface. Aplicadas e homologadas somente em `farol-pitimbu-dev` em 05/10/2026 ([testes.md](testes.md)); produção não recebeu estas migrations.
+**IMPLEMENTADO NO BANCO — Sprint 1, 05/10/2026, branch `feat/offers-sprint-01`.** Migrations `20261005000001` a `20261005000003`, cobertas por `src/test/db/offers.test.js`. Aplicadas e homologadas somente em `farol-pitimbu-dev` em 05/10/2026 ([testes.md](testes.md)); produção não recebeu estas migrations. A interface (branch `feat/offers-frontend`, 06/10/2026) está descrita no fim desta seção.
 
 ### Planos
 
@@ -376,6 +376,35 @@ As sete decisões de implementação foram aprovadas na revisão de 05/10/2026: 
 
 **DÍVIDA TÉCNICA.**
 - **Exclusão de negócio com histórico.** Hoje `admin_delete_business` falha por FK quando há ofertas. Isso preserva o histórico, mas não é a solução definitiva: o admin precisará retirar um negócio da operação sem destruir os registros. O modelo futuro é arquivamento (soft delete, por exemplo `archived`) em vez de exclusão física.
-- **Jobs.** A vitrine já esconde ofertas vencidas, mas o status persistido precisa refletir a realidade. Quando os jobs forem configurados: agendar `activate_due_offers` (`scheduled` → `active`) e criar o encerramento automático `active` → `ended` ao fim de `ends_at`, para não acumular ofertas `active` encerradas há meses.
+- **Jobs.** A vitrine já esconde ofertas vencidas, mas o status persistido precisa refletir a realidade. Quando os jobs forem configurados: agendar `activate_due_offers` (`scheduled` → `active`) e criar o encerramento automático `active` → `ended` ao fim de `ends_at`, para não acumular ofertas `active` encerradas há meses. **Até lá, uma oferta agendada não entra no ar sozinha.** Nenhuma RPC permite ao admin ativá-la manualmente na data; a interface informa isso sem prometer ativação automática.
 
-**PENDENTE/FUTURO.** Interface do proprietário e do admin, com mensagens de produto para códigos como `plan_fee_unavailable` ("Seu plano atual não inclui publicação de ofertas."); cupons e cobrança; bloqueio financeiro na reativação; revisão de oferta aprovada, agendada ou suspensa; retenção ao excluir conta com ofertas. Uma revisão em análise quando a oferta é encerrada continua no histórico e não pode mais ser publicada.
+**PENDENTE/FUTURO.** Cupons e cobrança; bloqueio financeiro na reativação; revisão de oferta aprovada, agendada ou suspensa; retenção ao excluir conta com ofertas; exibição pública das ofertas na ficha do negócio. Uma revisão em análise quando a oferta é encerrada continua no histórico e não pode mais ser publicada.
+
+### Interface (frontend da Sprint 1)
+
+**IMPLEMENTADO — 06/10/2026, branch `feat/offers-frontend`.** Toda escrita usa as RPCs oficiais. As leituras listam colunas explícitas, e os códigos de erro são traduzidos em `src/lib/offerErrors.js`; o identificador bruto nunca aparece para a pessoa.
+
+**Proprietário.**
+- **`/meu-negocio`:** mostra o plano real do negócio e dá acesso a Ofertas.
+- **`/meu-negocio/ofertas`:** plano, limite, ofertas ativas e taxa vigente (lidos de `get_business_offer_terms`, nunca fixos no código), filtros por situação e estado vazio.
+- **`/meu-negocio/ofertas/nova` e `/:id/editar`:** assistente em quatro passos (Oferta, Condições, Cupons, Revisão).
+  - Cada "Continuar" salva o rascunho; "Salvar rascunho" grava sem exigir os campos obrigatórios.
+  - A revisão mostra a prévia, o plano e a taxa por cupom utilizado. O envio só é habilitado com o aceite marcado, um plano com taxa e o negócio publicado.
+  - No Gratuito, o passo 4 explica que o plano não inclui publicação e não chama o aceite nem o envio.
+- **`/meu-negocio/ofertas/:id`:** situação explicada, mensagem da equipe (ajustes, não aprovação, suspensão), versão publicada e alteração em andamento, taxa aceita e histórico.
+  - Em ajustes solicitados, "Corrigir e criar nova versão" abre o assistente. O primeiro salvamento cria a versão seguinte, que exige novo aceite.
+  - Em oferta ativa, "Propor alteração" cria a revisão, e a versão publicada continua no ar.
+
+**Admin.**
+- **`/admin/ofertas`:** filas Pendentes, Ajustes solicitados, Aprovadas, Agendadas, Ativas, Suspensas, Encerradas e Rejeitadas. Uma alteração de oferta ativa aparece também em Pendentes, Ajustes ou Aprovadas.
+- **`/admin/ofertas/:id`:** negócio, proprietário, plano, versão em análise, versão publicada, versões anteriores com a taxa aceita (valor, autor, data) e histórico.
+  - As ações aparecem conforme o estado registrado: aprovar, solicitar ajustes, rejeitar, publicar/agendar, suspender, reativar e encerrar. Cada uma abre um diálogo nativo acessível.
+  - Ajustes, rejeição e suspensão exigem motivo, e o encerramento avisa que é definitivo.
+- **Admin › Negócios:** ganhou "Plano e ofertas", que usa `admin_set_business_plan`.
+
+**Decisões de interface.**
+- As datas são dias inteiros no fuso de Pitimbu: 00:00 do dia inicial a 23:59:59 do dia final.
+- Em "Horários específicos", todo dia escolhido precisa de ao menos uma faixa. O banco aceitaria dias sem faixa, mas o significado ficaria ambíguo.
+- "Sem limite" de quantidade é uma escolha explícita. Enquanto o passo 3 não foi preenchido, nenhuma opção vem marcada.
+- A validade do cupom é de 2 h a 7 dias. "Até o fim da oferta" não é oferecido porque `coupon_validity_minutes` precisa ser positivo.
+- A fila do admin carrega todas as ofertas e versões, sem paginação, o que é adequado ao volume atual.
