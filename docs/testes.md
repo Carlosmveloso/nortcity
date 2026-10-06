@@ -97,6 +97,47 @@ Job `offer-lifecycle`, 06/10/2026:
 
   As quatro execuções aparecem como `succeeded` em `cron.job_run_details`. Depois, `offers_e2e_dev_cleanup.sql` removeu a massa sem resíduos, com as triggers de guarda reabilitadas e `offer-lifecycle` ainda ativo.
 
+Cupons (Sprint 2), 06–07/10/2026:
+- **Vitest/PGlite:** `src/test/db/coupons.test.js` (19 testes) cobre:
+  - elegibilidade (ativa, rascunho, agendada antes do início, encerrada, suspensa) e visitante sem acesso;
+  - aceite obrigatório e na versão vigente;
+  - código e hash do QR únicos, e token do dono conferindo com o hash;
+  - rotação de chave e ausência de chave no Vault;
+  - versão congelada após publicar uma nova versão;
+  - validade individual e corte no fim da oferta, com limite 23:59:58/23:59:59 em UTC−3;
+  - limite total, devolução da vaga, idempotência da expiração e nova geração;
+  - um único disponível por usuário e cupom vencido ainda não processado pelo job;
+  - cancelamento administrativo;
+  - RLS para dono, outro usuário, admin e visitante, e escrita direta bloqueada para usuário, `service_role` e `postgres`, inclusive depois de uma RPC;
+  - cron registrado.
+  
+  `src/lib/coupons.test.js` cobre horário de Pitimbu, situação exibida, conteúdo do QR e tradução de erros.
+- **Playwright com API simulada:** `e2e/coupons.spec.js`, desktop e mobile. Cobre perfil → oferta → login com retorno → aceite → cupom com código, QR e validade → Meus cupons; temporariamente esgotado; esgotado entre a consulta e o clique; cupom já disponível; expirado sem QR e nova geração; condições da versão aceita; clique duplo; e regulamento. Suíte completa: 96.
+- **ROLLBACK em `farol-pitimbu-dev`:** `supabase/diagnostics/coupons_homologation_rollback.sql` terminou em `coupons_qa_passed_with_rollback`. Cobre:
+  - catálogo, grants e privilégios, cron, chave no Vault e regulamento;
+  - geração como `authenticated`, terms, segundo disponível e hash do QR;
+  - outro usuário, visitante e vagas;
+  - versão congelada;
+  - expiração, devolução e nova geração com a versão 2;
+  - escrita direta por usuário, `service_role` e `postgres`;
+  - cancelamento;
+  - suspensão da oferta sem cancelar cupons.
+- **E2E real (`e2e-dev/coupons-flow.spec.js`):** massa `offers_e2e_dev_setup.sql` + `coupons_e2e_dev_offers.sql` (ofertas com 1 vaga e cupom de 1 minuto). Aprovado em desktop (1440 px) e mobile (Pixel 7).
+  - **Fluxo:** visitante abre o perfil → oferta → login obrigatório com retorno → aceite → geração → código `FP-` e QR → "Válido até".
+  - **Banco**, consultado via REST com o JWT do usuário: cupom ligado à versão publicada e regulamento `2026-10-v1`; a coluna do hash responde 403/42501.
+  - **Depois:** Meus cupons mostra o cupom; após 65 s ele aparece como expirado e sem QR, e a mesma pessoa gera outro cupom, porque a vaga voltou.
+  - **Primeiras execuções:** falharam por expectativa errada do teste (esperava 401; o correto para usuário autenticado é 403) e por uma reexecução feita enquanto o cupom anterior ainda valia. Neste caso a tela mostrou corretamente "Você já tem um cupom disponível".
+- **Concorrência real (`coupons_concurrency_setup.sql`):** duas conexões em paralelo pela Management API. A sessão 1 gera e segura a trava da oferta com `pg_sleep(20)`; a sessão 2 só chama depois de vê-la dormindo.
+
+  | Cenário | Sessão 1 gerou | Sessão 2 chamou | Esperou | Retornou | Resultado da sessão 2 |
+  |---|---|---|---|---|---|
+  | A — dois usuários, 1 vaga | 15:23:03.539 UTC | 15:23:04.149 | 19,4 s | 15:23:23.547 (4 ms após o commit) | `offer_sold_out` |
+  | B — mesmo usuário | 15:25:08.341 UTC | 15:25:08.362 | 20,0 s | 15:25:28.366 (4 ms após o commit) | `coupon_already_available` |
+
+  Resultado final: um cupom na oferta de 1 vaga e um `available` por usuário na oferta sem limite. Uma primeira tentativa do cenário B deu o resultado certo, mas a sessão 2 só chamou depois do commit da sessão 1, sem provar simultaneidade. Foi descartada e repetida com registro explícito de que a sessão 1 foi vista.
+- **Cron real `coupon-expiration`:** sem nenhuma outra ação, cupons vencidos passaram a `expired`, com evento `expired` sem autor, nas execuções das 15:15:00, 15:20:00 e 15:25:00 UTC (12:15, 12:20 e 12:25 em Pitimbu). Exemplo: FP-5PWSGG foi gerado às 15:21:18, venceu às 15:22:18 e foi expirado pelo cron às 15:25:00. Na execução das 15:30:00 (12:30) nada mudou: FP-5PWSGG continuou com 2 eventos, e o dev tinha 7 cupons expirados e 7 eventos `expired`, exatamente um por cupom. As quatro execuções aparecem como `succeeded` em `cron.job_run_details`, a oferta de 1 vaga voltou a aparecer disponível e o `coupon-expiration` continuou ativo.
+- **Limpeza:** `offers_e2e_dev_cleanup.sql` (que agora remove cupons e histórico antes das ofertas) zerou cupons, eventos, ofertas, versões, histórico, planos atribuídos, contas e negócio da massa. As seis triggers de guarda ficaram reabilitadas e os três jobs ativos.
+
 Ainda falta uma passagem manual da interface completa contra os serviços reais para cadastro com arquivo de imagem e moderação pelo painel. Os testes Playwright cobrem essas telas com API simulada; a homologação transacional cobre as regras e policies no servidor, mas não substitui o upload binário pelo serviço Storage.
 
 Para interface alterada, conferir foco, teclado, contraste, textos longos e responsividade. Um teste com API simulada não substitui essa homologação.

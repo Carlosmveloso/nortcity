@@ -106,6 +106,17 @@ export const staticPages = [
         noindex: true,
     },
     {
+        path: '/regulamento-cupons',
+        title: 'Regulamento dos cupons',
+        description: 'Regulamento de Utilização dos Cupons das ofertas do Farol Pitimbu.',
+    },
+    {
+        path: '/meus-cupons',
+        title: 'Meus cupons',
+        description: 'Seus cupons gerados nas ofertas do Farol Pitimbu.',
+        noindex: true,
+    },
+    {
         path: '/entrar',
         title: 'Entrar',
         description: 'Acesse sua conta do Farol Pitimbu.',

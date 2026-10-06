@@ -1,6 +1,6 @@
 -- Massa do E2E real de ofertas — APENAS farol-pitimbu-dev.
 --
--- Grava duas contas fictícias com senha (proprietário e admin), um negócio
+-- Grava três contas fictícias com senha (proprietário, admin e consumidor), um negócio
 -- publicado no plano Profissional e uma categoria, todos com ids reservados
 -- 74000000-…. A senha NÃO fica no repositório: o executor substitui
 -- __E2E_PASSWORD__ por um valor aleatório e o repassa ao Playwright em
@@ -33,14 +33,15 @@ select id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticat
        '', '', '', ''
   from (values
     ('74000000-0000-4000-8000-000000000001'::uuid, 'offers.e2e.owner@example.test', 'Proprietário E2E'),
-    ('74000000-0000-4000-8000-000000000002'::uuid, 'offers.e2e.admin@example.test', 'Admin E2E')
+    ('74000000-0000-4000-8000-000000000002'::uuid, 'offers.e2e.admin@example.test', 'Admin E2E'),
+    ('74000000-0000-4000-8000-000000000003'::uuid, 'offers.e2e.consumer@example.test', 'Consumidor E2E')
   ) as fixture(id, email, full_name);
 
 insert into auth.identities (id, user_id, provider_id, provider, identity_data, last_sign_in_at, created_at, updated_at)
 select gen_random_uuid(), id, id::text, 'email',
        jsonb_build_object('sub', id::text, 'email', email, 'email_verified', true), now(), now(), now()
   from auth.users
- where id in ('74000000-0000-4000-8000-000000000001', '74000000-0000-4000-8000-000000000002');
+ where id in ('74000000-0000-4000-8000-000000000001', '74000000-0000-4000-8000-000000000002', '74000000-0000-4000-8000-000000000003');
 
 insert into public.user_roles (user_id, role) values ('74000000-0000-4000-8000-000000000002', 'admin');
 insert into public.categories (id, name, slug, order_index)

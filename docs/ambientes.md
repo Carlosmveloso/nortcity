@@ -32,6 +32,18 @@ Em 06/10/2026, o E2E real da interface de ofertas rodou contra `farol-pitimbu-de
 
 Ainda em 06/10/2026, a migration `20261006000001_offer_lifecycle_jobs.sql` (job `offer-lifecycle`) foi aplicada exclusivamente em `farol-pitimbu-dev`, depois de dry-run que listou só ela (36 migrations). O job `pg_cron` fica ativo nesse projeto a cada 5 minutos. Produção não recebeu esta migration; ao publicar, aplique as migrations de ofertas na ordem e confirme `cron.job` com `offer-lifecycle` ativo.
 
+Cupons, 06/10/2026, só em `farol-pitimbu-dev`:
+- Criado no Vault o segredo `coupon_qr_key_v1`: 64 caracteres hexadecimais gerados dentro do banco, nunca impressos nem copiados.
+- Dry-run e aplicação da migration `20261007000001_coupons.sql` (37 migrations). O job `coupon-expiration` ficou ativo a cada 5 minutos.
+- O segredo continua no dev, porque a geração depende dele. Produção não recebeu a migration nem o segredo.
+
+**Ordem para publicar ofertas e cupons em produção** (quando autorizado):
+1. Aplicar, com dry-run e no destino confirmado: `20261005000001_plans`, `20261005000002_offers`, `20261005000003_offer_rpcs`, `20261006000001_offer_lifecycle_jobs` e `20261007000001_coupons`.
+2. Antes de liberar a geração, criar o segredo próprio de produção: `select vault.create_secret(encode(extensions.gen_random_bytes(32), 'hex'), 'coupon_qr_key_v1', '…');`. Não reutilizar o do dev. Sem ele, a geração recusa com `qr_key_unavailable`.
+3. Conferir em `cron.job` que `offer-lifecycle` e `coupon-expiration` estão ativos, conferir os grants (seção 0 dos roteiros de homologação) e só então publicar o front-end.
+
+Rotação de chave: criar `coupon_qr_key_v2`. Os cupons antigos continuam verificáveis enquanto `coupon_qr_key_v1` existir.
+
 Para preparar outro ambiente:
 
 1. Selecionar/criar o projeto de desenvolvimento, sem reutilizar dados pessoais de produção.
