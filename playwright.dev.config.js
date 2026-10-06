@@ -14,6 +14,8 @@ if (!devEnv.VITE_SUPABASE_URL || devEnv.VITE_SUPABASE_URL === prodEnv.VITE_SUPAB
     throw new Error('E2E dev recusado: .env.development.local precisa apontar para um projeto diferente do de produção.');
 }
 process.env.E2E_DEV_SUPABASE_ORIGIN = new URL(devEnv.VITE_SUPABASE_URL).origin;
+// Chave pública (anon) do projeto de desenvolvimento, para conferências via REST.
+process.env.E2E_DEV_ANON_KEY = devEnv.VITE_SUPABASE_ANON_KEY ?? '';
 process.env.E2E_FORBIDDEN_SUPABASE_ORIGIN = prodEnv.VITE_SUPABASE_URL ? new URL(prodEnv.VITE_SUPABASE_URL).origin : '';
 
 export default defineConfig({
