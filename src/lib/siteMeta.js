@@ -118,6 +118,12 @@ export const staticPages = [
         noindex: true,
     },
     {
+        path: '/meu-negocio/ofertas',
+        title: 'Minhas ofertas',
+        description: 'Crie e acompanhe as ofertas do seu negócio no Farol Pitimbu.',
+        noindex: true,
+    },
+    {
         path: '/admin',
         title: 'Painel Admin',
         description: 'Área administrativa do Farol Pitimbu.',

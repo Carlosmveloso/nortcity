@@ -31,6 +31,9 @@ const Planos = lazy(() => import("./pages/Planos"));
 const GuiaLocal = lazy(() => import("./pages/GuiaLocal"));
 const CadastrarNegocio = lazy(() => import("./pages/CadastrarNegocio"));
 const MeuNegocio = lazy(() => import("./pages/MeuNegocio"));
+const MinhasOfertas = lazy(() => import("./pages/MinhasOfertas"));
+const OfertaEditor = lazy(() => import("./pages/OfertaEditor"));
+const OfertaDetalhe = lazy(() => import("./pages/OfertaDetalhe"));
 const Sobre = lazy(() => import("./pages/Sobre"));
 const Contato = lazy(() => import("./pages/Contato"));
 const Favoritos = lazy(() => import("./pages/Favoritos"));
@@ -86,6 +89,38 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MeuNegocio />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meu-negocio/ofertas"
+                element={
+                  <ProtectedRoute>
+                    <MinhasOfertas />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meu-negocio/ofertas/nova"
+                element={
+                  <ProtectedRoute>
+                    <OfertaEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meu-negocio/ofertas/:offerId/editar"
+                element={
+                  <ProtectedRoute>
+                    <OfertaEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meu-negocio/ofertas/:offerId"
+                element={
+                  <ProtectedRoute>
+                    <OfertaDetalhe />
                   </ProtectedRoute>
                 }
               />
