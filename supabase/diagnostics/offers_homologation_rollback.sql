@@ -97,7 +97,7 @@ select pg_temp.check(
     (select bool_and(not has_function_privilege(r, f, 'EXECUTE'))
        from unnest(array['anon', 'authenticated']) r,
             unnest(array[
-            'public.activate_due_offers()', 'public.lock_offer(uuid)', 'public.lock_owned_offer(uuid)',
+            'public.activate_due_offers(timestamptz)', 'public.lock_offer(uuid)', 'public.lock_owned_offer(uuid)',
             'public.decide_offer_version(uuid,text,text)', 'public.assert_offer_plan_capacity(uuid)',
             'public.log_offer_review(uuid,uuid,offer_review_action,text)',
             'public.business_plan_id(uuid)', 'public.current_plan_coupon_fee(text,timestamptz)']) f),
