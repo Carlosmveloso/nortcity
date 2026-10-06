@@ -59,6 +59,23 @@ Execução de 05/10/2026 no projeto hospedado `farol-pitimbu-dev`. Antes, confer
   - Na sessão B, a RPC foi chamada a partir de `postgres` com o JWT simulado do admin; a função é `SECURITY DEFINER`, então o bloqueio é o mesmo.
 - **Limpeza:** `offers_concurrency_cleanup.sql` removeu toda a massa `73000000-…`, e a conferência posterior não encontrou resíduos.
 
+Interface de ofertas, 06/10/2026:
+- **Vitest:** `src/lib/offerForm.test.js` e `src/lib/offers.test.js` cobrem o payload e as datas no fuso de Pitimbu, a validação espelhando as constraints, os horários, a escolha explícita de limite, os resumos e a tradução dos erros (sem expor códigos). Total da suíte: 382.
+- **Playwright com API simulada:** `e2e/offers.spec.js` usa `e2e/offersMock.js`, que reproduz as regras das RPCs. Roda em desktop e mobile e cobre:
+  - proprietário: estado vazio, assistente em 4 passos com validação por etapa, rascunho retomado, Gratuito sem envio, taxa vinda do plano, aceite obrigatório, envio, versão em análise bloqueada, ajustes com nova versão e novo aceite, clique duplo sem operação duplicada, alteração de oferta ativa e acesso negado ao admin;
+  - admin: fila, análise, ajustes e rejeição com motivo, aprovação, publicação, agendamento, suspensão, limite do plano traduzido na reativação, encerramento definitivo, Esc no diálogo e atribuição de plano;
+  - sem rolagem horizontal nas telas principais.
+  
+  Suíte completa: 76 testes passando, duas execuções seguidas.
+- **E2E real (`npm run test:e2e:dev`, `playwright.dev.config.js` + `e2e-dev/`):** roda contra `farol-pitimbu-dev` com Auth, PostgREST, RLS e RPCs reais.
+  - A configuração lê o destino de `.env.development.local` e recusa rodar se ele coincidir com o de produção. A fixture aborta qualquer requisição fora do projeto de desenvolvimento e falha se houver chamada a produção.
+  - Massa: `supabase/diagnostics/offers_e2e_dev_setup.sql`, com o placeholder `__E2E_PASSWORD__` substituído por uma senha aleatória fora do repositório e passada em `E2E_DEV_PASSWORD`. Limpeza: `offers_e2e_dev_cleanup.sql`.
+  - Execução de 06/10/2026, desktop (1440 px) e mobile (Pixel 7), ambos aprovados. O proprietário criou a oferta pelos 4 passos, aceitou e enviou; o admin pediu ajustes; o proprietário criou a versão 2 com novo aceite e reenviou; o admin aprovou e publicou.
+  - Conferido no banco: oferta `active`, versão 1 `changes_requested` e versão 2 publicada, cada uma com a taxa de R$ 1,00 aceita, e histórico submitted → changes_requested → resubmitted → approved → published.
+  - Pela API pública com a chave anônima: só a versão publicada aparece; `select=*` responde 401 e `fee_amount` responde 42501.
+  - Uma primeira execução em desktop completou o fluxo, mas falhou numa asserção do próprio teste (texto do histórico), corrigida em seguida. A limpeza removeu as três ofertas e toda a massa, sem resíduos e com as triggers reabilitadas.
+- **Ainda não coberto:** ativação de oferta agendada na data (não há job), leitores de tela reais e Safari/iOS.
+
 Ainda falta uma passagem manual da interface completa contra os serviços reais para cadastro com arquivo de imagem e moderação pelo painel. Os testes Playwright cobrem essas telas com API simulada; a homologação transacional cobre as regras e policies no servidor, mas não substitui o upload binário pelo serviço Storage.
 
 Para interface alterada, conferir foco, teclado, contraste, textos longos e responsividade. Um teste com API simulada não substitui essa homologação.
