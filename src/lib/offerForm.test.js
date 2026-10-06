@@ -19,6 +19,7 @@ function form(overrides = {}) {
         benefitValue: '20',
         startDate: '2026-11-01',
         endDate: '2026-11-30',
+        limitMode: 'limited',
         totalLimit: '100',
         perUserLimit: '1',
         couponValidityMinutes: '1440',
@@ -116,6 +117,12 @@ describe('validateOfferStep', () => {
         expect(validateOfferStep(form({ perUserLimit: '0' }), 3).perUserLimit).toBeTruthy();
     });
 
+    it('quantidade total exige escolha explícita', () => {
+        expect(validateOfferStep(form({ limitMode: '' }), 3).totalLimit).toMatch(/Escolha se a oferta/);
+        expect(offerFormFromVersion({ total_limit: null, coupon_validity_minutes: null }).limitMode).toBe('');
+        expect(offerFormFromVersion({ total_limit: null, coupon_validity_minutes: 60 }).limitMode).toBe('unlimited');
+    });
+
     it('brinde não exige valor', () => {
         expect(validateOfferStep(form({ benefitType: 'gift', benefitValue: '' }), 1)).toEqual({});
     });
@@ -144,7 +151,7 @@ describe('validateOfferStep', () => {
     it('rascunho (não estrito) aceita campos vazios, mas não valores inválidos', () => {
         const partial = { ...emptyOfferForm, windows: form().windows, title: 'Oferta parcial' };
         expect(validateOfferStep(partial, 4, { strict: false })).toEqual({});
-        expect(validateOfferStep({ ...partial, totalLimit: '-1' }, 3, { strict: false }).totalLimit).toBeTruthy();
+        expect(validateOfferStep({ ...partial, limitMode: 'limited', totalLimit: '-1' }, 3, { strict: false }).totalLimit).toBeTruthy();
         expect(firstStepWithErrors(partial)).toBe(1);
     });
 });

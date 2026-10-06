@@ -894,7 +894,10 @@ function OfertaEditor() {
                     )}
                     {ready && editable && (
                         <EditorForm
-                            key={latest?.id ?? 'new'}
+                            // Identidade do formulário é a oferta, não a versão: a recarga
+                            // depois de criar a versão seguinte não pode apagar o que a
+                            // pessoa já está digitando no passo seguinte.
+                            key={offerId ?? 'new'}
                             business={business}
                             offer={offer}
                             latest={latest}

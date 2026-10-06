@@ -39,7 +39,9 @@ export const emptyOfferForm = {
     eligibleItems: '',
     stackable: false,
     conditions: '',
-    limitMode: 'limited',
+    // '' = ainda não escolhido. "Sem limite" precisa ser uma escolha explícita,
+    // porque no banco é só a ausência de total_limit.
+    limitMode: '',
     totalLimit: '',
     perUserLimit: '1',
     couponValidityMinutes: '',
@@ -53,6 +55,14 @@ function text(value) {
 function decimalField(value) {
     if (value === null || value === undefined || value === '') return '';
     return String(Number(value)).replace('.', ',');
+}
+
+// total_limit nulo significa "sem limite" — ou que o passo 3 ainda não foi
+// preenchido. A validade do cupom é obrigatória nesse passo, então serve de
+// sinal: sem ela, a escolha de quantidade ainda não foi feita.
+function limitModeFromVersion(version) {
+    if (version.total_limit !== null && version.total_limit !== undefined) return 'limited';
+    return version.coupon_validity_minutes ? 'unlimited' : '';
 }
 
 export function offerFormFromVersion(version) {
@@ -75,7 +85,7 @@ export function offerFormFromVersion(version) {
         eligibleItems: text(version.eligible_items),
         stackable: Boolean(version.stackable),
         conditions: text(version.conditions),
-        limitMode: version.total_limit === null || version.total_limit === undefined ? 'unlimited' : 'limited',
+        limitMode: limitModeFromVersion(version),
         totalLimit: text(version.total_limit),
         perUserLimit: text(version.per_user_limit ?? 1),
         couponValidityMinutes: text(version.coupon_validity_minutes),
@@ -128,7 +138,7 @@ export function buildOfferPayload(form) {
     const valued = VALUED_BENEFITS.includes(form.benefitType);
     const benefitValue = valued ? parseDecimal(form.benefitValue) : null;
     const minimumPurchase = parseDecimal(form.minimumPurchase);
-    const totalLimit = form.limitMode === 'unlimited' ? null : parseInteger(form.totalLimit);
+    const totalLimit = form.limitMode === 'limited' ? parseInteger(form.totalLimit) : null;
     const perUserLimit = parseInteger(form.perUserLimit);
     const validity = parseInteger(form.couponValidityMinutes);
 
@@ -235,7 +245,9 @@ export function validateOfferStep(form, step, { strict = true } = {}) {
         } else if (Number.isNaN(perUser) || perUser < 1) {
             errors.perUserLimit = 'Use um número inteiro a partir de 1.';
         }
-        if (form.limitMode === 'limited') {
+        if (!form.limitMode) {
+            if (strict) errors.totalLimit = 'Escolha se a oferta tem quantidade limitada ou não.';
+        } else if (form.limitMode === 'limited') {
             const total = parseInteger(form.totalLimit);
             if (total === null) {
                 if (strict) errors.totalLimit = 'Informe a quantidade total ou escolha “Sem limite”.';
