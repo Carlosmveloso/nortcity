@@ -30,6 +30,8 @@ Em 05/10/2026, as migrations de ofertas e planos mínimos (`20261005000001` a `2
 
 Em 06/10/2026, o E2E real da interface de ofertas rodou contra `farol-pitimbu-dev`, com duas contas fictícias e um negócio de ids reservados `74000000-…`, removidos em seguida por `offers_e2e_dev_cleanup.sql`. Nenhuma migration nova foi aplicada para o frontend.
 
+Ainda em 06/10/2026, a migration `20261006000001_offer_lifecycle_jobs.sql` (job `offer-lifecycle`) foi aplicada exclusivamente em `farol-pitimbu-dev`, depois de dry-run que listou só ela (36 migrations). O job `pg_cron` fica ativo nesse projeto a cada 5 minutos. Produção não recebeu esta migration; ao publicar, aplique as migrations de ofertas na ordem e confirme `cron.job` com `offer-lifecycle` ativo.
+
 Para preparar outro ambiente:
 
 1. Selecionar/criar o projeto de desenvolvimento, sem reutilizar dados pessoais de produção.

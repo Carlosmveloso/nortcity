@@ -352,14 +352,15 @@ Visitante que tenta salvar é encaminhado ao login e retorna à página com seus
 | `pending_review` → `approved` | admin, `approve_offer` | aprovar não publica |
 | `approved` → `active` | admin, `publish_offer` | início já passou; exige vaga no plano |
 | `approved` → `scheduled` | admin, `publish_offer` | início futuro |
-| `scheduled` → `active` | sistema, `activate_due_offers` | exige vaga no plano; ainda sem agendamento no cron |
+| `scheduled` → `active` | sistema, job `offer-lifecycle` | a cada 5 min; exige vaga no plano |
+| `active`/`suspended`/`scheduled`/`approved` → `ended` | sistema, job `offer-lifecycle` | quando `ends_at` passa |
 | `active` → `suspended` | admin, `suspend_offer` | motivo obrigatório |
 | `suspended` → `active` | admin, `reactivate_offer` | período válido, negócio ativo, vaga no plano |
 | `approved`/`scheduled`/`active`/`suspended` → `ended` | admin, `end_offer` | definitivo |
 
 A trigger `offers_guard` aplica essa máquina de estados a qualquer papel, inclusive `service_role`, e só aceita mudanças vindas das operações da tabela acima. `authenticated` não tem grant de escrita nas tabelas de ofertas.
 
-Antes de ativar, `publish_offer` e `reactivate_offer` travam o negócio e contam as ofertas `active`. Sem vaga, recusam com `plan_offer_limit_reached` e a oferta continua `approved` (ou `suspended`). Se a vaga não existir na hora de ativar uma oferta agendada, ela continua `scheduled`.
+Antes de ativar, `publish_offer` e `reactivate_offer` travam o negócio e contam as ofertas `active`. Sem vaga, recusam com `plan_offer_limit_reached` e a oferta continua `approved` (ou `suspended`). Se a vaga não existir na hora de ativar uma oferta agendada, ela continua `scheduled` e o job tenta de novo a cada execução.
 
 As decisões sobre uma revisão de oferta ativa valem só para a versão: a oferta continua `active`. Publicar a revisão aprovada troca `published_version_id`, desde que o novo período já tenha começado.
 
@@ -376,9 +377,23 @@ As sete decisões de implementação foram aprovadas na revisão de 05/10/2026: 
 
 **DÍVIDA TÉCNICA.**
 - **Exclusão de negócio com histórico.** Hoje `admin_delete_business` falha por FK quando há ofertas. Isso preserva o histórico, mas não é a solução definitiva: o admin precisará retirar um negócio da operação sem destruir os registros. O modelo futuro é arquivamento (soft delete, por exemplo `archived`) em vez de exclusão física.
-- **Jobs.** A vitrine já esconde ofertas vencidas, mas o status persistido precisa refletir a realidade. Quando os jobs forem configurados: agendar `activate_due_offers` (`scheduled` → `active`) e criar o encerramento automático `active` → `ended` ao fim de `ends_at`, para não acumular ofertas `active` encerradas há meses. **Até lá, uma oferta agendada não entra no ar sozinha.** Nenhuma RPC permite ao admin ativá-la manualmente na data; a interface informa isso sem prometer ativação automática.
+- ~~**Jobs.**~~ Resolvido em 06/10/2026 pelo job `offer-lifecycle` (ver "Ciclo automático" abaixo).
 
 **PENDENTE/FUTURO.** Cupons e cobrança; bloqueio financeiro na reativação; revisão de oferta aprovada, agendada ou suspensa; retenção ao excluir conta com ofertas; exibição pública das ofertas na ficha do negócio. Uma revisão em análise quando a oferta é encerrada continua no histórico e não pode mais ser publicada.
+
+### Ciclo automático (job `offer-lifecycle`)
+
+**IMPLEMENTADO — 06/10/2026, migration `20261006000001`, branch `feat/offers-scheduling-jobs`.** Coberto por `src/test/db/offer-lifecycle.test.js` e homologado em `farol-pitimbu-dev`; produção ainda não recebeu a migration.
+
+- O `pg_cron` executa `offer-lifecycle` a cada 5 minutos (`*/5 * * * *`), chamando `process_offer_lifecycle()`.
+- **Primeiro encerra, depois ativa.** `end_expired_offers()` encerra `active`, `suspended`, `scheduled` e `approved` cujo `ends_at` já passou, e só então `activate_due_offers()` ativa as `scheduled` cujo `starts_at` chegou. Uma agendada que venceu sem ser ativada vai direto para `ended`, sem um `published` artificial.
+- **Período considerado:** o da versão publicada; antes da primeira publicação, o da versão mais recente.
+- **Estados não tocados:** `draft`, `pending_review`, `changes_requested`, `rejected` e `ended`.
+- **Histórico:** as ações do job ficam com `actor_id` nulo, exibido como "Sistema". O encerramento registra `ended` com a mensagem "Período da oferta encerrado"; a ativação registra `published`.
+- **Plano sem vaga:** a agendada continua `scheduled`, sem linha nova no histórico, e é tentada de novo a cada execução. Quem começa antes ocupa a vaga primeiro. A interface deriva o aviso "Aguardando vaga no plano" de `status = scheduled` com início já passado; não existe status próprio para isso.
+- **Fuso:** a comparação é direta entre `timestamptz` e o instante atual. Como a aplicação grava 00:00 e 23:59:59 em UTC−3, a oferta não começa nem termina três horas antes.
+- **Proteções:** as funções usam o mesmo sinal `farol.offer_write` das RPCs e não têm grant para `anon` nem `authenticated`. O parâmetro opcional `p_now` existe só para testes; o cron usa `now()`.
+- **Assinatura:** `activate_due_offers()` passou a ser `activate_due_offers(p_now timestamptz default now())`. A versão sem parâmetro foi removida na nova migration.
 
 ### Interface (frontend da Sprint 1)
 
