@@ -92,7 +92,7 @@ export function seedOffer(state, { businessId, ownerId, status = 'draft', versio
     });
     for (const item of reviews) {
         const version = state.versions.find((v) => v.offer_id === offer.id && v.version_number === (item.version ?? 1));
-        review(state, offer, version, item.action, item.actor ?? ownerId, item.message);
+        review(state, offer, version, item.action, 'actor' in item ? item.actor : ownerId, item.message);
     }
     return offer;
 }

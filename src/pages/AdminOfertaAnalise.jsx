@@ -13,6 +13,7 @@ import {
     formatMoney,
     formatOfferDate,
     formatOfferDateTime,
+    isWaitingForPlanSlot,
 } from '@/lib/offers';
 import { staticPageMeta } from '@/lib/siteMeta';
 
@@ -142,6 +143,18 @@ function actionConfig(action, { offer, view }) {
         default:
             return null;
     }
+}
+
+function WaitingForSlot() {
+    return (
+        <div role="status" className="mt-3 rounded-2xl border border-sun/40 bg-sun/10 px-4 py-3 text-sm text-dark-ocean">
+            <p className="font-semibold">Aguardando vaga no plano</p>
+            <p className="mt-1">
+                A data de início desta oferta já chegou, mas o negócio atingiu o limite de ofertas ativas do plano atual. O
+                sistema tenta ativá-la a cada 5 minutos.
+            </p>
+        </div>
+    );
 }
 
 function person(profiles, id) {
@@ -279,12 +292,13 @@ function AdminOfertaAnalise() {
                                 })}
                             </div>
                         )}
-                        {offer.status === 'scheduled' && (
+                        {offer.status === 'scheduled' && !isWaitingForPlanSlot(offer, view) && (
                             <p className="mt-3 text-sm text-dark-ocean/70">
-                                Início previsto para {formatOfferDate(latest?.starts_at)}. A ativação na data depende do job
-                                de agendamento (activate_due_offers), que ainda não está programado no banco.
+                                Início previsto para {formatOfferDate(latest?.starts_at)}. A ativação é automática, em até
+                                5 minutos depois do início.
                             </p>
                         )}
+                        {isWaitingForPlanSlot(offer, view) && <WaitingForSlot />}
                     </Card>
 
                     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">

@@ -12,6 +12,7 @@ import {
     formatMoney,
     formatOfferDate,
     formatOfferDateTime,
+    isWaitingForPlanSlot,
     latestAdminMessage,
 } from '@/lib/offers';
 import { staticPageMeta } from '@/lib/siteMeta';
@@ -22,7 +23,7 @@ const EXPLANATION = {
     changes_requested:
         'A equipe pediu ajustes. A versão analisada fica preservada; suas correções viram uma nova versão, com novo aceite.',
     approved: 'Oferta aprovada. Ela entra no ar quando a equipe do Farol publicar.',
-    scheduled: 'Publicação agendada para a data de início. A equipe do Farol acompanha a entrada no ar.',
+    scheduled: 'Publicação agendada. A oferta entra no ar automaticamente na data de início, em até alguns minutos.',
     active: 'Oferta no ar para quem usa o Farol Pitimbu.',
     suspended: 'Oferta suspensa pela equipe do Farol. Ela não aparece para o público enquanto estiver suspensa.',
     rejected: 'Esta oferta não foi aprovada. Para tentar de novo, crie uma nova oferta considerando o motivo informado.',
@@ -140,6 +141,12 @@ function OfertaDetalhe() {
                         {status === 'scheduled' && display?.starts_at && (
                             <p className="mt-2 text-sm font-semibold text-foreground">
                                 Início previsto: {formatOfferDate(display.starts_at)}
+                            </p>
+                        )}
+                        {isWaitingForPlanSlot(offer, view) && (
+                            <p className="mt-3 rounded-2xl bg-sun/10 px-4 py-3 text-sm text-dark-ocean">
+                                A data de início chegou, mas o negócio atingiu o limite de ofertas ativas do plano atual. A
+                                oferta entra no ar assim que houver vaga.
                             </p>
                         )}
                         {view.revisionStatus && (

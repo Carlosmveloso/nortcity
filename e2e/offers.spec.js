@@ -220,6 +220,33 @@ test.describe('ofertas — proprietário', () => {
         expect(api.offers.offers[0].published_version_id).toBe(api.offers.versions[0].id);
     });
 
+    test('encerramento automático aparece como Sistema e agendada sem vaga é explicada', async ({ page, api }) => {
+        const ended = seed(api, {
+            status: 'ended',
+            versions: [{ review_status: 'approved', published: true, title: 'Encerrada pelo período' }],
+            reviews: [
+                { action: 'submitted' },
+                { action: 'approved' },
+                { action: 'published', actor: null },
+                { action: 'ended', actor: null, message: 'Período da oferta encerrado' },
+            ],
+        });
+        await page.goto(`/meu-negocio/ofertas/${ended.id}`);
+        const last = page.getByRole('region', { name: 'Histórico' }).getByRole('listitem').last();
+        await expect(last).toContainText('Oferta encerrada');
+        await expect(last).toContainText('Sistema');
+        await expect(last).toContainText('Período da oferta encerrado');
+
+        const waiting = seed(api, {
+            status: 'scheduled',
+            versions: [{ review_status: 'approved', starts_at: `${day(-1)}T03:00:00Z` }],
+            reviews: [{ action: 'submitted' }, { action: 'approved' }, { action: 'scheduled' }],
+        });
+        await page.goto(`/meu-negocio/ofertas/${waiting.id}`);
+        await expect(page.getByText(/atingiu o limite de ofertas ativas do plano atual/)).toBeVisible();
+        await expect(page.getByText(/entra no ar automaticamente na data de início/)).toBeVisible();
+    });
+
     test('proprietário não acessa a análise de ofertas', async ({ page, api }) => {
         await page.goto('/admin/ofertas');
         await expect(page).toHaveURL(/\/$/);
@@ -325,6 +352,26 @@ test.describe('ofertas — admin', () => {
         await end.getByRole('button', { name: 'Encerrar definitivamente' }).click();
         await expect(page.getByText('Oferta encerrada.')).toBeVisible();
         await expect(page.getByText(/Nenhuma ação disponível/)).toBeVisible();
+        await noOverflow(page);
+    });
+
+    test('agendada com início vencido mostra Aguardando vaga no plano', async ({ page, api }) => {
+        const waiting = seed(api, {
+            status: 'scheduled',
+            versions: [{ review_status: 'approved', title: 'Sem vaga', starts_at: `${day(-1)}T03:00:00Z` }],
+            reviews: [{ action: 'submitted' }, { action: 'approved' }, { action: 'scheduled' }],
+        });
+        seed(api, {
+            status: 'scheduled',
+            versions: [{ review_status: 'approved', title: 'Futura', starts_at: `${day(5)}T03:00:00Z` }],
+            reviews: [{ action: 'submitted' }, { action: 'approved' }, { action: 'scheduled' }],
+        });
+        await page.goto('/admin/ofertas?fila=scheduled');
+        await expect(page.getByRole('listitem').filter({ hasText: 'Sem vaga' }).getByText('Aguardando vaga no plano')).toBeVisible();
+        await expect(page.getByRole('listitem').filter({ hasText: 'Futura' }).getByText('Aguardando vaga no plano')).toHaveCount(0);
+        await page.goto(`/admin/ofertas/${waiting.id}`);
+        await expect(page.getByRole('status').filter({ hasText: 'Aguardando vaga no plano' })).toBeVisible();
+        await expect(page.getByText(/tenta ativá-la a cada 5 minutos/)).toBeVisible();
         await noOverflow(page);
     });
 

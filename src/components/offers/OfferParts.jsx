@@ -124,7 +124,12 @@ export function OfferHistory({ reviews, versions, actorName }) {
                             {formatOfferDateTime(review.created_at)}
                         </time>
                     </div>
-                    {actorName && review.actor_id && <p className="mt-0.5 text-xs text-dark-ocean/60">{actorName(review.actor_id)}</p>}
+                    {/* Sem autor = ação automática do job offer-lifecycle. */}
+                    {(actorName || !review.actor_id) && (
+                        <p className="mt-0.5 text-xs text-dark-ocean/60">
+                            {review.actor_id ? actorName(review.actor_id) : 'Sistema'}
+                        </p>
+                    )}
                     {review.message && <p className="mt-1 text-sm whitespace-pre-line text-dark-ocean/80">{review.message}</p>}
                 </li>
             ))}
