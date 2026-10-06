@@ -18,8 +18,27 @@ const CONTENT_FIELDS = [
     'minimum_purchase', 'eligible_items', 'stackable', 'conditions', 'total_limit', 'per_user_limit', 'coupon_validity_minutes',
 ];
 
+export const TERMS_VERSION = '2026-10-v1';
+
 export function createOffersState() {
-    return { planId: 'profissional', offers: [], versions: [], reviews: [], fail: {}, gate: null };
+    return { planId: 'profissional', offers: [], versions: [], reviews: [], coupons: [], fail: {}, gate: null };
+}
+
+const couponEffective = (coupon) =>
+    coupon.status === 'available' && new Date(coupon.expires_at) <= new Date() ? 'expired' : coupon.status;
+
+/** Cupom direto no estado (cenários de esgotado, expirado e versão antiga). */
+export function seedCoupon(state, { offer, userId, versionNumber, status = 'available', expiresInMinutes = 120 }) {
+    const version = state.versions.find((v) => v.offer_id === offer.id && (versionNumber ? v.version_number === versionNumber : v.id === offer.published_version_id));
+    const coupon = {
+        id: randomUUID(), code: `FP-${randomUUID().replace(/[^A-HJ-NP-Z2-9]/gi, '').toUpperCase().slice(0, 6).padEnd(6, 'K')}`,
+        status, offer_id: offer.id, offer_version_id: version.id, business_id: offer.business_id, user_id: userId,
+        generated_at: iso(), expires_at: new Date(Date.now() + expiresInMinutes * 60_000).toISOString(),
+        terms_version: TERMS_VERSION, terms_accepted_at: iso(), canceled_at: status === 'canceled' ? iso() : null,
+        cancel_reason: status === 'canceled' ? 'Uso indevido.' : null,
+    };
+    state.coupons.push(coupon);
+    return coupon;
 }
 
 const iso = () => new Date().toISOString();
@@ -121,6 +140,38 @@ export async function handleOffers({ state, business, userId, path, url, method,
 
     const single = (rows) => (accept?.includes('vnd.pgrst.object') ? rows[0] ?? null : rows);
 
+    const couponView = (coupon) => {
+        const current = businessOf();
+        const version = offersState.versions.find((v) => v.id === coupon.offer_version_id);
+        const publicVersion = Object.fromEntries(
+            ['id', 'version_number', ...CONTENT_FIELDS].map((field) => [field, version[field]])
+        );
+        return {
+            id: coupon.id, code: coupon.code, status: couponEffective(coupon), generated_at: coupon.generated_at,
+            expires_at: coupon.expires_at, expired_at: null, canceled_at: coupon.canceled_at, cancel_reason: coupon.cancel_reason,
+            terms_version: coupon.terms_version, terms_accepted_at: coupon.terms_accepted_at, offer_id: coupon.offer_id,
+            business: { id: current.id, name: current.name, slug: current.slug }, version: publicVersion,
+        };
+    };
+    const reserved = (offerId) =>
+        offersState.coupons.filter((c) => c.offer_id === offerId && couponEffective(c) === 'available').length;
+    const isPublic = (offer) => {
+        const version = offersState.versions.find((v) => v.id === offer.published_version_id);
+        return offer.status === 'active' && businessOf()?.status === 'active' && version
+            && new Date(version.starts_at) <= new Date() && new Date(version.ends_at) > new Date();
+    };
+
+    if (path === '/rest/v1/coupon_terms') {
+        return { status: 200, body: [{
+            version: TERMS_VERSION, title: 'Regulamento de Utilização dos Cupons', published_at: '2026-10-06T03:00:00Z',
+            content: [
+                { heading: null, blocks: [{ p: 'Os cupons disponibilizados pelo Farol Pitimbu correspondem a benefícios oferecidos pelos estabelecimentos participantes aos usuários da plataforma.' }] },
+                { heading: '1. Condições da oferta', blocks: [{ p: 'Antes de gerar o cupom, o usuário deverá verificar as condições específicas da oferta, incluindo:' }, { list: ['benefício oferecido;', 'período de validade;'] }] },
+                { heading: '10. Aceite do usuário', blocks: [{ p: 'Importante: o benefício somente poderá ser utilizado de acordo com as condições apresentadas nesta oferta.' }] },
+            ],
+        }] };
+    }
+
     if (path === '/rest/v1/plans') return { status: 200, body: Object.values(PLANS).map((plan) => ({ id: plan.id, name: plan.name, active_offer_limit: plan.active_offer_limit, sort_order: plan.sort_order })) };
     if (path === '/rest/v1/offers') {
         if (method !== 'GET') return rpcError('direct_write_not_allowed', 403);
@@ -149,6 +200,7 @@ export async function handleOffers({ state, business, userId, path, url, method,
         'get_business_offer_terms', 'create_offer', 'update_offer_draft', 'create_offer_revision',
         'accept_offer_financial_terms', 'submit_offer_for_review', 'approve_offer', 'request_offer_changes',
         'reject_offer', 'publish_offer', 'suspend_offer', 'reactivate_offer', 'end_offer', 'admin_set_business_plan',
+        'offer_coupon_availability', 'generate_coupon', 'get_my_coupons', 'get_my_coupon', 'get_coupon_qr_token',
     ];
     if (!known.includes(rpc)) return null;
 
@@ -166,6 +218,38 @@ export async function handleOffers({ state, business, userId, path, url, method,
     const requireMessage = () => !(body?.p_message ?? '').trim();
 
     switch (rpc) {
+        case 'offer_coupon_availability':
+            return ok(offersState.offers
+                .filter((item) => body.p_offer_ids.includes(item.id) && isPublic(item))
+                .map((item) => {
+                    const version = offersState.versions.find((v) => v.id === item.published_version_id);
+                    return { offer_id: item.id, available: version.total_limit === null || reserved(item.id) < version.total_limit };
+                }));
+        case 'generate_coupon': {
+            if (!body.p_terms_version) return rpcError('terms_not_accepted');
+            if (body.p_terms_version !== TERMS_VERSION) return rpcError('terms_outdated');
+            const target = offersState.offers.find((item) => item.id === body.p_offer_id);
+            if (!target || !isPublic(target)) return rpcError('offer_not_active');
+            const version = offersState.versions.find((v) => v.id === target.published_version_id);
+            if (offersState.coupons.some((c) => c.offer_id === target.id && c.user_id === userId && couponEffective(c) === 'available')) {
+                return rpcError('coupon_already_available');
+            }
+            if (version.total_limit !== null && reserved(target.id) >= version.total_limit) return rpcError('offer_sold_out');
+            const expires = Math.min(Date.now() + version.coupon_validity_minutes * 60_000, new Date(version.ends_at).getTime());
+            const coupon = seedCoupon(offersState, { offer: target, userId, expiresInMinutes: (expires - Date.now()) / 60_000 });
+            return ok({ coupon_id: coupon.id, code: coupon.code, expires_at: coupon.expires_at });
+        }
+        case 'get_my_coupons':
+            return ok(offersState.coupons.filter((c) => c.user_id === userId).reverse().map(couponView));
+        case 'get_my_coupon': {
+            const coupon = offersState.coupons.find((c) => c.id === body.p_coupon_id && c.user_id === userId);
+            return coupon ? ok(couponView(coupon)) : rpcError('coupon_not_found');
+        }
+        case 'get_coupon_qr_token': {
+            const coupon = offersState.coupons.find((c) => c.id === body.p_coupon_id && c.user_id === userId);
+            if (!coupon) return rpcError('coupon_not_found');
+            return ok(couponEffective(coupon) === 'available' ? `tok_${coupon.id.replace(/-/g, '')}` : null);
+        }
         case 'get_business_offer_terms':
             return ok({
                 plan_id: plan.id, plan_name: plan.name, active_offer_limit: plan.active_offer_limit,
