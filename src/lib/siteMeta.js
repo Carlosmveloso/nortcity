@@ -130,6 +130,12 @@ export const staticPages = [
         noindex: true,
     },
     {
+        path: '/admin/ofertas',
+        title: 'Ofertas',
+        description: 'Análise e publicação das ofertas dos negócios.',
+        noindex: true,
+    },
+    {
         path: '/admin/analytics',
         title: 'Analytics',
         description: 'Comportamento dos visitantes do Farol Pitimbu.',

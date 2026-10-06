@@ -247,3 +247,32 @@ export function latestAdminMessage(reviews = [], actions = ['changes_requested',
     );
 }
 
+// ---------------------------------------------------------------------------
+// Filas do painel administrativo
+// ---------------------------------------------------------------------------
+
+export const ADMIN_QUEUES = [
+    { value: 'pending', label: 'Pendentes' },
+    { value: 'changes_requested', label: 'Ajustes solicitados' },
+    { value: 'approved', label: 'Aprovadas' },
+    { value: 'scheduled', label: 'Agendadas' },
+    { value: 'active', label: 'Ativas' },
+    { value: 'suspended', label: 'Suspensas' },
+    { value: 'ended', label: 'Encerradas' },
+    { value: 'rejected', label: 'Rejeitadas' },
+];
+
+/**
+ * Em quais filas a oferta aparece. Revisão de oferta ativa entra também em
+ * Pendentes/Ajustes/Aprovadas, porque o status da oferta continua `active`.
+ * Rascunhos nunca enviados não aparecem para o admin.
+ * @returns {string[]}
+ */
+export function adminQueuesFor(offer, view) {
+    const queues = new Set();
+    if (view.awaitingReview) queues.add('pending');
+    if (offer.status === 'changes_requested' || view.revisionStatus === 'changes_requested') queues.add('changes_requested');
+    if (offer.status === 'approved' || view.revisionStatus === 'approved') queues.add('approved');
+    if (['scheduled', 'active', 'suspended', 'ended', 'rejected'].includes(offer.status)) queues.add(offer.status);
+    return [...queues];
+}

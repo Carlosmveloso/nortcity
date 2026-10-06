@@ -16,6 +16,8 @@ import Home from "./pages/Home";
 
 const Admin = lazy(() => import("./pages/Admin"));
 const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics"));
+const AdminOfertas = lazy(() => import("./pages/AdminOfertas"));
+const AdminOfertaAnalise = lazy(() => import("./pages/AdminOfertaAnalise"));
 
 const Explorar = lazy(() => import("./pages/Explorar"));
 const Experiencia = lazy(() => import("./pages/Experiencia"));
@@ -141,6 +143,22 @@ function App() {
                 element={
                   <AdminRoute>
                     <AdminAnalytics />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/ofertas"
+                element={
+                  <AdminRoute>
+                    <AdminOfertas />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/ofertas/:offerId"
+                element={
+                  <AdminRoute>
+                    <AdminOfertaAnalise />
                   </AdminRoute>
                 }
               />
