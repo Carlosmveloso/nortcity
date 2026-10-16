@@ -294,7 +294,7 @@ atribuição manual pelo admin (seção 14).
 
 Analytics administrativo está implementado; métricas comerciais para proprietários continuam futuras.
 
-Também continuam fora do escopo: cobrança/Stripe, validação e utilização de cupons (seção 15), galeria comercial, patrocinados, selo
+Também continuam fora do escopo: cobrança/Stripe, fechamento financeiro e estornos de cupons (Sprint 4), galeria comercial, patrocinados, selo
 Verificado, avaliações, roteiros, alertas, moderação de fotos por IA, Google OAuth,
 moderador com permissões próprias, equipes, múltiplos negócios por conta, status `closed` e
 reivindicação pública.
@@ -495,8 +495,91 @@ Suspender ou encerrar a oferta, ou suspender o negócio, bloqueia novas emissõe
 - A interface não mostra quantidade de vagas restantes nem "poucas unidades".
 - Não há área geral de ofertas além do perfil do negócio. A página da oferta tem `noindex`, porque as ofertas são temporárias e não entram no sitemap.
 
-### Pendências (Sprint 3 e depois)
+### Pendências
 
-- Estado `used`, `coupon_usages`, validação no estabelecimento, validadores e contagem do `per_user_limit`.
-- Cobrança por utilização, cancelamento em lote, tela de cancelamento no admin e leitura agregada para o proprietário.
-- "Definitivamente esgotada", que depende de utilizações.
+- Validação, utilização e `per_user_limit` foram implementados na Sprint 3 (seção 16).
+- Cancelamento em lote e tela de cancelamento no admin.
+- "Definitivamente esgotada", que agora pode ser derivada das utilizações, mas ainda não tem regra de produto.
+
+## 16. Validação e utilização de cupons (Sprint 3)
+
+**IMPLEMENTADO — 16/10/2026, migrations `20261016000001_coupon_used_status.sql` e `20261016000002_coupon_usage.sql`, branch `feat/coupons-sprint-03`.** Coberto por `src/test/db/coupon-usage.test.js`, e2e simulados e E2E real; homologado em `farol-pitimbu-dev` ([testes.md](testes.md)). Produção não recebeu as migrations.
+
+### Fluxo
+
+O cliente apresenta o cupom. O validador lê o QR ou digita o código, e `verify_coupon` mostra a situação e as condições **da versão do cupom**, sem alterar nada. Se o cupom for válido, `confirm_coupon_usage` faz numa transação só:
+- `available → used`, com `used_at`;
+- a linha em `coupon_usages`, com o validador e o método (`qr` ou `code`);
+- o lançamento da taxa em `fee_ledger_entries`;
+- o evento `used` em `coupon_events`.
+
+### Modelo
+
+- **`coupon_status`** ganhou `used` e **`coupon_event_action`** ganhou `used`, numa migration própria: o PostgreSQL não usa um valor novo de enum na mesma transação que o criou.
+- **`business_validators`:** vínculo validador ↔ negócio. Cada ativação é uma linha; desativar encerra a linha (`active = false`, `deactivated_at`, `deactivated_by`) e um novo cadastro cria outra. Nada é apagado, e há no máximo um vínculo ativo por conta e negócio.
+- **`coupon_usages`:** uma utilização por cupom (`UNIQUE(coupon_id)`), com oferta, versão (FK composta), negócio, cliente, validador, método, `used_at`, `fee_amount` e `fee_rule_id`. Só aceita inclusão e não tem cascata.
+- **`fee_ledger_entries`:** livro-razão do que o negócio deve ao Farol (`business_id`, `kind`, `coupon_usage_id`, `amount`). Nesta sprint só existe `kind = 'usage_fee'`, um por utilização (índice único). Estornos e créditos da Sprint 4 entram como novas linhas de outro `kind`, sem alterar as existentes. Só aceita inclusão.
+- **Proteção:** as três tabelas e `coupons` só mudam pelas operações oficiais (sinal `farol.coupon_write`), inclusive para `service_role` e `postgres`. `used` é terminal (`invalid_transition`); utilização e lançamento são imutáveis (`record_immutable`).
+
+### Regras
+
+- **Quem valida:**
+  - o proprietário do negócio, automaticamente;
+  - validadores vinculados, que o proprietário cadastra pelo e-mail de uma conta existente (`owner_add_validator`). Convite para quem ainda não tem conta fica para depois, porque exigiria envio de e-mail e estado pendente;
+  - o admin **não** valida. Cupom de outro negócio responde `coupon_not_found`, sem revelar que existe.
+- **Identificação:** o mesmo campo aceita `farol-cupom:1:<token>`, procurado pelo hash do token, ou o código `FP-XXXXXX`. O código pode vir com espaços, em minúsculas ou sem hífen. Leitores de QR que "digitam" o conteúdo também funcionam.
+- **Situações recusadas:**
+  - `coupon_already_used`;
+  - `coupon_canceled`;
+  - `coupon_expired`, também para um disponível já vencido;
+  - `offer_time_window_not_allowed`: fora dos dias ou faixas da versão do cupom, no horário de America/Fortaleza. A faixa vale do início, inclusive, ao fim, exclusive: 11:00–15:00 vai até 14:59:59. Estar fora do horário **não** expira o cupom, que continua `available`.
+- **Oferta ou negócio fora do ar:** cupom já emitido continua utilizável até `expires_at`.
+- **Taxa:** a `fee_amount` aceita na **versão do cupom**. Nunca a taxa atual do plano: mudar o plano ou publicar versão nova não altera utilizações nem cupons já emitidos.
+- **`per_user_limit`:**
+  - conta só `used` da oferta inteira, atravessando versões, contra o limite da versão do cupom (na confirmação) ou da versão publicada (na geração);
+  - `generate_coupon` recusa com `user_limit_reached`;
+  - expirado e cancelado não contam, e a regra de um `available` por vez continua.
+- **Vagas:** `offer_reserved_coupons` conta `available` válidos **+** `used`. A expiração nunca toca em `used`.
+- **Sem desfazer:** `available → used` é terminal nesta sprint. Correção, estorno, crédito e nova emissão ficam para a Sprint 4.
+- **Dados do cliente:** a verificação não devolve nome, e-mail nem identificador do cliente, nem a taxa.
+
+### Concorrência
+
+A confirmação trava **a oferta e depois o cupom**, na mesma ordem de `generate_coupon`:
+- gerações e confirmações da mesma oferta passam uma de cada vez, o que protege vagas e o `per_user_limit`;
+- duas confirmações do mesmo cupom produzem uma utilização e um `coupon_already_used`;
+- a expiração usa `FOR UPDATE SKIP LOCKED`: pula um cupom sendo confirmado, e uma confirmação que encontra o cupom sendo expirado espera e recebe `coupon_expired`.
+
+Duas confirmações **simultâneas** de cupons diferentes do mesmo cliente na mesma oferta não chegam a existir: o índice `coupons_one_available_per_user` impede dois `available` do mesmo cliente na mesma oferta, em qualquer versão. A corrida possível, confirmação × nova geração do mesmo cliente, é serializada pela trava da oferta e termina em `user_limit_reached`.
+
+### Acesso
+
+- **Leitura** pelas RPCs:
+  - `my_validation_businesses`;
+  - `verify_coupon`;
+  - `owner_list_validators`;
+  - `list_coupon_usages`: o proprietário vê o próprio negócio; o admin vê um negócio ou todos, com período.
+- **Tabelas:** sem SELECT direto para usuários, exceto leitura administrativa (RLS só para admin). O visitante não tem acesso.
+- **Cliente:** vê o próprio cupom `used`, com `used_at`, por `get_my_coupon`, sem validador nem taxa.
+
+### Interface
+
+- **`/validar`:**
+  - escolha do estabelecimento, quando a conta valida mais de um;
+  - "Ler QR com a câmera", com `jsqr` 1.4.0 (Apache-2.0, sem dependências), carregado só ao tocar no botão; sem câmera ou permissão, fica a entrada manual;
+  - campo para código ou conteúdo do QR;
+  - resultado com situação, benefício, validade e condições da versão aceita;
+  - "Confirmar utilização" em diálogo, com bloqueio de clique duplo.
+- **`/meu-negocio/cupons`:** validadores (cadastrar e desativar) e cupons utilizados com a taxa lançada. Card em Meu Negócio.
+- **`/admin/cupons`:** utilizações por período e negócio, para auditoria.
+- **Cliente:**
+  - "Meus cupons" com o filtro **Utilizados**;
+  - o cupom utilizado mostra data, hora e estabelecimento, sem QR;
+  - a oferta informa quando o limite por pessoa foi atingido.
+- **Menu:** atalho "Validar cupons" só para quem valida algum negócio.
+
+### Pendências
+
+- **Limite de tentativas na verificação (força bruta):** proposta aguardando aprovação. Tabela de tentativas, 20 falhas em 10 minutos por validador e retenção de 30 dias.
+- **Sprint 4:** fechamento mensal, cobrança, Pix, estorno ou anulação de utilização e crédito.
+- **Depois:** convite de validador para quem ainda não tem conta, cancelamento em lote e "definitivamente esgotada".

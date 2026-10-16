@@ -8,7 +8,10 @@
 -- Método (o mesmo das Sprints 1 e 2): duas conexões em paralelo. A sessão 1
 -- faz a operação e segura as travas com pg_sleep(20) antes do COMMIT; a
 -- sessão 2 só age depois de VER a sessão 1 dormindo (pg_stat_activity) e
--- registra esse instante, a chamada e o retorno.
+-- registra esse instante, a chamada e o retorno. O laço de detecção precisa
+-- chamar pg_stat_clear_snapshot() a cada volta: pg_stat_activity é lido uma
+-- vez por transação, e sem isso a sessão 1 pode nunca aparecer. Resultado com
+-- a sessão 2 marcada como "não viu" não prova simultaneidade e é descartado.
 --
 -- | Cenário | Sessão 1                          | Sessão 2                               | Esperado da sessão 2           |
 -- |---------|-----------------------------------|----------------------------------------|--------------------------------|

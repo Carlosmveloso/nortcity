@@ -37,8 +37,10 @@ Cupons, 06/10/2026, só em `farol-pitimbu-dev`:
 - Dry-run e aplicação da migration `20261007000001_coupons.sql` (37 migrations). O job `coupon-expiration` ficou ativo a cada 5 minutos.
 - O segredo continua no dev, porque a geração depende dele. Produção não recebeu a migration nem o segredo.
 
+Validação e utilização de cupons, 16/10/2026, só em `farol-pitimbu-dev`: dry-run e aplicação de `20261016000001_coupon_used_status.sql` e `20261016000002_coupon_usage.sql` (39 migrations). Nenhum job novo. A CLI foi fixada em `supabase@2.119.0`, a mesma versão das homologações anteriores.
+
 **Ordem para publicar ofertas e cupons em produção** (quando autorizado):
-1. Aplicar, com dry-run e no destino confirmado: `20261005000001_plans`, `20261005000002_offers`, `20261005000003_offer_rpcs`, `20261006000001_offer_lifecycle_jobs` e `20261007000001_coupons`.
+1. Aplicar, com dry-run e no destino confirmado: `20261005000001_plans`, `20261005000002_offers`, `20261005000003_offer_rpcs`, `20261006000001_offer_lifecycle_jobs`, `20261007000001_coupons`, `20261016000001_coupon_used_status` e `20261016000002_coupon_usage`. A de `used` precisa ser aplicada e confirmada antes da seguinte; `db push` faz isso naturalmente, porque cada migration roda em sua própria transação.
 2. Antes de liberar a geração, criar o segredo próprio de produção: `select vault.create_secret(encode(extensions.gen_random_bytes(32), 'hex'), 'coupon_qr_key_v1', '…');`. Não reutilizar o do dev. Sem ele, a geração recusa com `qr_key_unavailable`.
 3. Conferir em `cron.job` que `offer-lifecycle` e `coupon-expiration` estão ativos, conferir os grants (seção 0 dos roteiros de homologação) e só então publicar o front-end.
 
