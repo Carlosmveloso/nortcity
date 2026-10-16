@@ -138,7 +138,7 @@ test.describe('validação no balcão', () => {
         await expect(validators.getByText(/Nenhuma conta encontrada com esse e-mail/)).toBeVisible();
         await validators.getByLabel('E-mail da conta').fill('caixa@example.test');
         await validators.getByRole('button', { name: 'Cadastrar validador' }).click();
-        await expect(validators.getByText('Validador cadastrado.')).toBeVisible();
+        await expect(validators.getByText('Validador cadastrado.', { exact: true })).toBeVisible();
         await expect(validators.getByRole('list', { name: 'Validadores ativos' })).toContainText('caixa@example.test');
 
         await validators.getByRole('button', { name: 'Desativar caixa@example.test' }).click();
