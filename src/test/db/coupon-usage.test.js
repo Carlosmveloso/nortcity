@@ -129,7 +129,7 @@ describe('quem valida', () => {
 
         expect(await expectError(verify(admin, ctx.businessId, coupon.code))).toBe('not_a_validator');
         expect(await expectError(verify(customer, ctx.businessId, coupon.code))).toBe('not_a_validator');
-        expect(await expectError(verify(other.owner, other.businessId, coupon.code))).toBe('coupon_not_found');
+        expect(await verify(other.owner, other.businessId, coupon.code)).toEqual({ valid: false, reason: 'coupon_not_found' });
 
         await call(ctx.owner, 'select public.owner_deactivate_validator($1)', [validatorId]);
         expect(await expectError(verify(staff, ctx.businessId, coupon.code))).toBe('not_a_validator');
@@ -164,8 +164,8 @@ describe('identificação', () => {
         }
         const qr = await verify(ctx.owner, ctx.businessId, await qrPayload(customer, coupon.coupon_id));
         expect(qr).toMatchObject({ method: 'qr', coupon: { code: coupon.code } });
-        expect(await expectError(verify(ctx.owner, ctx.businessId, 'farol-cupom:1:' + 'A'.repeat(43)))).toBe('coupon_not_found');
-        expect(await expectError(verify(ctx.owner, ctx.businessId, 'qualquer coisa'))).toBe('coupon_not_found');
+        expect(await verify(ctx.owner, ctx.businessId, 'farol-cupom:1:' + 'A'.repeat(43))).toEqual({ valid: false, reason: 'coupon_not_found' });
+        expect(await verify(ctx.owner, ctx.businessId, 'qualquer coisa')).toEqual({ valid: false, reason: 'coupon_not_found' });
         // A verificação não expõe dados do cliente nem taxa.
         const text = JSON.stringify(qr);
         expect(text).not.toContain(customer);
@@ -387,5 +387,93 @@ describe('escrita protegida e acesso', () => {
             expect(await expectError(db.query(`select * from public.${table}`))).toContain('permission denied');
         }
         expect(await expectError(db.query('select public.verify_coupon($1, $2)', [ctx.businessId, coupon.code]))).toContain('permission denied');
+    });
+});
+
+describe('limite de tentativas na verificação', () => {
+    async function attempts(validatorId) {
+        await asService(db);
+        return (await db.query(
+            'select method, coupon_found from public.coupon_verification_attempts where validator_id = $1 order by id', [validatorId]
+        )).rows;
+    }
+    /** Falhas antigas, inseridas pelo caminho oficial (sinal de escrita). */
+    async function seedOldFailures(validatorId, businessId, count, minutesAgo) {
+        await asService(db);
+        await db.exec('begin');
+        await db.query('select public.begin_coupon_write()');
+        await db.query(
+            `insert into public.coupon_verification_attempts (validator_id, business_id, method, coupon_found, created_at)
+             select $1, $2, 'code', false, now() - make_interval(mins => $4) from generate_series(1, $3)`,
+            [validatorId, businessId, count, minutesAgo]
+        );
+        await db.exec('commit');
+    }
+
+    it('20 falhas em 10 minutos bloqueiam QR e código; acertos não contam nem zeram', async () => {
+        const ctx = await newBusiness();
+        const customer = await createUser(db);
+        const coupon = await generate(customer, await offer(ctx));
+        for (let i = 0; i < 10; i += 1) await verify(ctx.owner, ctx.businessId, `FP-AAAA${'23456789'[i % 8]}${'ABCDEFGH'[i % 8]}`);
+        // Acerto no meio: registrado como encontrado, não zera as falhas.
+        expect((await verify(ctx.owner, ctx.businessId, coupon.code)).valid).toBe(true);
+        for (let i = 0; i < 9; i += 1) await verify(ctx.owner, ctx.businessId, `farol-cupom:1:${'B'.repeat(42)}${i}`);
+        // Entrada sem formato também conta (chegou ao backend).
+        expect(await confirm(ctx.owner, ctx.businessId, 'xyz')).toEqual({ confirmed: false, reason: 'coupon_not_found' });
+
+        const rows = await attempts(ctx.owner);
+        expect(rows.filter((row) => !row.coupon_found)).toHaveLength(20);
+        expect(rows.filter((row) => row.coupon_found)).toHaveLength(1);
+        expect(new Set(rows.map((row) => row.method))).toEqual(new Set(['code', 'qr', null]));
+
+        // Bloqueado antes de procurar: nem o código válido passa, e nada novo é registrado.
+        expect(await expectError(verify(ctx.owner, ctx.businessId, coupon.code))).toBe('too_many_attempts');
+        expect(await expectError(confirm(ctx.owner, ctx.businessId, coupon.code))).toBe('too_many_attempts');
+        expect(await attempts(ctx.owner)).toHaveLength(21);
+        expect((await row('coupons', 'id = $1', [coupon.coupon_id]))[0].status).toBe('available');
+
+        // Outro validador do mesmo negócio continua livre.
+        const staff = await userWithEmail(`limit${counter}@example.test`);
+        await call(ctx.owner, 'select public.owner_add_validator($1, $2)', [ctx.businessId, `limit${counter}@example.test`]);
+        expect((await verify(staff, ctx.businessId, coupon.code)).valid).toBe(true);
+    });
+
+    it('falhas fora da janela de 10 minutos não contam', async () => {
+        const ctx = await newBusiness();
+        const customer = await createUser(db);
+        const coupon = await generate(customer, await offer(ctx));
+        await seedOldFailures(ctx.owner, ctx.businessId, 25, 11);
+        await seedOldFailures(ctx.owner, ctx.businessId, 19, 5);
+        expect((await verify(ctx.owner, ctx.businessId, coupon.code)).valid).toBe(true);
+        expect(await verify(ctx.owner, ctx.businessId, 'FP-ZZZZZZ')).toEqual({ valid: false, reason: 'coupon_not_found' });
+        expect(await expectError(verify(ctx.owner, ctx.businessId, coupon.code))).toBe('too_many_attempts');
+    });
+
+    it('não guarda o que foi digitado, não tem acesso direto e expira em 30 dias', async () => {
+        await asService(db);
+        const columns = (await db.query(
+            "select column_name from information_schema.columns where table_schema = 'public' and table_name = 'coupon_verification_attempts' order by ordinal_position"
+        )).rows.map((r) => r.column_name);
+        expect(columns).toEqual(['id', 'validator_id', 'business_id', 'method', 'coupon_found', 'created_at']);
+
+        const ctx = await newBusiness();
+        await verify(ctx.owner, ctx.businessId, 'FP-ZZZZZZ');
+        expect(await expectError(call(ctx.owner, 'select * from public.coupon_verification_attempts'))).toContain('permission denied');
+        expect(await expectError(call(admin, 'select * from public.coupon_verification_attempts'))).toContain('permission denied');
+        await asAnon(db);
+        expect(await expectError(db.query('select * from public.coupon_verification_attempts'))).toContain('permission denied');
+        await asService(db);
+        expect(await expectError(db.query('delete from public.coupon_verification_attempts'))).toBe('direct_write_not_allowed');
+        expect(await expectError(db.query('update public.coupon_verification_attempts set coupon_found = true'))).toBe('record_immutable');
+
+        await seedOldFailures(ctx.owner, ctx.businessId, 3, 31 * 24 * 60);
+        const before = (await db.query('select count(*)::int as n from public.coupon_verification_attempts where validator_id = $1', [ctx.owner])).rows[0].n;
+        expect((await db.query('select public.purge_coupon_verification_attempts() as n')).rows[0].n).toBeGreaterThanOrEqual(3);
+        expect((await db.query('select count(*)::int as n from public.coupon_verification_attempts where validator_id = $1', [ctx.owner])).rows[0].n).toBe(before - 3);
+        expect((await db.query("select schedule, command from cron.job where jobname = 'coupon-verification-attempts-retention'")).rows).toEqual([
+            { schedule: '17 3 * * *', command: 'select public.purge_coupon_verification_attempts()' },
+        ]);
+        await asUser(db, admin);
+        expect(await expectError(db.query('select public.purge_coupon_verification_attempts()'))).toContain('permission denied');
     });
 });

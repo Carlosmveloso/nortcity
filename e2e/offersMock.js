@@ -292,7 +292,9 @@ export async function handleOffers({ state, business, userId, path, url, method,
         case 'confirm_coupon_usage': {
             if (businessOf()?.owner_id !== userId || body.p_business_id !== businessOf().id) return rpcError('not_a_validator');
             const found = findForBusiness(body.p_input);
-            if (!found) return rpcError('coupon_not_found');
+            if (!found) {
+                return ok(rpc === 'verify_coupon' ? { valid: false, reason: 'coupon_not_found' } : { confirmed: false, reason: 'coupon_not_found' });
+            }
             const { coupon, method } = found;
             const version = offersState.versions.find((v) => v.id === coupon.offer_version_id);
             const why = reason(coupon, version);
@@ -315,7 +317,7 @@ export async function handleOffers({ state, business, userId, path, url, method,
                 fee_amount: Number(version.fee_amount ?? '1.00'), business_id: coupon.business_id, business_name: businessOf().name,
                 offer_id: coupon.offer_id, offer_title: version.title, version_number: version.version_number, validator_name: 'Pessoa de Teste',
             });
-            return ok({ coupon_id: coupon.id, code: coupon.code, used_at: coupon.used_at, method });
+            return ok({ confirmed: true, coupon_id: coupon.id, code: coupon.code, used_at: coupon.used_at, method });
         }
         case 'owner_list_validators':
             return ok([...offersState.validators].reverse());

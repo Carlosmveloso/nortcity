@@ -503,7 +503,7 @@ Suspender ou encerrar a oferta, ou suspender o negócio, bloqueia novas emissõe
 
 ## 16. Validação e utilização de cupons (Sprint 3)
 
-**IMPLEMENTADO — 16/10/2026, migrations `20261016000001_coupon_used_status.sql` e `20261016000002_coupon_usage.sql`, branch `feat/coupons-sprint-03`.** Coberto por `src/test/db/coupon-usage.test.js`, e2e simulados e E2E real; homologado em `farol-pitimbu-dev` ([testes.md](testes.md)). Produção não recebeu as migrations.
+**IMPLEMENTADO — 16/10/2026, migrations `20261016000001_coupon_used_status.sql`, `20261016000002_coupon_usage.sql` e `20261016000003_coupon_verification_attempts.sql`, branch `feat/coupons-sprint-03`.** Coberto por `src/test/db/coupon-usage.test.js`, e2e simulados e E2E real; homologado em `farol-pitimbu-dev` ([testes.md](testes.md)). Produção não recebeu as migrations.
 
 ### Fluxo
 
@@ -542,6 +542,18 @@ O cliente apresenta o cupom. O validador lê o QR ou digita o código, e `verify
 - **Vagas:** `offer_reserved_coupons` conta `available` válidos **+** `used`. A expiração nunca toca em `used`.
 - **Sem desfazer:** `available → used` é terminal nesta sprint. Correção, estorno, crédito e nova emissão ficam para a Sprint 4.
 - **Dados do cliente:** a verificação não devolve nome, e-mail nem identificador do cliente, nem a taxa.
+- **"Não encontrado" é resultado, não erro:** `verify_coupon` devolve `reason = coupon_not_found` e `confirm_coupon_usage` devolve `confirmed = false`. Um erro desfaria a transação, e com ela o registro da tentativa.
+
+### Limite de tentativas (força bruta)
+
+- **Regra:** 20 verificações **sem encontrar cupom** em uma janela móvel de 10 minutos, pelo mesmo validador, somando QR e código manual, fazem `verify_coupon` e `confirm_coupon_usage` recusarem com `too_many_attempts`. O bloqueio dura até as falhas antigas saírem da janela. Não existe `blocked_until`: a contagem decide.
+- **Acertos:** tentativas que encontram o cupom são registradas, mas não contam e não zeram as falhas.
+- **Antes da busca:** o limite é checado **antes** de procurar o cupom. Quando o validador está bloqueado, a resposta e o tempo não diferenciam código existente de inexistente, e a tentativa bloqueada não é registrada.
+- **Concorrência:** as tentativas do mesmo validador são serializadas por uma trava de transação (`pg_advisory_xact_lock`), para tentativas simultâneas não passarem do limite.
+- **Registro:** `coupon_verification_attempts(validator_id, business_id, method, coupon_found, created_at)`, com índices por validador e por negócio no tempo. **Não** guarda o código nem o token digitado. Não tem acesso direto para nenhum papel do navegador, inclusive admin; escrita só pelas operações oficiais e sem alteração.
+- **Retenção:** 30 dias. O job `coupon-verification-attempts-retention` roda todo dia às 03:17 UTC (00:17 em Pitimbu) e chama `purge_coupon_verification_attempts()`. Não é auditoria: a auditoria de cupons continua em `coupon_events`, `coupon_usages` e `fee_ledger_entries`.
+- **Entrada sem formato:** é recusada na tela e nem chega ao backend. Se chegar por outro caminho, conta como falha (`method` nulo).
+- **Fora desta etapa:** limite por IP ou por negócio, que exigiria outra camada de infraestrutura e poderia bloquear estabelecimentos com vários atendentes.
 
 ### Concorrência
 
@@ -580,6 +592,5 @@ Duas confirmações **simultâneas** de cupons diferentes do mesmo cliente na me
 
 ### Pendências
 
-- **Limite de tentativas na verificação (força bruta):** proposta aguardando aprovação. Tabela de tentativas, 20 falhas em 10 minutos por validador e retenção de 30 dias.
 - **Sprint 4:** fechamento mensal, cobrança, Pix, estorno ou anulação de utilização e crédito.
 - **Depois:** convite de validador para quem ainda não tem conta, cancelamento em lote e "definitivamente esgotada".

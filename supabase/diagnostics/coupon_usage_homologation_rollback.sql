@@ -67,6 +67,21 @@ select pg_temp.check(
                              'public.require_validator(uuid)', 'public.coupon_version_public(uuid)']) f),
     '0.3 privilégios de função'
 );
+select pg_temp.check(
+    not has_table_privilege('authenticated', 'public.coupon_verification_attempts', 'SELECT')
+    and not has_table_privilege('anon', 'public.coupon_verification_attempts', 'SELECT')
+    and (select bool_and(not has_function_privilege(r, f, 'EXECUTE'))
+           from unnest(array['anon', 'authenticated']) r,
+                unnest(array['public.assert_verification_attempts_allowed(uuid)',
+                             'public.record_verification_attempt(uuid,uuid,coupon_validation_method,boolean)',
+                             'public.purge_coupon_verification_attempts(timestamptz)']) f)
+    and (select array_agg(column_name::text order by ordinal_position) from information_schema.columns
+          where table_schema = 'public' and table_name = 'coupon_verification_attempts')
+        = array['id', 'validator_id', 'business_id', 'method', 'coupon_found', 'created_at']
+    and (select count(*) = 1 and bool_and(schedule = '17 3 * * *' and active)
+           from cron.job where jobname = 'coupon-verification-attempts-retention'),
+    '0.5 tentativas: sem acesso, sem o valor digitado e com retenção agendada'
+);
 select pg_temp.check(public.coupon_qr_current_key_version() >= 1, '0.4 chave do QR presente');
 
 -- ---------------------------------------------------------------------------
@@ -201,7 +216,10 @@ select pg_temp.check(
 
 select pg_temp.as_user('77000000-0000-4000-8000-000000000004');
 set local role authenticated;
-select pg_temp.expect_error(format('select public.verify_coupon(%L, %L)', pg_temp.qa('other_biz'), pg_temp.val('c_closed_code')), 'coupon_not_found', '4.1 outro negócio não enxerga o cupom');
+select pg_temp.check(
+    public.verify_coupon(pg_temp.qa('other_biz'), pg_temp.val('c_closed_code')) = '{"valid": false, "reason": "coupon_not_found"}'::jsonb,
+    '4.1 outro negócio não enxerga o cupom'
+);
 select pg_temp.expect_error(format('select public.verify_coupon(%L, %L)', pg_temp.qa('biz'), pg_temp.val('c_closed_code')), 'not_a_validator', '4.2 dono de outro negócio não valida este');
 reset role;
 select pg_temp.as_user('77000000-0000-4000-8000-000000000005');
@@ -257,6 +275,40 @@ select pg_temp.expect_error(format($q$insert into public.business_validators (bu
 reset role;
 select pg_temp.expect_error(format($q$insert into public.fee_ledger_entries (business_id, kind, coupon_usage_id, amount)
     select business_id, 'usage_fee', id, 5 from public.coupon_usages where coupon_id = %L$q$, pg_temp.qa('c1')), 'direct_write_not_allowed', '6.10 postgres depois de RPCs também é recusado');
+
+-- ---------------------------------------------------------------------------
+-- 7. Limite de tentativas (20 falhas em 10 minutos por validador)
+-- ---------------------------------------------------------------------------
+
+select pg_temp.as_user('77000000-0000-4000-8000-000000000001');
+set local role authenticated;
+do $$
+declare v_result jsonb;
+begin
+    for i in 1..10 loop
+        v_result := public.verify_coupon(pg_temp.qa('biz'), 'FP-ZZZZZ' || substr('23456789ABCDEFGH', i, 1));
+    end loop;
+    for i in 1..9 loop
+        v_result := public.verify_coupon(pg_temp.qa('biz'), 'farol-cupom:1:' || repeat('Q', 42) || i::text);
+    end loop;
+    v_result := public.confirm_coupon_usage(pg_temp.qa('biz'), 'sem formato');
+    perform pg_temp.check(v_result = '{"confirmed": false, "reason": "coupon_not_found"}'::jsonb, '7.1 confirmação sem cupom vira resultado registrado');
+end;
+$$;
+select pg_temp.expect_error(format('select public.verify_coupon(%L, %L)', pg_temp.qa('biz'), pg_temp.val('c_closed_code')), 'too_many_attempts', '7.2 21ª verificação bloqueada mesmo com código existente');
+select pg_temp.expect_error(format('select public.confirm_coupon_usage(%L, %L)', pg_temp.qa('biz'), pg_temp.val('c_closed_code')), 'too_many_attempts', '7.3 confirmação também bloqueada');
+reset role;
+select pg_temp.check(
+    (select count(*) filter (where not coupon_found) = 20 and count(distinct method) = 2
+       from public.coupon_verification_attempts
+      where validator_id = '77000000-0000-4000-8000-000000000001' and created_at > now() - interval '10 minutes'),
+    '7.4 20 falhas registradas, QR e código somados'
+);
+select pg_temp.as_user('77000000-0000-4000-8000-000000000001');
+set local role service_role;
+select pg_temp.expect_error('delete from public.coupon_verification_attempts', 'direct_write_not_allowed', '7.5 service_role não apaga tentativas por fora');
+reset role;
+select pg_temp.check(public.purge_coupon_verification_attempts(now() + interval '31 days') >= 20, '7.6 retenção remove registros com mais de 30 dias');
 
 rollback;
 select 'coupon_usage_qa_passed_with_rollback' as result;

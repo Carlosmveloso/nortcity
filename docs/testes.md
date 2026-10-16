@@ -170,7 +170,23 @@ Validação e utilização de cupons (Sprint 3), 16/10/2026:
   Uma primeira rodada de A, B e D2 deu os resultados certos, mas a sessão 2 marcou "não viu". A causa estava no laço de detecção: `pg_stat_activity` é lido uma vez por transação. O laço passou a chamar `pg_stat_clear_snapshot()`, e A, B e D2 foram repetidos em ofertas novas, agora com a sessão 1 vista em todos. A mesma causa explica a tentativa descartada da Sprint 2.
 
   O cenário C foi redefinido porque duas confirmações **simultâneas** de cupons diferentes do mesmo cliente na mesma oferta não existem: o índice `coupons_one_available_per_user` impede dois disponíveis. O caso entre versões diferentes está nos testes PGlite e no roteiro com ROLLBACK.
-- **Limpeza:** `offers_e2e_dev_cleanup.sql` agora remove também utilizações, lançamentos e validadores. Zerou toda a massa, e as dez triggers de guarda e os três jobs continuam ativos.
+- **Limite de tentativas** (migration `20261016000003`, aplicada no dev após dry-run):
+  - **PGlite**, 3 testes em `coupon-usage.test.js`:
+    - 20 falhas somando QR, código e entrada sem formato bloqueiam a verificação e a confirmação, mesmo com código existente;
+    - o acerto no meio não zera as falhas, e outro validador continua livre;
+    - falhas fora da janela de 10 minutos não contam;
+    - a tabela não guarda o valor digitado e não tem acesso direto (nem para o admin), e a retenção de 30 dias e o job ficam registrados.
+  - **Roteiro com ROLLBACK:** ganhou a seção 0.5 e a seção 7 (20 falhas, 21ª bloqueada na verificação e na confirmação, `service_role` sem apagar por fora, retenção) e terminou em `coupon_usage_qa_passed_with_rollback` no servidor hospedado.
+  - **E2E simulado:** formato inválido não chega ao backend, "não encontrado" e bloqueio traduzidos.
+  - **Reexecução no dev**, porque `confirm_coupon_usage` foi redefinida: o E2E real foi aprovado de novo em desktop e mobile, com as tentativas registradas, e os cenários A e B de concorrência foram repetidos com prova de simultaneidade:
+    - A: a sessão 2 viu a sessão 1 às 13:09:26.867 UTC, esperou 19,8 s e recebeu `coupon_already_used` 3 ms após o commit;
+    - B: viu às 13:09:50.925 UTC, esperou 20,0 s e recebeu `coupon_already_used`;
+    - cada um terminou com 1 utilização e 1 lançamento.
+- **Limpeza:** `offers_e2e_dev_cleanup.sql` agora remove também tentativas de verificação, utilizações, lançamentos e validadores. Zerou toda a massa, sem triggers de guarda desligadas e com os quatro jobs ativos.
+- **CI:** dois testes de tela passavam no Mac e falhavam no Linux da CI.
+  - **Câmera:** a recusa da câmera produz mensagens diferentes conforme o sistema, e a asserção diferenciava maiúsculas. O teste agora fixa a recusa do navegador.
+  - **Mensagem de sucesso do validador:** a busca por substring encontrava também "Nenhum validador cadastrado." enquanto a lista recarregava. O teste agora exige o texto exato.
+  - A causa foi lida no relatório do Playwright anexado ao run, porque o log da CI exige login.
 
 Ainda falta uma passagem manual da interface completa contra os serviços reais para cadastro com arquivo de imagem e moderação pelo painel. Os testes Playwright cobrem essas telas com API simulada; a homologação transacional cobre as regras e policies no servidor, mas não substitui o upload binário pelo serviço Storage.
 
