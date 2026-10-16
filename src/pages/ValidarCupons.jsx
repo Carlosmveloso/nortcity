@@ -109,6 +109,11 @@ function ValidarCupons() {
             setError(validationErrorMessage(rpcError));
             return;
         }
+        // "Não encontrado" vem como resultado (a tentativa fica registrada).
+        if (data.reason === 'coupon_not_found') {
+            setError(validationErrorMessage({ message: 'coupon_not_found' }));
+            return;
+        }
         setResult({ ...data, input: value });
     };
 
@@ -264,7 +269,9 @@ function ValidarCupons() {
                 errorMessage={validationErrorMessage}
                 onClose={() => setConfirming(false)}
                 onConfirm={async () => {
-                    const response = await validationRpc.confirm(businessId, result.input);
+                    const confirmed = await validationRpc.confirm(businessId, result.input);
+                    const response =
+                        confirmed.data?.confirmed === false ? { data: null, error: { message: confirmed.data.reason } } : confirmed;
                     if (response.error) {
                         // O estado pode ter mudado (já utilizado, expirado): mostra a situação atual.
                         const fresh = await validationRpc.verify(businessId, result.input);

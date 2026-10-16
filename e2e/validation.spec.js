@@ -177,6 +177,27 @@ test.describe('validação no balcão', () => {
     });
 });
 
+test.describe('tentativas', () => {
+    test.use({ initialStatus: 'active' });
+    test('código inexistente e bloqueio por excesso de tentativas', async ({ page, api }) => {
+        activeOffer(api);
+        await page.goto('/validar');
+        // Formato inválido nem chega ao backend.
+        await verifyCode(page, 'abc');
+        await expect(page.getByText(/Digite o código do cupom/)).toBeVisible();
+        expect(calls(api, 'verify_coupon')).toHaveLength(0);
+
+        await verifyCode(page, 'FP-ZZZZZZ');
+        await expect(page.getByRole('alert')).toContainText('Cupom não encontrado para este estabelecimento.');
+        expect(calls(api, 'verify_coupon')).toHaveLength(1);
+
+        api.offers.fail.verify_coupon = 'too_many_attempts';
+        await verifyCode(page, 'FP-YYYYYY');
+        await expect(page.getByRole('alert')).toContainText('Muitas tentativas sem sucesso. Aguarde alguns minutos');
+        await expect(page.getByText('too_many_attempts')).toHaveCount(0);
+    });
+});
+
 test.describe('navegador sem acesso à câmera', () => {
     test.use({ initialStatus: 'active' });
     test('informa e mantém a entrada manual', async ({ page }) => {
