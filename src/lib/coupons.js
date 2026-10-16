@@ -7,17 +7,19 @@ export const COUPON_STATUS_LABELS = {
     available: 'Disponível',
     expired: 'Expirado',
     canceled: 'Cancelado',
+    used: 'Utilizado',
 };
 
 export const COUPON_STATUS_STYLE = {
     available: 'bg-turquoise/15 text-ocean',
     expired: 'bg-sand-dark text-dark-ocean/80',
     canceled: 'bg-red-100 text-red-700',
+    used: 'bg-ocean/10 text-ocean',
 };
 
-// "Utilizados" só entra quando a Sprint 3 criar o estado `used`.
 export const COUPON_FILTERS = [
     { value: 'available', label: 'Disponíveis' },
+    { value: 'used', label: 'Utilizados' },
     { value: 'expired', label: 'Expirados' },
     { value: 'canceled', label: 'Cancelados' },
 ];

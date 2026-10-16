@@ -92,9 +92,11 @@ function MeusCupons() {
                                 <p className="mt-2 text-sm text-dark-ocean/80">
                                     {coupon.status === 'available'
                                         ? `Válido até ${formatCouponDateTime(coupon.expires_at)}`
-                                        : coupon.status === 'expired'
-                                          ? `Expirou em ${formatCouponDateTime(coupon.expires_at)}`
-                                          : `Cancelado em ${formatCouponDateTime(coupon.canceled_at)}`}
+                                        : coupon.status === 'used'
+                                          ? `Utilizado em ${formatCouponDateTime(coupon.used_at)}`
+                                          : coupon.status === 'expired'
+                                            ? `Expirou em ${formatCouponDateTime(coupon.expires_at)}`
+                                            : `Cancelado em ${formatCouponDateTime(coupon.canceled_at)}`}
                                 </p>
                                 <Link
                                     to={`/meus-cupons/${coupon.id}`}

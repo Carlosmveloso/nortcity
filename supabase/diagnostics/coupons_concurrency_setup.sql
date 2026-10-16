@@ -24,8 +24,11 @@
 -- Sessão 2 (proprietário 74…01, como outro consumidor), iniciada em paralelo:
 --   create temp table qa_b (k text, at timestamptz default clock_timestamp());
 --   grant all on qa_b to authenticated;
+--   -- pg_stat_clear_snapshot(): sem ele, pg_stat_activity é lido uma vez por
+--   -- transação e a sessão 1 pode nunca aparecer como dormindo.
 --   do $$ begin
 --       loop
+--           perform pg_stat_clear_snapshot();
 --           exit when exists (select 1 from pg_stat_activity where pid <> pg_backend_pid()
 --                              and wait_event = 'PgSleep' and query like '%qa_coupon_' || 'session_1%');
 --           perform pg_sleep(0.3);

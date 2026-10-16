@@ -138,6 +138,40 @@ Cupons (Sprint 2), 06–07/10/2026:
 - **Cron real `coupon-expiration`:** sem nenhuma outra ação, cupons vencidos passaram a `expired`, com evento `expired` sem autor, nas execuções das 15:15:00, 15:20:00 e 15:25:00 UTC (12:15, 12:20 e 12:25 em Pitimbu). Exemplo: FP-5PWSGG foi gerado às 15:21:18, venceu às 15:22:18 e foi expirado pelo cron às 15:25:00. Na execução das 15:30:00 (12:30) nada mudou: FP-5PWSGG continuou com 2 eventos, e o dev tinha 7 cupons expirados e 7 eventos `expired`, exatamente um por cupom. As quatro execuções aparecem como `succeeded` em `cron.job_run_details`, a oferta de 1 vaga voltou a aparecer disponível e o `coupon-expiration` continuou ativo.
 - **Limpeza:** `offers_e2e_dev_cleanup.sql` (que agora remove cupons e histórico antes das ofertas) zerou cupons, eventos, ofertas, versões, histórico, planos atribuídos, contas e negócio da massa. As seis triggers de guarda ficaram reabilitadas e os três jobs ativos.
 
+Validação e utilização de cupons (Sprint 3), 16/10/2026:
+- **Vitest/PGlite:** `src/test/db/coupon-usage.test.js` (12 testes) cobre:
+  - proprietário e validador ativo; desativado, comum, admin e outro negócio recusados;
+  - cadastro de validador: conta inexistente, o próprio dono, duplicado e não proprietário;
+  - QR e código normalizado encontrando o mesmo cupom, sem dados do cliente nem taxa;
+  - expirado, cancelado, vencido e utilizado com o motivo certo;
+  - limites da faixa 11:00/15:00 em America/Fortaleza, incluindo um horário que estaria na faixa em UTC;
+  - fora do dia: cupom continua disponível;
+  - confirmação com utilização, lançamento e evento, e segunda confirmação recusada;
+  - taxa da versão do cupom depois de mudar o plano e depois de publicar versão nova;
+  - `per_user_limit` entre versões; vagas com `used`; expiração sem tocar em `used`;
+  - escrita direta bloqueada (também depois de uma RPC na mesma transação) e leitura por papel.
+  
+  `src/lib/couponValidation.test.js` cobre a leitura do código ou do QR e as mensagens. Suíte: 428.
+- **Playwright com API simulada:** `e2e/validation.spec.js`, desktop e mobile. Cobre código manual → verificar → confirmar; cupom já utilizado; expirado; fora do horário; câmera indisponível → entrada manual; conteúdo do QR digitado por leitor; clique duplo; cadastro e desativação de validador; utilizações do negócio; cliente em "Utilizados"; limite por pessoa na oferta; e conta sem negócio. Suíte completa: 110.
+- **ROLLBACK em `farol-pitimbu-dev`:** `coupon_usage_homologation_rollback.sql` terminou em `coupon_usage_qa_passed_with_rollback`. O roteiro da Sprint 2 (`coupons_homologation_rollback.sql`) foi reexecutado depois das migrations e continuou passando.
+- **E2E real (`e2e-dev/coupon-usage-flow.spec.js`):** massa `offers_e2e_dev_setup.sql` (com conta de validador) + `coupon_usage_e2e_dev_offers.sql`. Aprovado em desktop (1440 px) e mobile (Pixel 7).
+  - **Fluxo:** o cliente gera; o validador, em outra sessão, verifica pelo código digitado em minúsculas e sem hífen e confirma; o cliente vê "Utilizado" e o limite por pessoa na oferta; a nova verificação mostra "já foi utilizado" sem botão de confirmar.
+  - **Banco:** cada cupom `used`, com uma utilização pelo validador 74…04, método `code`, taxa R$ 1,00 da versão, um lançamento e um evento `used`. Pela API, o cliente não lê `coupon_usages`.
+- **Concorrência real (`coupon_usage_concurrency_setup.sql`):** duas conexões em paralelo pela Management API. A sessão 1 segura as travas com `pg_sleep(20)`, e a sessão 2 só age depois de ver a sessão 1 dormindo. Horários em UTC; em Pitimbu, menos 3 h.
+
+  | Cenário | Sessão 2 viu e chamou | Espera | Retorno | Resultado | Estado final |
+  |---|---|---|---|---|---|
+  | A — dois validadores, mesmo cupom | 12:25:15.330 | 19,9 s | 2 ms após o commit | `coupon_already_used` | 1 utilização, 1 lançamento |
+  | B — mesmo validador, duplo envio | 12:25:40.228 | 19,8 s | 3 ms após o commit | `coupon_already_used` | 1 utilização, 1 lançamento |
+  | C — confirmação × nova geração do mesmo cliente (limite 1) | 12:13:11.897 | 19,9 s | 4 ms após o commit | `user_limit_reached` | 1 utilização |
+  | D1 — confirmação segura o cupom; expiração roda | 12:13:35.743 | nenhuma | imediato | 0 expirados (`SKIP LOCKED`) | `used` |
+  | D2 — expiração segura o cupom; confirmação roda | 12:26:04.373 | 19,9 s | 2 ms após o commit | `coupon_expired` | `expired`, sem utilização |
+
+  Uma primeira rodada de A, B e D2 deu os resultados certos, mas a sessão 2 marcou "não viu". A causa estava no laço de detecção: `pg_stat_activity` é lido uma vez por transação. O laço passou a chamar `pg_stat_clear_snapshot()`, e A, B e D2 foram repetidos em ofertas novas, agora com a sessão 1 vista em todos. A mesma causa explica a tentativa descartada da Sprint 2.
+
+  O cenário C foi redefinido porque duas confirmações **simultâneas** de cupons diferentes do mesmo cliente na mesma oferta não existem: o índice `coupons_one_available_per_user` impede dois disponíveis. O caso entre versões diferentes está nos testes PGlite e no roteiro com ROLLBACK.
+- **Limpeza:** `offers_e2e_dev_cleanup.sql` agora remove também utilizações, lançamentos e validadores. Zerou toda a massa, e as dez triggers de guarda e os três jobs continuam ativos.
+
 Ainda falta uma passagem manual da interface completa contra os serviços reais para cadastro com arquivo de imagem e moderação pelo painel. Os testes Playwright cobrem essas telas com API simulada; a homologação transacional cobre as regras e policies no servidor, mas não substitui o upload binário pelo serviço Storage.
 
 Para interface alterada, conferir foco, teclado, contraste, textos longos e responsividade. Um teste com API simulada não substitui essa homologação.

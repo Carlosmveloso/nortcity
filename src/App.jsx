@@ -43,6 +43,9 @@ const OfertaPublica = lazy(() => import("./pages/OfertaPublica"));
 const MeusCupons = lazy(() => import("./pages/MeusCupons"));
 const CupomDetalhe = lazy(() => import("./pages/CupomDetalhe"));
 const RegulamentoCupons = lazy(() => import("./pages/RegulamentoCupons"));
+const ValidarCupons = lazy(() => import("./pages/ValidarCupons"));
+const CuponsNegocio = lazy(() => import("./pages/CuponsNegocio"));
+const AdminCupons = lazy(() => import("./pages/AdminCupons"));
 const Entrar = lazy(() => import("./pages/Entrar"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -136,6 +139,22 @@ function App() {
               <Route path="/ofertas/:offerId" element={<OfertaPublica />} />
               <Route path="/regulamento-cupons" element={<RegulamentoCupons />} />
               <Route
+                path="/validar"
+                element={
+                  <ProtectedRoute>
+                    <ValidarCupons />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meu-negocio/cupons"
+                element={
+                  <ProtectedRoute>
+                    <CuponsNegocio />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/meus-cupons"
                 element={
                   <ProtectedRoute>
@@ -181,6 +200,14 @@ function App() {
                 element={
                   <AdminRoute>
                     <AdminOfertaAnalise />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/cupons"
+                element={
+                  <AdminRoute>
+                    <AdminCupons />
                   </AdminRoute>
                 }
               />
