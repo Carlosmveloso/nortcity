@@ -1,4 +1,4 @@
-import { AlertTriangle, BadgePercent, ChevronRight, Clock, ExternalLink, ImagePlus, Loader2, Store } from 'lucide-react';
+import { AlertTriangle, BadgePercent, ChevronRight, ScanLine, Clock, ExternalLink, ImagePlus, Loader2, Store } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -661,6 +661,28 @@ function MeuNegocio() {
                                 className="rounded-full bg-turquoise px-5 py-2.5 text-sm font-bold text-sand"
                             >
                                 Ver ofertas
+                            </Link>
+                        </div>
+                    )}
+
+                    {!loading && business && (
+                        <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-card p-6 shadow-sm">
+                            <div className="flex items-start gap-3">
+                                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-turquoise/10 text-turquoise">
+                                    <ScanLine size={22} aria-hidden="true" />
+                                </span>
+                                <div>
+                                    <h2 className="font-head text-lg font-bold text-foreground">Cupons</h2>
+                                    <p className="mt-1 text-sm text-dark-ocean/70">
+                                        Valide cupons no balcão, cadastre validadores e acompanhe as utilizações.
+                                    </p>
+                                </div>
+                            </div>
+                            <Link
+                                to="/meu-negocio/cupons"
+                                className="rounded-full bg-turquoise px-5 py-2.5 text-sm font-bold text-sand"
+                            >
+                                Gerenciar cupons
                             </Link>
                         </div>
                     )}

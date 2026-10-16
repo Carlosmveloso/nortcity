@@ -117,6 +117,24 @@ export const staticPages = [
         noindex: true,
     },
     {
+        path: '/validar',
+        title: 'Validar cupons',
+        description: 'Validação de cupons do Farol Pitimbu no estabelecimento.',
+        noindex: true,
+    },
+    {
+        path: '/meu-negocio/cupons',
+        title: 'Cupons do negócio',
+        description: 'Validadores e cupons utilizados do seu negócio.',
+        noindex: true,
+    },
+    {
+        path: '/admin/cupons',
+        title: 'Cupons utilizados',
+        description: 'Auditoria das utilizações de cupons.',
+        noindex: true,
+    },
+    {
         path: '/entrar',
         title: 'Entrar',
         description: 'Acesse sua conta do Farol Pitimbu.',

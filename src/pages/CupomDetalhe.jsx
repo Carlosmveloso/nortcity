@@ -83,7 +83,7 @@ function CupomDetalhe() {
                         <CouponStatusBadge status={status} />
                         <p className="text-xs font-semibold tracking-widest text-dark-ocean/60 uppercase">Código do cupom</p>
                         <p
-                            className={`font-mono text-3xl font-extrabold tracking-wider break-all sm:text-4xl ${valid ? 'text-foreground' : 'text-dark-ocean/50 line-through'}`}
+                            className={`font-mono text-3xl font-extrabold tracking-wider break-all sm:text-4xl ${valid ? 'text-foreground' : status === 'used' ? 'text-dark-ocean/60' : 'text-dark-ocean/50 line-through'}`}
                         >
                             {coupon.code}
                         </p>
@@ -107,6 +107,11 @@ function CupomDetalhe() {
                                     Apresente este cupom no estabelecimento antes de concluir a compra.
                                 </p>
                             </>
+                        ) : status === 'used' ? (
+                            <p className="max-w-md text-sm text-dark-ocean/80">
+                                Cupom utilizado em {formatCouponDateTime(coupon.used_at)} em {coupon.business.name}. Ele não
+                                pode ser utilizado novamente.
+                            </p>
                         ) : status === 'expired' ? (
                             <p className="max-w-md text-sm text-dark-ocean/80">
                                 Este cupom expirou em {formatCouponDateTime(coupon.expires_at)} e não pode mais ser utilizado.

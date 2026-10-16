@@ -9,7 +9,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { COUPON_TERMS_CHECKBOX, couponErrorMessage } from '@/lib/coupons';
 import { benefitSummary } from '@/lib/offers';
 
-function GenerateBox({ offer, user, myCoupon, termsVersion, refetchMine }) {
+function GenerateBox({ offer, user, myCoupon, usedCount, termsVersion, refetchMine }) {
     const navigate = useNavigate();
     const location = useLocation();
     const [accepted, setAccepted] = useState(false);
@@ -41,6 +41,18 @@ function GenerateBox({ offer, user, myCoupon, termsVersion, refetchMine }) {
                 <p className="font-semibold">Você já tem um cupom disponível desta oferta.</p>
                 <Link to={`/meus-cupons/${myCoupon.id}`} className="mt-3 inline-flex rounded-full bg-turquoise px-5 py-2.5 font-bold text-sand">
                     Ver meu cupom
+                </Link>
+            </div>
+        );
+    }
+
+    // per_user_limit conta utilizações da oferta inteira, em qualquer versão.
+    if (usedCount >= (offer.version.per_user_limit ?? 1)) {
+        return (
+            <div className="rounded-2xl bg-sand-dark/70 p-4 text-sm text-dark-ocean">
+                <p className="font-semibold">Você já utilizou esta oferta o número máximo de vezes permitido.</p>
+                <Link to="/meus-cupons?situacao=used" className="mt-2 inline-block font-semibold text-ocean underline">
+                    Ver meus cupons utilizados
                 </Link>
             </div>
         );
@@ -128,6 +140,7 @@ function OfertaPublica() {
     const mine = useLoader(couponRpc.mine, mineKey, Boolean(user));
     const offer = offerState.data?.offer ?? null;
     const myCoupon = (mine.data?.data ?? []).find((coupon) => coupon.offer_id === offerId && coupon.status === 'available');
+    const usedCount = (mine.data?.data ?? []).filter((coupon) => coupon.offer_id === offerId && coupon.status === 'used').length;
 
     usePageMeta({
         path: `/ofertas/${offerId}`,
@@ -197,6 +210,7 @@ function OfertaPublica() {
                                 offer={offer}
                                 user={user}
                                 myCoupon={myCoupon}
+                                usedCount={usedCount}
                                 termsVersion={termsState.data?.terms?.version}
                                 refetchMine={mine.refetch}
                             />

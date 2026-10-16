@@ -1,4 +1,4 @@
-import { AlertTriangle, BadgePercent, BarChart3, ChevronRight, Copy, ImagePlus, Link2, Link2Off, Loader2, Plus, Search, Trash2 } from 'lucide-react';
+import { AlertTriangle, BadgePercent, BarChart3, Ticket, ChevronRight, Copy, ImagePlus, Link2, Link2Off, Loader2, Plus, Search, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -1084,6 +1084,13 @@ function Admin() {
                         >
                             <BadgePercent size={16} aria-hidden="true" />
                             Ofertas
+                        </Link>
+                        <Link
+                            to="/admin/cupons"
+                            className="inline-flex items-center gap-2 rounded-full bg-card px-5 py-2.5 text-sm font-bold text-dark-ocean"
+                        >
+                            <Ticket size={16} aria-hidden="true" />
+                            Cupons utilizados
                         </Link>
                         <Link
                             to="/admin/analytics"
