@@ -12,12 +12,15 @@ alter table public.coupons disable trigger coupons_guard_trigger;
 alter table public.coupon_usages disable trigger coupon_usages_guard_trigger;
 alter table public.fee_ledger_entries disable trigger fee_ledger_entries_guard_trigger;
 alter table public.business_validators disable trigger business_validators_guard_trigger;
+alter table public.coupon_verification_attempts disable trigger coupon_verification_attempts_guard_trigger;
 alter table public.coupon_events disable trigger coupon_events_guard_trigger;
 alter table public.offers disable trigger offers_guard_trigger;
 alter table public.offer_versions disable trigger offer_versions_guard_trigger;
 alter table public.offer_reviews disable trigger offer_reviews_guard_trigger;
 
--- Utilizações, lançamentos e validadores da massa antes dos cupons.
+-- Tentativas de verificação, utilizações, lançamentos e validadores antes dos cupons.
+delete from public.coupon_verification_attempts
+ where business_id = '74000000-0000-4000-8000-0000000000b1' or validator_id::text like '74000000-0000-4000-8000-%';
 delete from public.fee_ledger_entries where business_id = '74000000-0000-4000-8000-0000000000b1';
 delete from public.coupon_usages
  where business_id = '74000000-0000-4000-8000-0000000000b1' or user_id::text like '74000000-0000-4000-8000-%';
@@ -45,6 +48,7 @@ alter table public.coupons enable trigger coupons_guard_trigger;
 alter table public.coupon_usages enable trigger coupon_usages_guard_trigger;
 alter table public.fee_ledger_entries enable trigger fee_ledger_entries_guard_trigger;
 alter table public.business_validators enable trigger business_validators_guard_trigger;
+alter table public.coupon_verification_attempts enable trigger coupon_verification_attempts_guard_trigger;
 alter table public.coupon_events enable trigger coupon_events_guard_trigger;
 alter table public.offers enable trigger offers_guard_trigger;
 alter table public.offer_versions enable trigger offer_versions_guard_trigger;
@@ -63,14 +67,16 @@ begin
         or exists (select 1 from public.coupons where business_id = '74000000-0000-4000-8000-0000000000b1')
         or exists (select 1 from public.coupon_usages where business_id = '74000000-0000-4000-8000-0000000000b1')
         or exists (select 1 from public.fee_ledger_entries where business_id = '74000000-0000-4000-8000-0000000000b1')
-        or exists (select 1 from public.business_validators where business_id = '74000000-0000-4000-8000-0000000000b1') then
+        or exists (select 1 from public.business_validators where business_id = '74000000-0000-4000-8000-0000000000b1')
+        or exists (select 1 from public.coupon_verification_attempts where business_id = '74000000-0000-4000-8000-0000000000b1') then
         raise exception 'offers_e2e_cleanup_incomplete';
     end if;
     if exists (
         select 1 from pg_trigger
          where tgname in ('offers_guard_trigger', 'offer_versions_guard_trigger', 'offer_reviews_guard_trigger',
                           'coupons_guard_trigger', 'coupon_events_guard_trigger', 'coupon_usages_guard_trigger',
-                          'fee_ledger_entries_guard_trigger', 'business_validators_guard_trigger')
+                          'fee_ledger_entries_guard_trigger', 'business_validators_guard_trigger',
+                          'coupon_verification_attempts_guard_trigger')
            and tgenabled = 'D'
     ) then
         raise exception 'offers_e2e_cleanup_trigger_disabled';
