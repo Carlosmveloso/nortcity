@@ -85,9 +85,17 @@ test.describe('validação no balcão', () => {
     test('câmera indisponível cai na entrada manual; conteúdo do QR digitado por leitor funciona', async ({ page, api }) => {
         const offer = activeOffer(api);
         const coupon = seedCoupon(api.offers, { offer, userId: CUSTOMER });
+        // O comportamento sem câmera varia com o sistema (macOS recusa na hora;
+        // o Linux da CI pode nem responder). O teste fixa a recusa do navegador.
+        await page.addInitScript(() => {
+            const deny = () => Promise.reject(new DOMException('Permissão negada', 'NotAllowedError'));
+            if (navigator.mediaDevices) navigator.mediaDevices.getUserMedia = deny;
+            else Object.defineProperty(navigator, 'mediaDevices', { value: { getUserMedia: deny } });
+        });
         await page.goto('/validar');
         await page.getByRole('button', { name: 'Ler QR com a câmera' }).click();
-        await expect(page.getByRole('alert')).toContainText('Digite o código abaixo');
+        await expect(page.getByRole('alert')).toContainText('Permissão da câmera negada');
+        await expect(page.getByRole('alert')).toContainText(/digite o código abaixo/i);
 
         const payload = `farol-cupom:1:${couponToken(coupon)}`;
         await page.getByLabel('Código do cupom ou conteúdo do QR').fill(payload);
@@ -166,6 +174,19 @@ test.describe('validação no balcão', () => {
         await expect(page.getByText('Você já utilizou esta oferta o número máximo de vezes permitido.')).toBeVisible();
         await expect(page.getByRole('button', { name: 'Gerar meu cupom' })).toHaveCount(0);
         expect(used.status).toBe('used');
+    });
+});
+
+test.describe('navegador sem acesso à câmera', () => {
+    test.use({ initialStatus: 'active' });
+    test('informa e mantém a entrada manual', async ({ page }) => {
+        await page.addInitScript(() => {
+            Object.defineProperty(navigator, 'mediaDevices', { value: undefined, configurable: true });
+        });
+        await page.goto('/validar');
+        await page.getByRole('button', { name: 'Ler QR com a câmera' }).click();
+        await expect(page.getByRole('alert')).toContainText('Este navegador não permite usar a câmera aqui');
+        await expect(page.getByLabel('Código do cupom ou conteúdo do QR')).toBeEnabled();
     });
 });
 
