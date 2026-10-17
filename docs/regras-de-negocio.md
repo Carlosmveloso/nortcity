@@ -315,7 +315,7 @@ Visitante que tenta salvar é encaminhado ao login e retorna à página com seus
 
 ## 14. Ofertas e planos mínimos
 
-**IMPLEMENTADO NO BANCO — Sprint 1, 05/10/2026, branch `feat/offers-sprint-01`.** Migrations `20261005000001` a `20261005000003`, cobertas por `src/test/db/offers.test.js`. Aplicadas e homologadas somente em `farol-pitimbu-dev` em 05/10/2026 ([testes.md](testes.md)); produção não recebeu estas migrations. A interface (branch `feat/offers-frontend`, 06/10/2026) está descrita no fim desta seção.
+**IMPLEMENTADO NO BANCO — Sprint 1, 05/10/2026, branch `feat/offers-sprint-01`.** Migrations `20261005000001` a `20261005000003`, cobertas por `src/test/db/offers.test.js`. Aplicadas e homologadas em `farol-pitimbu-dev` em 05/10/2026 ([testes.md](testes.md)); aplicadas em produção em 17/10/2026 ([ambientes.md](ambientes.md)). A interface (branch `feat/offers-frontend`, 06/10/2026) está descrita no fim desta seção.
 
 ### Planos
 
@@ -383,7 +383,7 @@ As sete decisões de implementação foram aprovadas na revisão de 05/10/2026: 
 
 ### Ciclo automático (job `offer-lifecycle`)
 
-**IMPLEMENTADO — 06/10/2026, migration `20261006000001`, branch `feat/offers-scheduling-jobs`.** Coberto por `src/test/db/offer-lifecycle.test.js` e homologado em `farol-pitimbu-dev`; produção ainda não recebeu a migration.
+**IMPLEMENTADO — 06/10/2026, migration `20261006000001`, branch `feat/offers-scheduling-jobs`.** Coberto por `src/test/db/offer-lifecycle.test.js` e homologado em `farol-pitimbu-dev`; aplicado em produção em 17/10/2026.
 
 - O `pg_cron` executa `offer-lifecycle` a cada 5 minutos (`*/5 * * * *`), chamando `process_offer_lifecycle()`.
 - **Primeiro encerra, depois ativa.** `end_expired_offers()` encerra `active`, `suspended`, `scheduled` e `approved` cujo `ends_at` já passou, e só então `activate_due_offers()` ativa as `scheduled` cujo `starts_at` chegou. Uma agendada que venceu sem ser ativada vai direto para `ended`, sem um `published` artificial.
@@ -426,7 +426,7 @@ As sete decisões de implementação foram aprovadas na revisão de 05/10/2026: 
 
 ## 15. Cupons (Sprint 2 — geração)
 
-**IMPLEMENTADO — 07/10/2026, migration `20261007000001_coupons.sql`, branch `feat/coupons-sprint-02`.** Coberto por `src/test/db/coupons.test.js`, e2e simulados e E2E real; homologado em `farol-pitimbu-dev` ([testes.md](testes.md)). Produção não recebeu a migration.
+**IMPLEMENTADO — 07/10/2026, migration `20261007000001_coupons.sql`, branch `feat/coupons-sprint-02`.** Coberto por `src/test/db/coupons.test.js`, e2e simulados e E2E real; homologado em `farol-pitimbu-dev` ([testes.md](testes.md)). Aplicado em produção em 17/10/2026, com segredo de QR próprio.
 
 O cupom é um registro único no banco. Código e QR só o identificam; a situação real é sempre decidida pelo servidor. Nesta sprint não há validação no estabelecimento, utilização nem cobrança.
 
@@ -503,7 +503,7 @@ Suspender ou encerrar a oferta, ou suspender o negócio, bloqueia novas emissõe
 
 ## 16. Validação e utilização de cupons (Sprint 3)
 
-**IMPLEMENTADO — 16/10/2026, migrations `20261016000001_coupon_used_status.sql`, `20261016000002_coupon_usage.sql` e `20261016000003_coupon_verification_attempts.sql`, branch `feat/coupons-sprint-03`.** Coberto por `src/test/db/coupon-usage.test.js`, e2e simulados e E2E real; homologado em `farol-pitimbu-dev` ([testes.md](testes.md)). Produção não recebeu as migrations.
+**IMPLEMENTADO — 16/10/2026, migrations `20261016000001_coupon_used_status.sql`, `20261016000002_coupon_usage.sql` e `20261016000003_coupon_verification_attempts.sql`, branch `feat/coupons-sprint-03`.** Coberto por `src/test/db/coupon-usage.test.js`, e2e simulados e E2E real; homologado em `farol-pitimbu-dev` ([testes.md](testes.md)). Aplicado em produção em 17/10/2026.
 
 ### Fluxo
 
