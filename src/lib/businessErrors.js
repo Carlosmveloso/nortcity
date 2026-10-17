@@ -56,6 +56,10 @@ export function businessErrorMessage(error, fallback = 'Não foi possível concl
 
     const known = MESSAGES[error.message];
     if (known) return known;
+    // Exclusão barrada por histórico (ofertas preservam aceite e decisões).
+    if (error.code === '23503' && /offers/.test(`${error.message ?? ''} ${error.details ?? ''}`)) {
+        return 'Este negócio tem ofertas no histórico e não pode ser excluído. Suspenda o negócio para tirá-lo do ar.';
+    }
     if (error.details) return error.details;
 
     // Erro que não é do nosso contrato (permissão, cast, rede). Antes virava uma

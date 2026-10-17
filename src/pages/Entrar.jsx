@@ -196,6 +196,12 @@ function Entrar() {
                             : 'Crie sua conta para salvar favoritos e cadastrar seu negócio.'}
                     </p>
 
+                    {location.state?.reason && !callbackError && (
+                        <p role="status" className="mt-5 rounded-2xl bg-turquoise/10 px-4 py-3 text-sm font-semibold text-ocean">
+                            {location.state.reason}
+                        </p>
+                    )}
+
                     {callbackError && (
                         <p
                             role="alert"

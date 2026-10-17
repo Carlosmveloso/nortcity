@@ -30,7 +30,8 @@ Consulte [regras-de-negocio.md](regras-de-negocio.md) para propriedade, categori
 ## FUTURO — sem implementação completa
 
 - Avaliações e Google OAuth.
-- Assinaturas, cobrança/Stripe, planos pagos, destaques patrocinados e ferramentas comerciais para proprietários.
+- Assinaturas, cobrança/Stripe, destaques patrocinados e ferramentas comerciais para proprietários.
+- Fechamento financeiro, cobrança, Pix e estornos (Sprint 4). Ofertas (seção 14), geração de cupons (seção 15) e validação e utilização com validadores e lançamento da taxa (seção 16) estão descritos nas [regras](regras-de-negocio.md).
 - Galeria comercial, selo de verificação e moderação de fotos por IA.
 - Permissões próprias de moderador, equipes e múltiplos negócios por conta.
 

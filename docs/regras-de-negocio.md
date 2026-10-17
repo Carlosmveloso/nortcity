@@ -268,7 +268,8 @@ isso a capa seria o único campo sensível alterável sem moderação.
 | Suspensão | Se o dono poderá editar o cadastro enquanto suspenso. |
 | Busca | Se a relevância deve casar palavra a palavra (hoje é a expressão inteira como substring). |
 | Propriedade | Transferência entre dois proprietários já vinculados. |
-| Planos | Periodicidade, limites, recursos e retenção. |
+| Planos | Periodicidade, preços, recursos além de ofertas e retenção. Limites de ofertas ativas decididos em 05/10/2026 (seção 14). |
+| Ofertas | Expiração automática por job, revisão de ofertas aprovadas/agendadas/suspensas, retenção ao excluir conta e bloqueio financeiro na reativação. |
 | Financeiro | Tolerância, retries e efeito temporal do downgrade. |
 | Verificação | Critérios e processo do selo Verificado. |
 
@@ -276,8 +277,9 @@ isso a capa seria o único campo sensível alterável sem moderação.
 
 ## 12. Invariantes comerciais a preservar (FUTURO)
 
-Documentados para o desenho futuro não nascer incompatível. **Nada disto está implementado** e nenhuma
-tabela comercial foi criada.
+Documentados para o desenho futuro não nascer incompatível. Assinatura, cobrança e downgrade **não
+estão implementados**. Desde 05/10/2026 existem apenas os planos mínimos do módulo de ofertas, com
+atribuição manual pelo admin (seção 14).
 
 - Planos pretendidos: Gratuito, Básico R$39, Profissional R$89, Premium R$179. Periodicidade e limites
   não fechados.
@@ -292,7 +294,7 @@ tabela comercial foi criada.
 
 Analytics administrativo está implementado; métricas comerciais para proprietários continuam futuras.
 
-Também continuam fora do escopo: cobrança/Stripe, galeria comercial, ofertas, patrocinados, selo
+Também continuam fora do escopo: cobrança/Stripe, fechamento financeiro e estornos de cupons (Sprint 4), galeria comercial, patrocinados, selo
 Verificado, avaliações, roteiros, alertas, moderação de fotos por IA, Google OAuth,
 moderador com permissões próprias, equipes, múltiplos negócios por conta, status `closed` e
 reivindicação pública.
@@ -310,3 +312,285 @@ Cards e ficha compartilham o estado na sessão. A lista é consultada ao abrir/r
 Visitante que tenta salvar é encaminhado ao login e retorna à página com seus filtros. Depois de entrar, confirma o salvamento pelo coração. A página `/favoritos` oferece acesso à conta para visitantes.
 
 **FUTURO.** Favoritos anônimos, sincronização offline/em tempo real entre abas, pastas, compartilhamento de listas, métricas e recomendações. A aplicação em produção deve anteceder a publicação do front-end desta versão.
+
+## 14. Ofertas e planos mínimos
+
+**IMPLEMENTADO NO BANCO — Sprint 1, 05/10/2026, branch `feat/offers-sprint-01`.** Migrations `20261005000001` a `20261005000003`, cobertas por `src/test/db/offers.test.js`. Aplicadas e homologadas em `farol-pitimbu-dev` em 05/10/2026 ([testes.md](testes.md)); aplicadas em produção em 17/10/2026 ([ambientes.md](ambientes.md)). A interface (branch `feat/offers-frontend`, 06/10/2026) está descrita no fim desta seção.
+
+### Planos
+
+- `plans`: Gratuito (0 ofertas ativas), Básico (1), Profissional (3), Premium (5).
+- Todo negócio começa no Gratuito: sem linha em `business_plan_assignments`, o plano é `gratuito`. Enquanto não houver assinatura, só o admin atribui outro plano, por `admin_set_business_plan`. Cada troca vira uma linha nova; nada é sobrescrito.
+- A troca de plano não altera o status do negócio. O rebaixamento para um limite menor que o número de ofertas ativas é recusado (`plan_offer_limit_exceeded`): o admin suspende ou encerra antes.
+- `plan_coupon_fees` guarda a taxa por cupom utilizado, com vigência. Os valores iniciais, desde 01/10/2026, são: Básico R$1,50, Profissional R$1,00 e Premium R$0,50. O Gratuito não tem taxa. Regras do mesmo plano não se sobrepõem no tempo, e uma regra publicada só pode ganhar data de fim; um valor novo exige uma regra nova.
+
+### Oferta e versões
+
+- `offers` guarda o negócio, o status e a versão publicada. O conteúdo comercial fica em `offer_versions`, e as decisões em `offer_reviews`, que só aceita inclusões.
+- Só o proprietário do negócio cria ofertas (`create_offer`). Toda oferta começa em `draft`, com a versão 1.
+- Só a versão em `draft` é editável. Ao ser enviada, ela fica imutável para qualquer papel. Quando a análise pede ajustes, a próxima edição cria a versão seguinte e a versão analisada fica como estava.
+- Uma oferta ativa recebe revisão (`create_offer_revision`). A versão publicada continua no ar até a revisão ser aprovada e publicada. Ofertas aprovadas, agendadas ou suspensas ainda não recebem revisão.
+- Os tipos de benefício são enum. O percentual deve ficar entre 0 e 100, e o desconto em valor deve ser positivo. Brinde, produto ou serviço adicional, condição especial e outros não exigem valor.
+- O banco garante: `starts_at < ends_at`, `per_user_limit >= 1`, `total_limit > 0` quando informado, `per_user_limit <= total_limit` e `coupon_validity_minutes > 0`.
+- Dias ISO (1 = segunda … 7 = domingo); os sete dias significam todos os dias. Faixas em `time_windows` no formato `[{day, start, end}]`, em horário local de Pitimbu. Cada faixa precisa estar em um dos dias escolhidos, não atravessa a meia-noite e não se sobrepõe a outra do mesmo dia. Lista vazia significa o dia inteiro.
+- Negócio e conta com ofertas não são apagados em cascata: o histórico financeiro permanece. Um negócio com ofertas é suspenso, não excluído.
+
+### Aceite financeiro e envio
+
+- `accept_offer_financial_terms(oferta, taxa_exibida)` copia para a versão a regra vigente do plano: `fee_amount`, `fee_rule_id`, quem aceitou e quando. Se a taxa exibida não for a vigente, o aceite é recusado (`fee_changed`). No Gratuito o aceite é recusado (`plan_fee_unavailable`), então a oferta não passa de rascunho.
+- Cada versão enviada carrega o próprio aceite. Depois de um pedido de ajustes, o reenvio exige novo aceite.
+- `submit_offer_for_review` exige o negócio publicado, título, descrição e tipo de benefício, o valor nos descontos, o período ainda não encerrado, o prazo do cupom e o aceite da regra ainda vigente. Se o plano ou a taxa mudaram depois do aceite, o envio é recusado (`fee_changed`).
+- O histórico registra `submitted` no primeiro envio e `resubmitted` depois de um pedido de ajustes.
+
+### Transições
+
+| De → para | Quem / operação | Observação |
+|---|---|---|
+| `draft`/`changes_requested` → `pending_review` | proprietário, `submit_offer_for_review` | aceite obrigatório |
+| `pending_review` → `changes_requested` | admin, `request_offer_changes` | motivo obrigatório |
+| `pending_review` → `rejected` | admin, `reject_offer` | motivo obrigatório; a oferta não é apagada |
+| `pending_review` → `approved` | admin, `approve_offer` | aprovar não publica |
+| `approved` → `active` | admin, `publish_offer` | início já passou; exige vaga no plano |
+| `approved` → `scheduled` | admin, `publish_offer` | início futuro |
+| `scheduled` → `active` | sistema, job `offer-lifecycle` | a cada 5 min; exige vaga no plano |
+| `active`/`suspended`/`scheduled`/`approved` → `ended` | sistema, job `offer-lifecycle` | quando `ends_at` passa |
+| `active` → `suspended` | admin, `suspend_offer` | motivo obrigatório |
+| `suspended` → `active` | admin, `reactivate_offer` | período válido, negócio ativo, vaga no plano |
+| `approved`/`scheduled`/`active`/`suspended` → `ended` | admin, `end_offer` | definitivo |
+
+A trigger `offers_guard` aplica essa máquina de estados a qualquer papel, inclusive `service_role`, e só aceita mudanças vindas das operações da tabela acima. `authenticated` não tem grant de escrita nas tabelas de ofertas.
+
+Antes de ativar, `publish_offer` e `reactivate_offer` travam o negócio e contam as ofertas `active`. Sem vaga, recusam com `plan_offer_limit_reached` e a oferta continua `approved` (ou `suspended`). Se a vaga não existir na hora de ativar uma oferta agendada, ela continua `scheduled` e o job tenta de novo a cada execução.
+
+As decisões sobre uma revisão de oferta ativa valem só para a versão: a oferta continua `active`. Publicar a revisão aprovada troca `published_version_id`, desde que o novo período já tenha começado.
+
+### Visibilidade
+
+- Visitante e outras contas veem só a versão publicada de uma oferta `active`, de um negócio `active` e dentro do período. Uma oferta vencida sai da vitrine mesmo antes de ser encerrada.
+- O visitante (`anon`) recebe apenas as colunas de vitrine: sem autoria, sem andamento da análise e sem taxa. Consultas pela API precisam listar as colunas; `select=*` é recusado para `anon`.
+- O proprietário vê as ofertas, versões e o histórico do próprio negócio. O admin vê tudo.
+- `get_business_offer_terms` informa ao proprietário ou ao admin o plano, o limite, as ofertas ativas e a taxa vigente.
+
+As sete decisões de implementação foram aprovadas na revisão de 05/10/2026: versão congelada a cada envio com novo aceite, rascunho no Gratuito, revisão só de oferta ativa, rebaixamento bloqueado, encerramento a partir de `approved`/`scheduled`, preservação do histórico e vitrine filtrada pelo período.
+
+**Invariante de auditoria (ajuste da revisão de 05/10/2026).** Toda gravação em `offers`, `offer_versions` e `offer_reviews` passa pelas operações oficiais, inclusive quando o chamador é `service_role` ou `postgres`. As RPCs ligam o sinal interno `farol.offer_write` ao começar e o desligam antes de retornar. As triggers primeiro validam a transição (`invalid_transition`, `version_immutable`) e, se ela for válida mas vier de fora das RPCs, recusam com `direct_write_not_allowed`. O sinal vale só para a transação; como é desligado no fim de cada operação, um `UPDATE` direto feito depois de uma RPC, na mesma transação, também é recusado. Isso protege contra erro de Edge Function, script ou manutenção, não contra quem liga o sinal manualmente. Correções excepcionais exigem desligar a trigger como dono da tabela, de forma explícita.
+
+**DÍVIDA TÉCNICA.**
+- **Exclusão de negócio com histórico.** Hoje `admin_delete_business` falha por FK quando há ofertas. Isso preserva o histórico, mas não é a solução definitiva: o admin precisará retirar um negócio da operação sem destruir os registros. O modelo futuro é arquivamento (soft delete, por exemplo `archived`) em vez de exclusão física.
+- ~~**Jobs.**~~ Resolvido em 06/10/2026 pelo job `offer-lifecycle` (ver "Ciclo automático" abaixo).
+
+**PENDENTE/FUTURO.** Validação e utilização de cupons, e cobrança (seção 15); bloqueio financeiro na reativação; revisão de oferta aprovada, agendada ou suspensa; retenção ao excluir conta com ofertas. A exibição pública das ofertas foi implementada na Sprint 2. Uma revisão em análise quando a oferta é encerrada continua no histórico e não pode mais ser publicada.
+
+### Ciclo automático (job `offer-lifecycle`)
+
+**IMPLEMENTADO — 06/10/2026, migration `20261006000001`, branch `feat/offers-scheduling-jobs`.** Coberto por `src/test/db/offer-lifecycle.test.js` e homologado em `farol-pitimbu-dev`; aplicado em produção em 17/10/2026.
+
+- O `pg_cron` executa `offer-lifecycle` a cada 5 minutos (`*/5 * * * *`), chamando `process_offer_lifecycle()`.
+- **Primeiro encerra, depois ativa.** `end_expired_offers()` encerra `active`, `suspended`, `scheduled` e `approved` cujo `ends_at` já passou, e só então `activate_due_offers()` ativa as `scheduled` cujo `starts_at` chegou. Uma agendada que venceu sem ser ativada vai direto para `ended`, sem um `published` artificial.
+- **Período considerado:** o da versão publicada; antes da primeira publicação, o da versão mais recente.
+- **Estados não tocados:** `draft`, `pending_review`, `changes_requested`, `rejected` e `ended`.
+- **Histórico:** as ações do job ficam com `actor_id` nulo, exibido como "Sistema". O encerramento registra `ended` com a mensagem "Período da oferta encerrado"; a ativação registra `published`.
+- **Plano sem vaga:** a agendada continua `scheduled`, sem linha nova no histórico, e é tentada de novo a cada execução. Quem começa antes ocupa a vaga primeiro. A interface deriva o aviso "Aguardando vaga no plano" de `status = scheduled` com início já passado; não existe status próprio para isso.
+- **Fuso:** a comparação é direta entre `timestamptz` e o instante atual. Como a aplicação grava 00:00 e 23:59:59 em UTC−3, a oferta não começa nem termina três horas antes.
+- **Proteções:** as funções usam o mesmo sinal `farol.offer_write` das RPCs e não têm grant para `anon` nem `authenticated`. O parâmetro opcional `p_now` existe só para testes; o cron usa `now()`.
+- **Assinatura:** `activate_due_offers()` passou a ser `activate_due_offers(p_now timestamptz default now())`. A versão sem parâmetro foi removida na nova migration.
+
+### Interface (frontend da Sprint 1)
+
+**IMPLEMENTADO — 06/10/2026, branch `feat/offers-frontend`.** Toda escrita usa as RPCs oficiais. As leituras listam colunas explícitas, e os códigos de erro são traduzidos em `src/lib/offerErrors.js`; o identificador bruto nunca aparece para a pessoa.
+
+**Proprietário.**
+- **`/meu-negocio`:** mostra o plano real do negócio e dá acesso a Ofertas.
+- **`/meu-negocio/ofertas`:** plano, limite, ofertas ativas e taxa vigente (lidos de `get_business_offer_terms`, nunca fixos no código), filtros por situação e estado vazio.
+- **`/meu-negocio/ofertas/nova` e `/:id/editar`:** assistente em quatro passos (Oferta, Condições, Cupons, Revisão).
+  - Cada "Continuar" salva o rascunho; "Salvar rascunho" grava sem exigir os campos obrigatórios.
+  - A revisão mostra a prévia, o plano e a taxa por cupom utilizado. O envio só é habilitado com o aceite marcado, um plano com taxa e o negócio publicado.
+  - No Gratuito, o passo 4 explica que o plano não inclui publicação e não chama o aceite nem o envio.
+- **`/meu-negocio/ofertas/:id`:** situação explicada, mensagem da equipe (ajustes, não aprovação, suspensão), versão publicada e alteração em andamento, taxa aceita e histórico.
+  - Em ajustes solicitados, "Corrigir e criar nova versão" abre o assistente. O primeiro salvamento cria a versão seguinte, que exige novo aceite.
+  - Em oferta ativa, "Propor alteração" cria a revisão, e a versão publicada continua no ar.
+
+**Admin.**
+- **`/admin/ofertas`:** filas Pendentes, Ajustes solicitados, Aprovadas, Agendadas, Ativas, Suspensas, Encerradas e Rejeitadas. Uma alteração de oferta ativa aparece também em Pendentes, Ajustes ou Aprovadas.
+- **`/admin/ofertas/:id`:** negócio, proprietário, plano, versão em análise, versão publicada, versões anteriores com a taxa aceita (valor, autor, data) e histórico.
+  - As ações aparecem conforme o estado registrado: aprovar, solicitar ajustes, rejeitar, publicar/agendar, suspender, reativar e encerrar. Cada uma abre um diálogo nativo acessível.
+  - Ajustes, rejeição e suspensão exigem motivo, e o encerramento avisa que é definitivo.
+- **Admin › Negócios:** ganhou "Plano e ofertas", que usa `admin_set_business_plan`.
+
+**Decisões de interface.**
+- As datas são dias inteiros no fuso de Pitimbu: 00:00 do dia inicial a 23:59:59 do dia final.
+- Em "Horários específicos", todo dia escolhido precisa de ao menos uma faixa. O banco aceitaria dias sem faixa, mas o significado ficaria ambíguo.
+- "Sem limite" de quantidade é uma escolha explícita. Enquanto o passo 3 não foi preenchido, nenhuma opção vem marcada.
+- A validade do cupom é de 2 h a 7 dias. "Até o fim da oferta" não é oferecido porque `coupon_validity_minutes` precisa ser positivo.
+- A fila do admin carrega todas as ofertas e versões, sem paginação, o que é adequado ao volume atual.
+
+## 15. Cupons (Sprint 2 — geração)
+
+**IMPLEMENTADO — 07/10/2026, migration `20261007000001_coupons.sql`, branch `feat/coupons-sprint-02`.** Coberto por `src/test/db/coupons.test.js`, e2e simulados e E2E real; homologado em `farol-pitimbu-dev` ([testes.md](testes.md)). Aplicado em produção em 17/10/2026, com segredo de QR próprio.
+
+O cupom é um registro único no banco. Código e QR só o identificam; a situação real é sempre decidida pelo servidor. Nesta sprint não há validação no estabelecimento, utilização nem cobrança.
+
+### Modelo
+
+- **`coupons`:**
+  - código público `FP-XXXXXX` com 6 caracteres sorteados de 31, sem 0/O/1/I/L (31^6 ≈ 887 milhões), `UNIQUE`;
+  - `qr_token_hash` (`UNIQUE`) e `qr_key_version`;
+  - vínculos: `offer_id`, `offer_version_id` (FK composta com a versão da mesma oferta), `business_id` e `user_id`;
+  - `status`, `generated_at`, `expires_at`, `terms_version`, `terms_accepted_at`, `expired_at` e, no cancelamento, `canceled_at`, `canceled_by` e `cancel_reason`.
+- **Situações (`coupon_status`):** `available`, `expired` e `canceled`. As únicas transições são `available → expired` e `available → canceled`. A Sprint 3 acrescenta `used` (`ALTER TYPE … ADD VALUE`).
+- **`coupon_events`:** histórico só de inclusão (`generated`, `expired`, `canceled`). `actor_id` nulo significa sistema.
+- **`coupon_terms`:** cada versão do Regulamento de Utilização dos Cupons com o texto integral. A `2026-10-v1` é o documento oficial, em 10 seções sem cortes. Versões publicadas não mudam nem são apagadas, e o cupom aponta para a versão aceita.
+- **Sem exclusão em cascata:** negócio ou conta com cupons não é apagado. É a mesma dívida registrada para ofertas; a exclusão de conta exigirá anonimização.
+
+### Geração (`generate_coupon(oferta, versão_do_regulamento)`)
+
+1. Exige login e o aceite da versão vigente do regulamento (`terms_not_accepted`, `terms_outdated`).
+2. Trava a linha da oferta. Gerações da mesma oferta passam uma de cada vez.
+3. Exige oferta `active`, com versão publicada, período vigente e negócio `active` (`offer_not_started`, `offer_expired`, `offer_not_active`).
+4. Expira na hora os cupons vencidos daquela oferta, para a vaga voltar sem esperar o job.
+5. Recusa um segundo `available` do mesmo usuário na mesma oferta (`coupon_already_available`). O índice único parcial garante isso também sob concorrência.
+6. **Vagas:** conta os `available` ainda válidos da oferta inteira, atravessando versões, contra o `total_limit` da versão publicada no momento (`offer_sold_out`). `total_limit` nulo significa sem limite. Exemplo: com 90 vagas ocupadas, se uma nova versão baixar o limite para 50, novas gerações ficam bloqueadas.
+7. **Validade:** `expires_at = min(geração + coupon_validity_minutes, ends_at da oferta)`. O cupom nunca passa do fim da oferta, e a comparação é entre `timestamptz`, sem conversão de fuso.
+8. Grava o cupom com a versão publicada no momento, o regulamento aceito e o evento `generated`, tudo numa transação.
+
+**Limite por usuário (`per_user_limit`):** vale para a oferta inteira e contará só utilizações efetivas (`used`), que a Sprint 3 criará. Expirado e cancelado nunca contam. **Dependência registrada:** na Sprint 3, `generate_coupon` passa a comparar o número de `used` do usuário na oferta com o `per_user_limit` da versão publicada e recusa com `user_limit_reached`. Até lá vale só a regra de um `available` por vez. Nesta sprint não existe simulação de `used`.
+
+### QR
+
+- O token é `HMAC-SHA256(id do cupom, segredo do Vault coupon_qr_key_vN)`, em base64url com 43 caracteres. O banco guarda só o hash SHA-256 e a versão da chave.
+- O token é recalculado apenas por `get_coupon_qr_token`, só para o dono e só enquanto o cupom está disponível. O segredo nunca sai do banco.
+- **Rotação de chave:** criar `coupon_qr_key_v(N+1)`. Novos cupons usam a versão nova, e os antigos continuam verificáveis enquanto o segredo antigo existir.
+- O QR contém só `farol-cupom:1:<token>`, sem dados pessoais, condições ou taxa.
+
+### Expiração
+
+- `expire_due_coupons()` marca como `expired` os `available` vencidos e registra `expired` sem autor. Rodar de novo não faz nada.
+- O job `pg_cron` `coupon-expiration` roda a cada 5 minutos (`*/5 * * * *`), separado do `offer-lifecycle`.
+- Na leitura, um cupom disponível vencido aparece como expirado mesmo antes do job.
+- A vaga volta automaticamente, porque só os `available` válidos contam. Depois de expirar, a pessoa pode gerar outro cupom se houver vaga.
+
+### Oferta ou negócio fora do ar
+
+Suspender ou encerrar a oferta, ou suspender o negócio, bloqueia novas emissões, mas **não cancela** cupons já emitidos: eles valem até `expires_at`. O cancelamento é uma ação administrativa explícita e auditável, `admin_cancel_coupon(cupom, motivo)`, só para cupom disponível e com motivo obrigatório. Ainda não tem tela; cancelamento em lote fica para depois.
+
+### Acesso e escrita
+
+- **Dono:** lê os próprios cupons (`coupons` sem a coluna `qr_token_hash`, e `coupon_events`).
+- **Admin:** lê tudo. O proprietário do negócio ainda não lê cupons.
+- **Visitante:** sem acesso a cupons. Lê `coupon_terms` e a disponibilidade pública.
+- **Leituras da interface:** passam por `get_my_coupons` e `get_my_coupon`, que devolvem as condições da versão aceita, só com colunas públicas. Isso funciona mesmo depois de outra versão ser publicada ou de a oferta sair do ar.
+- **Disponibilidade:** `offer_coupon_availability(ofertas)` devolve só sim/não, sem quantidades. É informativa; a autoridade é `generate_coupon`.
+- **Escrita:** mesmo padrão das ofertas, com o sinal `farol.coupon_write` ligado e desligado pelas operações oficiais. Escrita fora delas é recusada (`direct_write_not_allowed`), inclusive para `service_role` e `postgres`. A trigger também recusa mudar código, vínculos, validade ou aceite (`coupon_immutable`) e apagar cupom (`coupon_not_deletable`).
+
+### Interface
+
+- **Perfil do negócio:** seção "Ofertas do Farol" com as ofertas no ar (benefício, título, período, condição principal e "Cupons disponíveis" ou "Cupons temporariamente esgotados").
+- **`/ofertas/:id`:** condições completas e geração. O visitante é levado ao login com a mensagem "Entre para gerar este cupom." e volta à oferta. O aceite usa o texto do documento oficial, e o botão fica bloqueado durante a geração.
+- **`/meus-cupons`:** filtros Disponíveis, Expirados e Cancelados. "Utilizados" só entra na Sprint 3.
+- **`/meus-cupons/:id`:**
+  - código, QR (SVG via `qrcode-generator` 2.0.4, MIT, sem dependências), status em texto, "Válido até dd/mm/aaaa às hh:mm" no horário de Pitimbu e a instrução de apresentar antes da compra;
+  - condições da versão aceita e link para a versão do regulamento;
+  - expirado ou cancelado fica sem QR.
+- **`/regulamento-cupons?versao=`:** texto da versão pedida ou da vigente.
+- A interface não mostra quantidade de vagas restantes nem "poucas unidades".
+- Não há área geral de ofertas além do perfil do negócio. A página da oferta tem `noindex`, porque as ofertas são temporárias e não entram no sitemap.
+
+### Pendências
+
+- Validação, utilização e `per_user_limit` foram implementados na Sprint 3 (seção 16).
+- Cancelamento em lote e tela de cancelamento no admin.
+- "Definitivamente esgotada", que agora pode ser derivada das utilizações, mas ainda não tem regra de produto.
+
+## 16. Validação e utilização de cupons (Sprint 3)
+
+**IMPLEMENTADO — 16/10/2026, migrations `20261016000001_coupon_used_status.sql`, `20261016000002_coupon_usage.sql` e `20261016000003_coupon_verification_attempts.sql`, branch `feat/coupons-sprint-03`.** Coberto por `src/test/db/coupon-usage.test.js`, e2e simulados e E2E real; homologado em `farol-pitimbu-dev` ([testes.md](testes.md)). Aplicado em produção em 17/10/2026.
+
+### Fluxo
+
+O cliente apresenta o cupom. O validador lê o QR ou digita o código, e `verify_coupon` mostra a situação e as condições **da versão do cupom**, sem alterar nada. Se o cupom for válido, `confirm_coupon_usage` faz numa transação só:
+- `available → used`, com `used_at`;
+- a linha em `coupon_usages`, com o validador e o método (`qr` ou `code`);
+- o lançamento da taxa em `fee_ledger_entries`;
+- o evento `used` em `coupon_events`.
+
+### Modelo
+
+- **`coupon_status`** ganhou `used` e **`coupon_event_action`** ganhou `used`, numa migration própria: o PostgreSQL não usa um valor novo de enum na mesma transação que o criou.
+- **`business_validators`:** vínculo validador ↔ negócio. Cada ativação é uma linha; desativar encerra a linha (`active = false`, `deactivated_at`, `deactivated_by`) e um novo cadastro cria outra. Nada é apagado, e há no máximo um vínculo ativo por conta e negócio.
+- **`coupon_usages`:** uma utilização por cupom (`UNIQUE(coupon_id)`), com oferta, versão (FK composta), negócio, cliente, validador, método, `used_at`, `fee_amount` e `fee_rule_id`. Só aceita inclusão e não tem cascata.
+- **`fee_ledger_entries`:** livro-razão do que o negócio deve ao Farol (`business_id`, `kind`, `coupon_usage_id`, `amount`). Nesta sprint só existe `kind = 'usage_fee'`, um por utilização (índice único). Estornos e créditos da Sprint 4 entram como novas linhas de outro `kind`, sem alterar as existentes. Só aceita inclusão.
+- **Proteção:** as três tabelas e `coupons` só mudam pelas operações oficiais (sinal `farol.coupon_write`), inclusive para `service_role` e `postgres`. `used` é terminal (`invalid_transition`); utilização e lançamento são imutáveis (`record_immutable`).
+
+### Regras
+
+- **Quem valida:**
+  - o proprietário do negócio, automaticamente;
+  - validadores vinculados, que o proprietário cadastra pelo e-mail de uma conta existente (`owner_add_validator`). Convite para quem ainda não tem conta fica para depois, porque exigiria envio de e-mail e estado pendente;
+  - o admin **não** valida. Cupom de outro negócio responde `coupon_not_found`, sem revelar que existe.
+- **Identificação:** o mesmo campo aceita `farol-cupom:1:<token>`, procurado pelo hash do token, ou o código `FP-XXXXXX`. O código pode vir com espaços, em minúsculas ou sem hífen. Leitores de QR que "digitam" o conteúdo também funcionam.
+- **Situações recusadas:**
+  - `coupon_already_used`;
+  - `coupon_canceled`;
+  - `coupon_expired`, também para um disponível já vencido;
+  - `offer_time_window_not_allowed`: fora dos dias ou faixas da versão do cupom, no horário de America/Fortaleza. A faixa vale do início, inclusive, ao fim, exclusive: 11:00–15:00 vai até 14:59:59. Estar fora do horário **não** expira o cupom, que continua `available`.
+- **Oferta ou negócio fora do ar:** cupom já emitido continua utilizável até `expires_at`.
+- **Taxa:** a `fee_amount` aceita na **versão do cupom**. Nunca a taxa atual do plano: mudar o plano ou publicar versão nova não altera utilizações nem cupons já emitidos.
+- **`per_user_limit`:**
+  - conta só `used` da oferta inteira, atravessando versões, contra o limite da versão do cupom (na confirmação) ou da versão publicada (na geração);
+  - `generate_coupon` recusa com `user_limit_reached`;
+  - expirado e cancelado não contam, e a regra de um `available` por vez continua.
+- **Vagas:** `offer_reserved_coupons` conta `available` válidos **+** `used`. A expiração nunca toca em `used`.
+- **Sem desfazer:** `available → used` é terminal nesta sprint. Correção, estorno, crédito e nova emissão ficam para a Sprint 4.
+- **Dados do cliente:** a verificação não devolve nome, e-mail nem identificador do cliente, nem a taxa.
+- **"Não encontrado" é resultado, não erro:** `verify_coupon` devolve `reason = coupon_not_found` e `confirm_coupon_usage` devolve `confirmed = false`. Um erro desfaria a transação, e com ela o registro da tentativa.
+
+### Limite de tentativas (força bruta)
+
+- **Regra:** 20 verificações **sem encontrar cupom** em uma janela móvel de 10 minutos, pelo mesmo validador, somando QR e código manual, fazem `verify_coupon` e `confirm_coupon_usage` recusarem com `too_many_attempts`. O bloqueio dura até as falhas antigas saírem da janela. Não existe `blocked_until`: a contagem decide.
+- **Acertos:** tentativas que encontram o cupom são registradas, mas não contam e não zeram as falhas.
+- **Antes da busca:** o limite é checado **antes** de procurar o cupom. Quando o validador está bloqueado, a resposta e o tempo não diferenciam código existente de inexistente, e a tentativa bloqueada não é registrada.
+- **Concorrência:** as tentativas do mesmo validador são serializadas por uma trava de transação (`pg_advisory_xact_lock`), para tentativas simultâneas não passarem do limite.
+- **Registro:** `coupon_verification_attempts(validator_id, business_id, method, coupon_found, created_at)`, com índices por validador e por negócio no tempo. **Não** guarda o código nem o token digitado. Não tem acesso direto para nenhum papel do navegador, inclusive admin; escrita só pelas operações oficiais e sem alteração.
+- **Retenção:** 30 dias. O job `coupon-verification-attempts-retention` roda todo dia às 03:17 UTC (00:17 em Pitimbu) e chama `purge_coupon_verification_attempts()`. Não é auditoria: a auditoria de cupons continua em `coupon_events`, `coupon_usages` e `fee_ledger_entries`.
+- **Entrada sem formato:** é recusada na tela e nem chega ao backend. Se chegar por outro caminho, conta como falha (`method` nulo).
+- **Fora desta etapa:** limite por IP ou por negócio, que exigiria outra camada de infraestrutura e poderia bloquear estabelecimentos com vários atendentes.
+
+### Concorrência
+
+A confirmação trava **a oferta e depois o cupom**, na mesma ordem de `generate_coupon`:
+- gerações e confirmações da mesma oferta passam uma de cada vez, o que protege vagas e o `per_user_limit`;
+- duas confirmações do mesmo cupom produzem uma utilização e um `coupon_already_used`;
+- a expiração usa `FOR UPDATE SKIP LOCKED`: pula um cupom sendo confirmado, e uma confirmação que encontra o cupom sendo expirado espera e recebe `coupon_expired`.
+
+Duas confirmações **simultâneas** de cupons diferentes do mesmo cliente na mesma oferta não chegam a existir: o índice `coupons_one_available_per_user` impede dois `available` do mesmo cliente na mesma oferta, em qualquer versão. A corrida possível, confirmação × nova geração do mesmo cliente, é serializada pela trava da oferta e termina em `user_limit_reached`.
+
+### Acesso
+
+- **Leitura** pelas RPCs:
+  - `my_validation_businesses`;
+  - `verify_coupon`;
+  - `owner_list_validators`;
+  - `list_coupon_usages`: o proprietário vê o próprio negócio; o admin vê um negócio ou todos, com período.
+- **Tabelas:** sem SELECT direto para usuários, exceto leitura administrativa (RLS só para admin). O visitante não tem acesso.
+- **Cliente:** vê o próprio cupom `used`, com `used_at`, por `get_my_coupon`, sem validador nem taxa.
+
+### Interface
+
+- **`/validar`:**
+  - escolha do estabelecimento, quando a conta valida mais de um;
+  - "Ler QR com a câmera", com `jsqr` 1.4.0 (Apache-2.0, sem dependências), carregado só ao tocar no botão; sem câmera ou permissão, fica a entrada manual;
+  - campo para código ou conteúdo do QR;
+  - resultado com situação, benefício, validade e condições da versão aceita;
+  - "Confirmar utilização" em diálogo, com bloqueio de clique duplo.
+- **`/meu-negocio/cupons`:** validadores (cadastrar e desativar) e cupons utilizados com a taxa lançada. Card em Meu Negócio.
+- **`/admin/cupons`:** utilizações por período e negócio, para auditoria.
+- **Cliente:**
+  - "Meus cupons" com o filtro **Utilizados**;
+  - o cupom utilizado mostra data, hora e estabelecimento, sem QR;
+  - a oferta informa quando o limite por pessoa foi atingido.
+- **Menu:** atalho "Validar cupons" só para quem valida algum negócio.
+
+### Pendências
+
+- **Sprint 4:** fechamento mensal, cobrança, Pix, estorno ou anulação de utilização e crédito.
+- **Depois:** convite de validador para quem ainda não tem conta, cancelamento em lote e "definitivamente esgotada".

@@ -1,6 +1,8 @@
-import { Heart, LogOut, Menu, Shield, Store, User, X } from 'lucide-react';
+import { Heart, LogOut, Menu, ScanLine, Shield, Store, Ticket, User, X } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { validationRpc } from '@/integrations/supabase/couponValidation';
+import { useLoader } from '@/hooks/useLoader';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import Logo from './Logo';
@@ -16,6 +18,9 @@ const navLinks = [
 
 function Navbar() {
     const { user, isAdmin } = useAuth();
+    // Atalho de validação só para quem valida algum negócio (dono ou validador).
+    const validation = useLoader(validationRpc.myBusinesses, user?.id ?? 'anon', Boolean(user));
+    const isValidator = Boolean(user) && (validation.data?.data ?? []).length > 0;
     const [menuOpen, setMenuOpen] = useState(false);
 
     return (
@@ -52,6 +57,24 @@ function Navbar() {
                     </Link>
                     {user ? (
                         <>
+                            {isValidator && (
+                                <Link
+                                    to="/validar"
+                                    aria-label="Validar cupons"
+                                    title="Validar cupons"
+                                    className="inline-flex h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
+                                >
+                                    <ScanLine className="h-5 w-5" aria-hidden="true" />
+                                </Link>
+                            )}
+                            <Link
+                                to="/meus-cupons"
+                                aria-label="Meus cupons"
+                                title="Meus cupons"
+                                className="inline-flex h-10 w-10 items-center justify-center rounded-full text-dark-ocean hover:bg-sand-dark/50"
+                            >
+                                <Ticket className="h-5 w-5" aria-hidden="true" />
+                            </Link>
                             <Link
                                 to="/meu-negocio"
                                 aria-label="Meu Negócio"
@@ -163,6 +186,40 @@ function Navbar() {
                                 Favoritos
                             </Link>
                         </li>
+                        {user && (
+                            <li
+                                className={`px-3 py-3 transition-all duration-300 ${
+                                    menuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
+                                }`}
+                                style={{ transitionDelay: menuOpen ? `${(navLinks.length + 1) * 40}ms` : '0ms' }}
+                            >
+                                <Link
+                                    to="/meus-cupons"
+                                    onClick={() => setMenuOpen(false)}
+                                    className="flex items-center gap-2 text-dark-ocean/70"
+                                >
+                                    <Ticket className="h-4 w-4" aria-hidden="true" />
+                                    Meus cupons
+                                </Link>
+                            </li>
+                        )}
+                        {isValidator && (
+                            <li
+                                className={`px-3 py-3 transition-all duration-300 ${
+                                    menuOpen ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
+                                }`}
+                                style={{ transitionDelay: menuOpen ? `${(navLinks.length + 1) * 40}ms` : '0ms' }}
+                            >
+                                <Link
+                                    to="/validar"
+                                    onClick={() => setMenuOpen(false)}
+                                    className="flex items-center gap-2 text-dark-ocean/70"
+                                >
+                                    <ScanLine className="h-4 w-4" aria-hidden="true" />
+                                    Validar cupons
+                                </Link>
+                            </li>
+                        )}
                         {user && (
                             <li
                                 className={`px-3 py-3 transition-all duration-300 ${

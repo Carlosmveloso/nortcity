@@ -106,6 +106,35 @@ export const staticPages = [
         noindex: true,
     },
     {
+        path: '/regulamento-cupons',
+        title: 'Regulamento dos cupons',
+        description: 'Regulamento de Utilização dos Cupons das ofertas do Farol Pitimbu.',
+    },
+    {
+        path: '/meus-cupons',
+        title: 'Meus cupons',
+        description: 'Seus cupons gerados nas ofertas do Farol Pitimbu.',
+        noindex: true,
+    },
+    {
+        path: '/validar',
+        title: 'Validar cupons',
+        description: 'Validação de cupons do Farol Pitimbu no estabelecimento.',
+        noindex: true,
+    },
+    {
+        path: '/meu-negocio/cupons',
+        title: 'Cupons do negócio',
+        description: 'Validadores e cupons utilizados do seu negócio.',
+        noindex: true,
+    },
+    {
+        path: '/admin/cupons',
+        title: 'Cupons utilizados',
+        description: 'Auditoria das utilizações de cupons.',
+        noindex: true,
+    },
+    {
         path: '/entrar',
         title: 'Entrar',
         description: 'Acesse sua conta do Farol Pitimbu.',
@@ -118,9 +147,21 @@ export const staticPages = [
         noindex: true,
     },
     {
+        path: '/meu-negocio/ofertas',
+        title: 'Minhas ofertas',
+        description: 'Crie e acompanhe as ofertas do seu negócio no Farol Pitimbu.',
+        noindex: true,
+    },
+    {
         path: '/admin',
         title: 'Painel Admin',
         description: 'Área administrativa do Farol Pitimbu.',
+        noindex: true,
+    },
+    {
+        path: '/admin/ofertas',
+        title: 'Ofertas',
+        description: 'Análise e publicação das ofertas dos negócios.',
         noindex: true,
     },
     {

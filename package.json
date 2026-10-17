@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "build:check": "vite build --mode ci",
     "dev:e2e": "vite --mode e2e --host 127.0.0.1 --port 4173 --strictPort",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:dev": "playwright test -c playwright.dev.config.js"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -22,8 +23,10 @@
     "@tailwindcss/vite": "^4.3.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
+    "jsqr": "1.4.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.16.0",
+    "qrcode-generator": "2.0.4",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-leaflet": "^5.0.0",

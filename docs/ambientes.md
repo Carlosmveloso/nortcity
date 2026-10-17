@@ -26,6 +26,34 @@ Ainda em 04/10/2026, a migration `20261004000001_account_favorites.sql` foi apli
 
 Em 05/10/2026, após autorização de publicação, a mesma migration foi aplicada em produção. O destino foi confirmado contra o cliente do site público e o dry-run identificou apenas essa migration pendente. Foram conferidos o registro no histórico, RLS habilitado, três policies, duas referências com cascata e a ausência de SELECT para `anon` e UPDATE para `authenticated`. A API pública recusou a leitura anônima com HTTP 401/código 42501. O vínculo local da CLI e o ambiente de desenvolvimento permanecem no projeto separado. Essa verificação em produção foi de schema e leitura, sem usuários fictícios ou testes de escrita de favoritos.
 
+Em 05/10/2026, as migrations de ofertas e planos mínimos (`20261005000001` a `20261005000003`) foram aplicadas exclusivamente em `farol-pitimbu-dev` (35 migrations) e homologadas com os roteiros de ROLLBACK e de concorrência ([testes.md](testes.md)). Produção não recebeu essas migrations, e a interface de ofertas ainda não existe.
+
+Em 06/10/2026, o E2E real da interface de ofertas rodou contra `farol-pitimbu-dev`, com duas contas fictícias e um negócio de ids reservados `74000000-…`, removidos em seguida por `offers_e2e_dev_cleanup.sql`. Nenhuma migration nova foi aplicada para o frontend.
+
+Ainda em 06/10/2026, a migration `20261006000001_offer_lifecycle_jobs.sql` (job `offer-lifecycle`) foi aplicada exclusivamente em `farol-pitimbu-dev`, depois de dry-run que listou só ela (36 migrations). O job `pg_cron` fica ativo nesse projeto a cada 5 minutos. Produção não recebeu esta migration; ao publicar, aplique as migrations de ofertas na ordem e confirme `cron.job` com `offer-lifecycle` ativo.
+
+Cupons, 06/10/2026, só em `farol-pitimbu-dev`:
+- Criado no Vault o segredo `coupon_qr_key_v1`: 64 caracteres hexadecimais gerados dentro do banco, nunca impressos nem copiados.
+- Dry-run e aplicação da migration `20261007000001_coupons.sql` (37 migrations). O job `coupon-expiration` ficou ativo a cada 5 minutos.
+- O segredo continua no dev, porque a geração depende dele. Produção não recebeu a migration nem o segredo.
+
+Validação e utilização de cupons, 16/10/2026, só em `farol-pitimbu-dev`: dry-run e aplicação de `20261016000001_coupon_used_status.sql`, `20261016000002_coupon_usage.sql` e `20261016000003_coupon_verification_attempts.sql` (40 migrations). Job novo: `coupon-verification-attempts-retention`, diário às 03:17 UTC, que remove tentativas de verificação com mais de 30 dias. A CLI foi fixada em `supabase@2.119.0`, a mesma versão das homologações anteriores.
+
+**Ofertas e cupons em produção, 17/10/2026** (operação autorizada, antes da publicação do front-end):
+- Aplicadas as 8 migrations, na ordem abaixo: `20261005000001_plans`, `20261005000002_offers`, `20261005000003_offer_rpcs`, `20261006000001_offer_lifecycle_jobs`, `20261007000001_coupons`, `20261016000001_coupon_used_status`, `20261016000002_coupon_usage` e `20261016000003_coupon_verification_attempts`. Produção passou a ter 40 migrations; a última é `20261016000003`.
+- Criado no Vault de produção o segredo `coupon_qr_key_v1`, distinto do de desenvolvimento. O valor não foi impresso nem registrado. `coupon_qr_current_key_version()` retorna `1`.
+- Jobs `pg_cron` ativos: `offer-lifecycle` e `coupon-expiration` (a cada 5 minutos), `coupon-verification-attempts-retention` (diário, 03:17 UTC), `site-rebuild` (a cada 3 minutos) e `farol-analytics-diario` (agendado fora das migrations versionadas).
+- Conferidos: RLS ativa nas tabelas novas, grants, funções internas inacessíveis aos papéis do navegador, regulamento `2026-10-v1` e os quatro planos (Gratuito, Básico, Profissional, Premium).
+- Dados no momento da conferência: 96 negócios, 0 ofertas, 0 cupons e 0 tentativas de verificação. Nenhuma massa de teste foi criada em produção; os E2E reais continuam restritos a `farol-pitimbu-dev`.
+- O vínculo local da CLI permanece em `farol-pitimbu-dev`. O banco foi preparado antes do front-end; a interface de ofertas e cupons chega à produção pelo PR `develop → main`.
+
+**Ordem usada para publicar ofertas e cupons** (referência para outro ambiente):
+1. Aplicar, com dry-run e no destino confirmado: `20261005000001_plans`, `20261005000002_offers`, `20261005000003_offer_rpcs`, `20261006000001_offer_lifecycle_jobs`, `20261007000001_coupons`, `20261016000001_coupon_used_status`, `20261016000002_coupon_usage` e `20261016000003_coupon_verification_attempts`. A de `used` precisa ser aplicada e confirmada antes da seguinte; `db push` faz isso naturalmente, porque cada migration roda em sua própria transação.
+2. Antes de liberar a geração, criar o segredo próprio de produção: `select vault.create_secret(encode(extensions.gen_random_bytes(32), 'hex'), 'coupon_qr_key_v1', '…');`. Não reutilizar o do dev. Sem ele, a geração recusa com `qr_key_unavailable`.
+3. Conferir em `cron.job` que `offer-lifecycle`, `coupon-expiration` e `coupon-verification-attempts-retention` estão ativos, conferir os grants (seção 0 dos roteiros de homologação) e só então publicar o front-end.
+
+Rotação de chave: criar `coupon_qr_key_v2`. Os cupons antigos continuam verificáveis enquanto `coupon_qr_key_v1` existir.
+
 Para preparar outro ambiente:
 
 1. Selecionar/criar o projeto de desenvolvimento, sem reutilizar dados pessoais de produção.

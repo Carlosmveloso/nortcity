@@ -16,6 +16,8 @@ import Home from "./pages/Home";
 
 const Admin = lazy(() => import("./pages/Admin"));
 const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics"));
+const AdminOfertas = lazy(() => import("./pages/AdminOfertas"));
+const AdminOfertaAnalise = lazy(() => import("./pages/AdminOfertaAnalise"));
 
 const Explorar = lazy(() => import("./pages/Explorar"));
 const Experiencia = lazy(() => import("./pages/Experiencia"));
@@ -31,9 +33,19 @@ const Planos = lazy(() => import("./pages/Planos"));
 const GuiaLocal = lazy(() => import("./pages/GuiaLocal"));
 const CadastrarNegocio = lazy(() => import("./pages/CadastrarNegocio"));
 const MeuNegocio = lazy(() => import("./pages/MeuNegocio"));
+const MinhasOfertas = lazy(() => import("./pages/MinhasOfertas"));
+const OfertaEditor = lazy(() => import("./pages/OfertaEditor"));
+const OfertaDetalhe = lazy(() => import("./pages/OfertaDetalhe"));
 const Sobre = lazy(() => import("./pages/Sobre"));
 const Contato = lazy(() => import("./pages/Contato"));
 const Favoritos = lazy(() => import("./pages/Favoritos"));
+const OfertaPublica = lazy(() => import("./pages/OfertaPublica"));
+const MeusCupons = lazy(() => import("./pages/MeusCupons"));
+const CupomDetalhe = lazy(() => import("./pages/CupomDetalhe"));
+const RegulamentoCupons = lazy(() => import("./pages/RegulamentoCupons"));
+const ValidarCupons = lazy(() => import("./pages/ValidarCupons"));
+const CuponsNegocio = lazy(() => import("./pages/CuponsNegocio"));
+const AdminCupons = lazy(() => import("./pages/AdminCupons"));
 const Entrar = lazy(() => import("./pages/Entrar"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -89,9 +101,75 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/meu-negocio/ofertas"
+                element={
+                  <ProtectedRoute>
+                    <MinhasOfertas />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meu-negocio/ofertas/nova"
+                element={
+                  <ProtectedRoute>
+                    <OfertaEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meu-negocio/ofertas/:offerId/editar"
+                element={
+                  <ProtectedRoute>
+                    <OfertaEditor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meu-negocio/ofertas/:offerId"
+                element={
+                  <ProtectedRoute>
+                    <OfertaDetalhe />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/sobre" element={<Sobre />} />
               <Route path="/contato" element={<Contato />} />
               <Route path="/favoritos" element={<Favoritos />} />
+              <Route path="/ofertas/:offerId" element={<OfertaPublica />} />
+              <Route path="/regulamento-cupons" element={<RegulamentoCupons />} />
+              <Route
+                path="/validar"
+                element={
+                  <ProtectedRoute>
+                    <ValidarCupons />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meu-negocio/cupons"
+                element={
+                  <ProtectedRoute>
+                    <CuponsNegocio />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meus-cupons"
+                element={
+                  <ProtectedRoute>
+                    <MeusCupons />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meus-cupons/:couponId"
+                element={
+                  <ProtectedRoute>
+                    <CupomDetalhe />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/entrar" element={<Entrar />} />
               <Route
                 path="/admin"
@@ -106,6 +184,30 @@ function App() {
                 element={
                   <AdminRoute>
                     <AdminAnalytics />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/ofertas"
+                element={
+                  <AdminRoute>
+                    <AdminOfertas />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/ofertas/:offerId"
+                element={
+                  <AdminRoute>
+                    <AdminOfertaAnalise />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/cupons"
+                element={
+                  <AdminRoute>
+                    <AdminCupons />
                   </AdminRoute>
                 }
               />
